@@ -2,6 +2,7 @@ package at.ac.fhstp.meeteux;
 
 import com.unity3d.player.*;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
@@ -25,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import android.webkit.ConsoleMessage;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -50,7 +52,13 @@ import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 
+
+
+
+
 public class UnityPlayerActivity extends AbsRuntimePermission {
+
+
     private static final int REQUEST_PERMISSION = 10;
     private ProximityManager proximityManager;
     private BackgroundPowerSaver backgroundPowerSaver;
@@ -69,6 +77,8 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
     private static final Object SINGLETON_LOCK = new Object();
     protected static volatile BeaconManager sInstance = null;
+
+
 
     // Setup activity layout
     @Override protected void onCreate (Bundle savedInstanceState){
@@ -120,6 +130,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         myJSInterface = new JSInterface(myWebView, this);
         myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+         //myWebView.addJavascriptInterface(myJSInterface, "Android");
        // myWebView.loadUrl("file:///android_asset/ressources/views/index.html");
         myWebView.loadUrl("file:///android_asset/index.html");
         ((ViewGroup)super.findViewById(android.R.id.content)).removeView(this.mUnityPlayer);
@@ -129,6 +140,9 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         //setContentView(mUnityPlayer);
         mUnityPlayer.requestFocus();
     }
+
+
+
 
     @Override
     public void onPermissionsGranted(int requestCode){

@@ -10,50 +10,90 @@ socket.on('registerODResult', function (data) {
     console.log('registerODResult');
     console.log(data);
 
-    // get lookuptable back and store as exhibits in local storage
-    var lookuptable = {'exhibits' : data};
+    // get lookuptable back and store as locations in local storage
+    var lookuptable = {'locations' : data.locations};
     localStorage.setItem('lookuptable', JSON.stringify(lookuptable));
+
+    // TODO getSuccess back and write current user into localStorage
+    registrationSuccess.show();
+    outputRegistration.append(" " + JSON.stringify(data));
+
+    // set currentOD in localStorage
+    localStorage.setItem('currentOD', JSON.stringify(data.user));
+
+    if(!web){
+      window.webkit.messageHandlers.registerOD.postMessage("success");
+    }
 });
 
 socket.on('registerLocationResult', function (data) {
     console.log('registerLocationResult');
     console.log(data);
 
-    // TODO: save currentlocaction in localStorage - only possible at this point, if I know the exhibit ID
-    /*localStorage.setItem('currentExhibit', JSON.stringify(myexhibit));
-    locationHeading.text(myexhibit.description);*/
+    outputLocation.append(JSON.stringify(data));
+
+    // save currentlocaction in localStorage
+    localStorage.setItem('currentLocation', JSON.stringify(data));
+
+    var myexhibit = get_exhibit_by_id(data);
+    locationHeading.text(myexhibit.description);
 });
 
 // UI elements
 var headline = $("#headline");
 var locationHeading =$("#location");
+var registerOdNative = $("#registerODnative");
+var userNameInput = $("#username");
+var registrationSuccess = $("#registrationSuccess");
+var outputRegistration = $("#outputRegistration");
+var outputLocation = $("#outputLocation");
 
+//
+
+// Click-Events
+registerOdNative.click(function(){
+  window.webkit.messageHandlers.getDeviceInfos.postMessage("get");
+});
+
+// call from native
 // handles new location
 // gets major and minor of beacon in an array
 // sets new location
 function update_location(beacon){
   var myexhibit = get_exhibit_by_id(beacon['minor']);
+  var currentOD =  JSON.parse(localStorage.getItem('currentOD'));
 
-  socket.emit('registerLocation', {user: 1, location: myexhibit.id});
-
-  // TODO set in god response
-  localStorage.setItem('currentExhibit', JSON.stringify(myexhibit));
-  locationHeading.text(myexhibit.description);
+  socket.emit('registerLocation', {user: currentOD.id, location: myexhibit.id});
 }
 
-// handles new location
-// gets major and minor of beacon in an array
-// sets new location
-function register_od(deviceinfo){
-  // deviceinfo['']
-  socket.emit('registerOD', 'Niklas');
+// call from native
+// gets deviceInfos, calls registerOD
+function send_device_infos(deviceinfos){
+  console.log(deviceinfos);
+  register_od(deviceinfos);
+}
+
+// registers new OD
+// gets deviceinfos
+// sends registerOD to GoD
+function register_od(deviceinfos){
+  var devicetoregister = {
+    'name' : userNameInput.val(),
+    'deviceaddress' : deviceinfos['deviceaddress'],
+    'systemname' : deviceinfos['systemname'],
+    'systemversion' : deviceinfos['deviceaddress'],
+    'model' :  deviceinfos['model'],
+    'tagid' : 0
+  };
+
+  socket.emit('registerOD', devicetoregister['name']);
 }
 
 function get_exhibit_by_id(exhibitId){
   var lookuptable =  JSON.parse(localStorage.getItem('lookuptable'));
-  for(var i=0 ; i < lookuptable.exhibits.length ; i++){
-      if (lookuptable.exhibits[i]['id'] == exhibitId){
-          myexhibit = lookuptable.exhibits[i];
+  for(var i=0 ; i < lookuptable.locations.length ; i++){
+      if (lookuptable.locations[i]['id'] == exhibitId){
+          myexhibit = lookuptable.locations[i];
       }
   }
   return myexhibit;
@@ -86,7 +126,13 @@ if(web){
 }
 
 var testbeacon = {'major' : 10, 'minor' : 1002};
-var testdevice = {'id' : 1, 'device' : 'iPhone', 'os' : 'OS10'}
+var testdevice = {
+  'deviceaddress' : 'xxx',
+  'systemname' : 'iOS',
+  'systemversion' : '11.0',
+  'model' : 'iPad',
+  'tagid' : 1
+};
 
 sendBeaconInfoButton.click(function() {
   update_location(testbeacon);
@@ -94,7 +140,7 @@ sendBeaconInfoButton.click(function() {
 
 registerODButton.click(function(){
   register_od(testdevice);
-})
+});
 
 
 /****************
@@ -116,7 +162,11 @@ function call_native(){
   window.webkit.messageHandlers.observe.postMessage("hello");
 }
 
-setTimeout(call_native, 1000);
+
+if(!web){
+  setTimeout(call_native, 1000);
+}
+
 
 
 /*
