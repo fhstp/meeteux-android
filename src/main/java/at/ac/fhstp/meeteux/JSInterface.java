@@ -3,6 +3,7 @@ package at.ac.fhstp.meeteux;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 public class JSInterface extends AppCompatActivity {
 
@@ -25,6 +26,7 @@ public class JSInterface extends AppCompatActivity {
             }
         });
     }
+
     @JavascriptInterface
     public void forwardToUnity(String methodname, String command) //type is "monster" or "item"
     {
@@ -32,11 +34,27 @@ public class JSInterface extends AppCompatActivity {
     }
 
     /* calls to WebView */
+
     public void addItem(String name) {
         mAppView.loadUrl("javascript:addItem('" + name + "')");
     }
+
+
     public void setCurrentTriggerObject(String name) {
         mAppView.loadUrl("javascript:setCurrentTriggerObject('" + name + "')");
     }
+
+
+   /* @JavascriptInterface
+    public void run(final String scriptSrc){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mAppView.loadUrl("javascript:" + scriptSrc);
+            }
+        });
+    }*/
+
+
 
 }
