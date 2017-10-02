@@ -1,7 +1,9 @@
 package at.ac.fhstp.meeteux;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -61,6 +63,33 @@ public class JSInterface extends AppCompatActivity {
     public int getNearestBeaconMinor(){
         int nearestBeaconMinor = mainActivity.nearestBeaconMinorDetected();
         return nearestBeaconMinor;
+    }
+
+    @JavascriptInterface
+    public void update_location(){
+        mainActivity.update_location();
+    }
+
+    @JavascriptInterface
+    public void registerOD(){
+        mainActivity.registerODNatve();
+    }
+
+    @JavascriptInterface
+    public void getDeviceInfos(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String deviceInfos = mainActivity.getDeviceInfosNative();
+                mAppView.evaluateJavascript("javascript:send_device_infos("+ deviceInfos +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("CheckReceive","Es ist was passiert");
+                    }
+                });
+            }
+        });
     }
 
    /* @JavascriptInterface

@@ -1,3 +1,22 @@
+// Check if web browser or native web view
+var userAgent = window.navigator.userAgent.toLowerCase(),
+    safari = /safari/.test( userAgent ),
+    //ios = /iphone|ipod|ipad/.test( userAgent ),
+    chrome = /chrome/.test( userAgent ),
+    android = /android/.test( userAgent );
+
+console.log(userAgent);
+
+var web = false;
+
+//TODO: check for android native view
+if(safari || chrome){
+  if(!android){
+    console.log("you are in web browser");
+    web = true;
+  }
+}
+
 /****************
 *
 * set up socket connection
@@ -21,7 +40,11 @@ socket.on('registerODResult', function (data) {
     localStorage.setItem('currentOD', JSON.stringify(data.user));
 
     if(!web){
-      window.webkit.messageHandlers.registerOD.postMessage("success");
+      if(android){
+          MEETeUXAndroidAppRoot.registerOD();
+      }else{
+          window.webkit.messageHandlers.registerOD.postMessage("success");
+      }
     }
 });
 
@@ -29,7 +52,7 @@ socket.on('registerLocationResult', function (data) {
     console.log('registerLocationResult');
     console.log(data);
 
-    outputLocation.append(JSON.stringify(data));
+    outputLocation.append(" "+JSON.stringify(data));
 
     // save currentlocaction in localStorage
     localStorage.setItem('currentLocation', JSON.stringify(data));
@@ -51,7 +74,11 @@ var outputLocation = $("#outputLocation");
 
 // Click-Events
 registerOdNative.click(function(){
-  window.webkit.messageHandlers.getDeviceInfos.postMessage("get");
+  if(android){
+      MEETeUXAndroidAppRoot.getDeviceInfos();
+  }else{
+      window.webkit.messageHandlers.getDeviceInfos.postMessage("get");
+  }
 });
 
 // call from native
@@ -61,8 +88,9 @@ registerOdNative.click(function(){
 function update_location(beacon){
   var myexhibit = get_exhibit_by_id(beacon['minor']);
   var currentOD =  JSON.parse(localStorage.getItem('currentOD'));
-
-  socket.emit('registerLocation', {user: currentOD.id, location: myexhibit.id});
+  if(myexhibit.id){
+    socket.emit('registerLocation', {user: currentOD.id, location: myexhibit.id});
+  }
 }
 
 // call from native
@@ -93,6 +121,7 @@ function register_od(deviceinfos){
 
 function get_exhibit_by_id(exhibitId){
   var lookuptable =  JSON.parse(localStorage.getItem('lookuptable'));
+  var myexhibit;
   for(var i=0 ; i < lookuptable.locations.length ; i++){
       if (lookuptable.locations[i]['id'] == exhibitId){
           myexhibit = lookuptable.locations[i];
@@ -107,18 +136,7 @@ function get_exhibit_by_id(exhibitId){
 *
 *****************/
 
-// Check if web browser or native web view
-var userAgent = window.navigator.userAgent.toLowerCase(),
-    safari = /safari/.test( userAgent ),
-    //ios = /iphone|ipod|ipad/.test( userAgent ),
-    chrome = /chrome/.test( userAgent );
-var web = false;
 
-//TODO: check for android native view
-if(safari || chrome){
-  console.log("you are in web browser");
-  web = true;
-}
 var webdevtools = $("#webdevtools");
 var registerODButton = $("#registerOD");
 var sendBeaconInfoButton = $("#sendBeaconInfo");
@@ -135,21 +153,9 @@ var testdevice = {
   'deviceModel' : 'iPad',
   'identifier' : 1
 };
-var nearestbeacon;
 
 sendBeaconInfoButton.click(function() {
-  //update_location(testbeacon);
-  if (typeof MEETeUXAndroidAppRoot !== "undefined")
-  	{
-        var major = MEETeUXAndroidAppRoot.getNearestBeaconMajor();
-        var minor = MEETeUXAndroidAppRoot.getNearestBeaconMinor();
-        console.log(major);
-        console.log(minor);
-        console.log()
-         nearestbeacon = {'major' : major, 'minor' : minor};
-        //update_location(MEETeUXAndroidAppRoot.getNearestBeacon());
-        update_location(nearestbeacon);
-  }
+  update_location(testbeacon);
 });
 
 registerODButton.click(function(){
