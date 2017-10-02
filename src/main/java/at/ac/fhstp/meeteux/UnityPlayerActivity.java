@@ -74,6 +74,9 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
     String[] beaconItems;
     ListView listView;
+    IBeaconDevice nearestBeacon;
+    int nearestBeaconMinor;
+    int nearestBeaconMajor;
 
     private static final Object SINGLETON_LOCK = new Object();
     protected static volatile BeaconManager sInstance = null;
@@ -179,13 +182,14 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
             }
 
+            /*
             private ScanSettings getScanSettings()
             {
                 final ScanSettings.Builder builder = new ScanSettings.Builder();
                 builder.setReportDelay(0);
                 builder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
                 return builder.build();
-            }
+            }*/
 
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
@@ -218,6 +222,13 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                     String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
                     String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
                     beaconItems[i] = beaconName + " " + beaconRssi;
+
+                    if(i==0){
+                        nearestBeacon = newList.get(0);
+                        nearestBeaconMajor = newList.get(0).getMajor();
+                        nearestBeaconMinor = newList.get(0).getMinor();
+
+                    }
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
                 listView.setAdapter(adapter);
@@ -234,6 +245,18 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         proximityManager.setScanStatusListener(createScanStatusListener());
 
+    }
+
+    public IBeaconDevice nearestBeaconDetected(){
+        return nearestBeacon;
+    }
+
+    public int nearestBeaconMinorDetected(){
+        return nearestBeaconMinor;
+    }
+
+    public int nearestBeaconMajorDetected(){
+        return nearestBeaconMajor;
     }
 
 

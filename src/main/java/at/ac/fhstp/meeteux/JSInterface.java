@@ -5,6 +5,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.kontakt.sdk.android.common.profile.IBeaconDevice;
+
 public class JSInterface extends AppCompatActivity {
 
     private WebView mAppView;
@@ -44,6 +46,22 @@ public class JSInterface extends AppCompatActivity {
         mAppView.loadUrl("javascript:setCurrentTriggerObject('" + name + "')");
     }
 
+    public IBeaconDevice getNearestBeacon(){
+        IBeaconDevice nearestBeacon = mainActivity.nearestBeaconDetected();
+        return nearestBeacon;
+    }
+
+    @JavascriptInterface
+    public int getNearestBeaconMajor(){
+        int nearestBeaconMajor = mainActivity.nearestBeaconMajorDetected();
+        return nearestBeaconMajor;
+    }
+
+    @JavascriptInterface
+    public int getNearestBeaconMinor(){
+        int nearestBeaconMinor = mainActivity.nearestBeaconMinorDetected();
+        return nearestBeaconMinor;
+    }
 
    /* @JavascriptInterface
     public void run(final String scriptSrc){

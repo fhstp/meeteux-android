@@ -133,9 +133,21 @@ var testdevice = {
   'model' : 'iPad',
   'tagid' : 1
 };
+var nearestbeacon;
 
 sendBeaconInfoButton.click(function() {
-  update_location(testbeacon);
+  //update_location(testbeacon);
+  if (typeof MEETeUXAndroidAppRoot !== "undefined")
+  	{
+        var major = MEETeUXAndroidAppRoot.getNearestBeaconMajor();
+        var minor = MEETeUXAndroidAppRoot.getNearestBeaconMinor();
+        console.log(major);
+        console.log(minor);
+        console.log()
+         nearestbeacon = {'major' : major, 'minor' : minor};
+        //update_location(MEETeUXAndroidAppRoot.getNearestBeacon());
+        update_location(nearestbeacon);
+  }
 });
 
 registerODButton.click(function(){
