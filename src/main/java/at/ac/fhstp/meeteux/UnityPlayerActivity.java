@@ -1,5 +1,7 @@
 package at.ac.fhstp.meeteux;
 
+import com.kontakt.sdk.android.common.Proximity;
+import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.unity3d.player.*;
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +13,8 @@ import android.os.Bundle;
 import android.Manifest;
 import android.bluetooth.le.ScanSettings;
 
+import android.os.Parcel;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,7 +84,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
     static UnityPlayerActivity mySelf;
     static JSInterface myJSInterface;
 
-    String[] beaconItems;
+    IBeaconDevice[] beaconItems;
     ListView listView;
     IBeaconDevice nearestBeacon;
     int nearestBeaconMinor;
@@ -214,7 +218,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                 Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
                 //readBeaconData(iBeacons);
-                beaconItems = new String[iBeacons.size()];
+                beaconItems = new IBeaconDevice[iBeacons.size()];
                 List<IBeaconDevice> newList = new ArrayList<>(iBeacons);
                 Collections.sort(newList, new Comparator<IBeaconDevice>() {
                     @Override
@@ -232,25 +236,63 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                     }
                 });
 
-
-
+                int helpCounter = 0;
                 for(int i = 0; i<newList.size();i++) {
-                    String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
-                    String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
-                    beaconItems[i] = beaconName + " " + beaconRssi;
+                    //String helpString = newList.get(i).getProximity() + "";
+                    if((newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
+                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = newList.get(i);
+                        helpCounter++;
+                    }else if(newList.get(i).getMajor()==10&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
+                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = newList.get(i);
+                        helpCounter++;
+                    }else{
+                        beaconItems[helpCounter]=null;
+                        helpCounter++;
+                    }
+                }
+                int beaconItemsArraySize = 0;
+                for(int i = 0; i<beaconItems.length;i++){
+                    if(beaconItems[i]!=null){
+                      beaconItemsArraySize++;
+                    }
+                }
 
+                IBeaconDevice[] triggeredBeaconDevices = new IBeaconDevice[beaconItemsArraySize];
+                int helpCounterBeacons = 0;
+                for(int i = 0; i<beaconItems.length;i++){
+                    if(beaconItems[i]!=null){
+                        triggeredBeaconDevices[helpCounterBeacons] = beaconItems[i];
+                        helpCounterBeacons++;
+                    }
+                }
+
+
+
+                for(int i = 0; i<triggeredBeaconDevices.length;i++) {
+                    //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
+                    //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                    //beaconItems[i] = beaconName + " " + beaconRssi;
+                    Log.d("Right Beacons",String.valueOf(triggeredBeaconDevices[i].getMinor()));
+                    Log.d("Right Beacons RSSI",String.valueOf(triggeredBeaconDevices[i].getRssi()));
                     if(i==0){
-                        nearestBeacon = newList.get(0);
+                        /*nearestBeacon = newList.get(0);
                         nearestBeaconMajor = newList.get(0).getMajor();
-                        nearestBeaconMinor = newList.get(0).getMinor();
+                        nearestBeaconMinor = newList.get(0).getMinor();*/
 
+                        nearestBeacon = triggeredBeaconDevices[0];
+                        nearestBeaconMajor = triggeredBeaconDevices[0].getMajor();
+                        nearestBeaconMinor = triggeredBeaconDevices[0].getMinor();
 
                         update_location();
 
                     }
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
-                listView.setAdapter(adapter);
+                //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
+                //listView.setAdapter(adapter);
             }
 
 
