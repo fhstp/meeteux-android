@@ -239,12 +239,12 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                 int helpCounter = 0;
                 for(int i = 0; i<newList.size();i++) {
                     //String helpString = newList.get(i).getProximity() + "";
-                    if((newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
+                    if((String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
                         //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
                         //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
                         beaconItems[helpCounter] = newList.get(i);
                         helpCounter++;
-                    }else if(newList.get(i).getMajor()==10&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
+                    }else if(String.valueOf(newList.get(i).getMajor()).length()==3&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
                         //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
                         //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
                         beaconItems[helpCounter] = newList.get(i);
