@@ -6,4 +6,4 @@ Unity 2017.3
 
 Android Studio 3.0.1
 
-min Android SDK Versions: 19
+min Android SDK Versions: 19 (4.4 Kit Kat)
