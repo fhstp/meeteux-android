@@ -1,20 +1,26 @@
 package at.ac.fhstp.meeteux;
 
+import com.kontakt.sdk.android.common.Proximity;
+import com.kontakt.sdk.android.common.profile.DeviceProfile;
 import com.unity3d.player.*;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 import android.bluetooth.le.ScanSettings;
 
+import android.os.Parcel;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,12 +54,18 @@ import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusList
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
+import android.webkit.ValueCallback;
 
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import android.provider.Settings.Secure;
 
-
+import static android.os.Build.VERSION.RELEASE;
 
 
 public class UnityPlayerActivity extends AbsRuntimePermission {
@@ -72,8 +84,11 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
     static UnityPlayerActivity mySelf;
     static JSInterface myJSInterface;
 
-    String[] beaconItems;
+    IBeaconDevice[] beaconItems;
     ListView listView;
+    IBeaconDevice nearestBeacon;
+    int nearestBeaconMinor;
+    int nearestBeaconMajor;
 
     private static final Object SINGLETON_LOCK = new Object();
     protected static volatile BeaconManager sInstance = null;
@@ -107,6 +122,10 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         viewSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitch);
         viewSwitcher.addView(this.mUnityPlayer);
         myWebView = (WebView) findViewById(R.id.webView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            myWebView.setWebContentsDebuggingEnabled(true);
+        }
 
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -169,6 +188,10 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         /* proximityManager.setIBeaconListener(createIBeaconListener()); */
 
+
+
+
+
         proximityManager.setIBeaconListener(new IBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice iBeacon, IBeaconRegion region) {
@@ -179,13 +202,14 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
             }
 
+            /*
             private ScanSettings getScanSettings()
             {
                 final ScanSettings.Builder builder = new ScanSettings.Builder();
                 builder.setReportDelay(0);
                 builder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
                 return builder.build();
-            }
+            }*/
 
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
@@ -194,7 +218,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                 Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
                 //readBeaconData(iBeacons);
-                beaconItems = new String[iBeacons.size()];
+                beaconItems = new IBeaconDevice[iBeacons.size()];
                 List<IBeaconDevice> newList = new ArrayList<>(iBeacons);
                 Collections.sort(newList, new Comparator<IBeaconDevice>() {
                     @Override
@@ -212,15 +236,63 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                     }
                 });
 
-
-
+                int helpCounter = 0;
                 for(int i = 0; i<newList.size();i++) {
-                    String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
-                    String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
-                    beaconItems[i] = beaconName + " " + beaconRssi;
+                    //String helpString = newList.get(i).getProximity() + "";
+                    if((String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
+                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = newList.get(i);
+                        helpCounter++;
+                    }else if(String.valueOf(newList.get(i).getMajor()).length()==3&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
+                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = newList.get(i);
+                        helpCounter++;
+                    }else{
+                        beaconItems[helpCounter]=null;
+                        helpCounter++;
+                    }
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
-                listView.setAdapter(adapter);
+                int beaconItemsArraySize = 0;
+                for(int i = 0; i<beaconItems.length;i++){
+                    if(beaconItems[i]!=null){
+                      beaconItemsArraySize++;
+                    }
+                }
+
+                IBeaconDevice[] triggeredBeaconDevices = new IBeaconDevice[beaconItemsArraySize];
+                int helpCounterBeacons = 0;
+                for(int i = 0; i<beaconItems.length;i++){
+                    if(beaconItems[i]!=null){
+                        triggeredBeaconDevices[helpCounterBeacons] = beaconItems[i];
+                        helpCounterBeacons++;
+                    }
+                }
+
+
+
+                for(int i = 0; i<triggeredBeaconDevices.length;i++) {
+                    //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
+                    //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                    //beaconItems[i] = beaconName + " " + beaconRssi;
+                    Log.d("Right Beacons",String.valueOf(triggeredBeaconDevices[i].getMinor()));
+                    Log.d("Right Beacons RSSI",String.valueOf(triggeredBeaconDevices[i].getRssi()));
+                    if(i==0){
+                        /*nearestBeacon = newList.get(0);
+                        nearestBeaconMajor = newList.get(0).getMajor();
+                        nearestBeaconMinor = newList.get(0).getMinor();*/
+
+                        nearestBeacon = triggeredBeaconDevices[0];
+                        nearestBeaconMajor = triggeredBeaconDevices[0].getMajor();
+                        nearestBeaconMinor = triggeredBeaconDevices[0].getMinor();
+
+                        update_location();
+
+                    }
+                }
+                //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
+                //listView.setAdapter(adapter);
             }
 
 
@@ -232,17 +304,86 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
             }
         });
 
+
+
+
         proximityManager.setScanStatusListener(createScanStatusListener());
+    }
+
+    public IBeaconDevice nearestBeaconDetected(){
+        return nearestBeacon;
+    }
+
+    public int nearestBeaconMinorDetected(){
+        return nearestBeaconMinor;
+    }
+
+    public int nearestBeaconMajorDetected(){
+        return nearestBeaconMajor;
+    }
+
+
+    public String getDeviceInfosNative(){
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("deviceAddress", Secure.ANDROID_ID);
+            jObject.put("deviceOS", "Android");
+            jObject.put("deviceVersion", Build.VERSION.RELEASE);
+            jObject.put("deviceModel", android.os.Build.MODEL);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String deviceInfos = jObject.toString();
+
+        //{'deviceaddress' : 'xxx', 'systemname' : 'iOS', systemversion: '11.0', 'model' : 'iPhone'}
+
+        Log.d("DeviceInfos",deviceInfos);
+/*
+        myWebView.evaluateJavascript("javascript:send_device_infos("+ deviceInfos +")", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                //Log.i("onReceiveValue! " + value);
+                Log.d("CheckReceive","Es ist was passiert");
+            }
+        });*/
+        return deviceInfos;
+    }
+
+    public void registerODNatve(){
+        Log.d("Status","Bin Da!");
+        Log.i("Sample", "Start scanning");
+        startScanning();
 
     }
 
+    public void update_location(){
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("minor", nearestBeaconMinor);
+            jObject.put("major", nearestBeaconMajor);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String nearestBeaconInfos = jObject.toString();
+
+        myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                //Log.i("onReceiveValue! " + value);
+                Log.d("CheckReceive","Es ist was passiert");
+            }
+        });
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        Log.i("Sample", "Start scanning");
-        startScanning();
+
 
 
     }
