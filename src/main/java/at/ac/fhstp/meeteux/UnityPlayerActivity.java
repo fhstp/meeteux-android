@@ -73,6 +73,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
     int nearestBeaconMajor;
 
     Uri notification;
+    Ringtone r;
 
     //private static final Object SINGLETON_LOCK = new Object();
     //protected static volatile BeaconManager sInstance = null;
@@ -117,16 +118,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
-
-      /*  myWebView.setWebChromeClient(new WebChromeClient() {
-            public boolean onConsoleMessage(ConsoleMessage cm) {
-                Log.d("MyApplication", cm.message() + " -- From line "
-                        + cm.lineNumber() + " of "
-                        + cm.sourceId());
-                return true;
-            }
-        }); */
-
         myJSInterface = new JSInterface(myWebView, this);
         myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
         myWebView.loadUrl("file:///android_asset/www/index.html");
@@ -139,7 +130,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         // Setup sound for trigger location change
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
     }
 
 
@@ -287,17 +278,8 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         String deviceInfos = jObject.toString();
 
-        //{'deviceaddress' : 'xxx', 'systemname' : 'iOS', systemversion: '11.0', 'model' : 'iPhone'}
+        Log.d("DeviceInfos", deviceInfos);
 
-        Log.d("DeviceInfos",deviceInfos);
-/*
-        myWebView.evaluateJavascript("javascript:send_device_infos("+ deviceInfos +")", new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String value) {
-                //Log.i("onReceiveValue! " + value);
-                Log.d("CheckReceive","Es ist was passiert");
-            }
-        });*/
         return deviceInfos;
     }
 

@@ -85,7 +85,7 @@ public class JSInterface extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("CheckReceive","Es ist was passiert");
+                        Log.d("Status","Callback from send to web");
                     }
                 });
             }
