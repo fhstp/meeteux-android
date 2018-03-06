@@ -22,6 +22,7 @@ local.properties
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 .gradle/
+build.gradle.NEW
 *.iml
 
 # OS-specific files
