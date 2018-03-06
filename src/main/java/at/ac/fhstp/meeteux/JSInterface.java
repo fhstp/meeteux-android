@@ -92,6 +92,18 @@ public class JSInterface extends AppCompatActivity {
         });
     }
 
+    // triggers signal, when location is updated
+    @JavascriptInterface
+    public void triggerSignal(){
+        Log.d("Status","Trigger Signal");
+    }
+
+    // prints message from webview to Logcat
+    @JavascriptInterface
+    public void print(String message){
+        Log.d("WWW",message);
+    }
+
    /* @JavascriptInterface
     public void run(final String scriptSrc){
         mAppView.post(new Runnable() {
