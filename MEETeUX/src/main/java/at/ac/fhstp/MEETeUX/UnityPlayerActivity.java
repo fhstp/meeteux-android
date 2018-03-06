@@ -22,7 +22,6 @@ import android.view.Window;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-//import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -68,7 +67,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission
     static JSInterface myJSInterface;
 
     IBeaconDevice[] beaconItems;
-    //ListView listView;
     IBeaconDevice nearestBeacon;
     int nearestBeaconMinor;
     int nearestBeaconMajor;
@@ -99,8 +97,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission
                 },
                 R.string.msg,
                 REQUEST_PERMISSION);
-
-        //listView = (ListView) findViewById(R.id.listView);
 
         mySelf = this;
         mUnityPlayer = new UnityPlayer(this);
