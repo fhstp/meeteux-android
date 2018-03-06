@@ -149,9 +149,7 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         myJSInterface = new JSInterface(myWebView, this);
         myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
-         //myWebView.addJavascriptInterface(myJSInterface, "Android");
-       // myWebView.loadUrl("file:///android_asset/ressources/views/index.html");
-        myWebView.loadUrl("file:///android_asset/index.html");
+        myWebView.loadUrl("file:///android_asset/www/index.html");
         ((ViewGroup)super.findViewById(android.R.id.content)).removeView(this.mUnityPlayer);
 
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
@@ -186,17 +184,10 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         //  proximityManager.configuration().activityCheckConfiguration(ActivityCheckConfiguration.MINIMAL);
         proximityManager.configuration().deviceUpdateCallbackInterval(500);
 
-        /* proximityManager.setIBeaconListener(createIBeaconListener()); */
-
-
-
-
-
         proximityManager.setIBeaconListener(new IBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon discovered
-                Log.i("Sample", "Beacon discovered");
                 Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
 
 
@@ -214,7 +205,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
                 //Beacons updated
-                Log.i("Sample", "Beacon updated");
                 Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
                 //readBeaconData(iBeacons);
@@ -238,15 +228,10 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
                 int helpCounter = 0;
                 for(int i = 0; i<newList.size();i++) {
-                    //String helpString = newList.get(i).getProximity() + "";
                     if((String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
-                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
-                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
                         beaconItems[helpCounter] = newList.get(i);
                         helpCounter++;
                     }else if(String.valueOf(newList.get(i).getMajor()).length()==3&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
-                        //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
-                        //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
                         beaconItems[helpCounter] = newList.get(i);
                         helpCounter++;
                     }else{
@@ -273,33 +258,20 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
 
                 for(int i = 0; i<triggeredBeaconDevices.length;i++) {
-                    //String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor();
-                    //String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
-                    //beaconItems[i] = beaconName + " " + beaconRssi;
-                    Log.d("Right Beacons",String.valueOf(triggeredBeaconDevices[i].getMinor()));
-                    Log.d("Right Beacons RSSI",String.valueOf(triggeredBeaconDevices[i].getRssi()));
                     if(i==0){
-                        /*nearestBeacon = newList.get(0);
-                        nearestBeaconMajor = newList.get(0).getMajor();
-                        nearestBeaconMinor = newList.get(0).getMinor();*/
-
                         nearestBeacon = triggeredBeaconDevices[0];
                         nearestBeaconMajor = triggeredBeaconDevices[0].getMajor();
                         nearestBeaconMinor = triggeredBeaconDevices[0].getMinor();
 
                         update_location();
-
                     }
                 }
-                //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, beaconItems);
-                //listView.setAdapter(adapter);
             }
 
 
             @Override
             public void onIBeaconLost(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon lost
-                Log.i("Sample", "Beacon lost");
                 Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
             }
         });
@@ -352,10 +324,8 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
     }
 
     public void registerODNatve(){
-        Log.d("Status","Bin Da!");
         Log.i("Sample", "Start scanning");
         startScanning();
-
     }
 
     public void update_location(){
