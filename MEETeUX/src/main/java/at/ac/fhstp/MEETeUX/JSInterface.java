@@ -12,10 +12,10 @@ import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 public class JSInterface extends AppCompatActivity {
 
     private WebView mAppView;
-    private UnityPlayerActivity mainActivity;
+    private MainActivity mainActivity;
 
 
-    public JSInterface(WebView appView, UnityPlayerActivity mA) {
+    public JSInterface(WebView appView, MainActivity mA) {
         this.mAppView = appView;
         this.mainActivity = mA;
     }
