@@ -258,8 +258,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission
 
     public void switchToUnity(View v)
     {
-        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
-
         mySelf.runOnUiThread(new Runnable() {
             @Override
             public void run() {
