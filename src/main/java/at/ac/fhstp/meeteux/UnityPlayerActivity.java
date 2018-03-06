@@ -1,48 +1,29 @@
 package at.ac.fhstp.meeteux;
 
-import com.kontakt.sdk.android.common.Proximity;
-import com.kontakt.sdk.android.common.profile.DeviceProfile;
-import com.unity3d.player.*;
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.Manifest;
-import android.bluetooth.le.ScanSettings;
-
-import android.os.Parcel;
-import android.support.annotation.NonNull;
+import android.os.Vibrator;
+import android.provider.Settings.Secure;
 import android.util.Log;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.UUID;
-
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
-
-import android.webkit.ConsoleMessage;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
-import android.widget.ViewSwitcher;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
-import com.kontakt.sdk.android.ble.configuration.ActivityCheckConfiguration;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.device.BeaconRegion;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
@@ -54,18 +35,19 @@ import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusList
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
-import android.webkit.ValueCallback;
+import com.unity3d.player.UnityPlayer;
 
-import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.provider.Settings.Secure;
 
-import static android.os.Build.VERSION.RELEASE;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 
 public class UnityPlayerActivity extends AbsRuntimePermission {
@@ -90,10 +72,10 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
     int nearestBeaconMinor;
     int nearestBeaconMajor;
 
-    private static final Object SINGLETON_LOCK = new Object();
-    protected static volatile BeaconManager sInstance = null;
+    Uri notification;
 
-
+    //private static final Object SINGLETON_LOCK = new Object();
+    //protected static volatile BeaconManager sInstance = null;
 
     // Setup activity layout
     @Override protected void onCreate (Bundle savedInstanceState){
@@ -136,8 +118,6 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
 
-
-
       /*  myWebView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("MyApplication", cm.message() + " -- From line "
@@ -156,9 +136,11 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
 
         //setContentView(mUnityPlayer);
         mUnityPlayer.requestFocus();
+
+        // Setup sound for trigger location change
+        notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
     }
-
-
 
 
     @Override
@@ -268,16 +250,12 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
                 }
             }
 
-
             @Override
             public void onIBeaconLost(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon lost
                 Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
             }
         });
-
-
-
 
         proximityManager.setScanStatusListener(createScanStatusListener());
     }
@@ -349,13 +327,28 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         });
     }
 
+    public void triggerSignalNative(){
+        Log.d("Status", "Trigger signal native");
+
+        // vibrate
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        v.vibrate(500);
+
+        // play sound
+        r.play();
+    }
+
+    /***************
+     *
+     *  Overrides for Beacon Manager
+     *
+     *
+     */
+
     @Override
     protected void onStart() {
         super.onStart();
-
-
-
-
     }
 
     @Override
@@ -425,6 +418,12 @@ public class UnityPlayerActivity extends AbsRuntimePermission {
         setIntent(intent);
     }
 
+
+    /****
+     *
+     * Unity functions
+     *
+     */
     // Quit Unity
    /* @Override protected void onDestroy ()
     {

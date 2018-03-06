@@ -96,6 +96,7 @@ public class JSInterface extends AppCompatActivity {
     @JavascriptInterface
     public void triggerSignal(){
         Log.d("Status","Trigger Signal");
+        mainActivity.triggerSignalNative();
     }
 
     // prints message from webview to Logcat
