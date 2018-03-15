@@ -254,9 +254,20 @@ public class MainActivity extends AbsRuntimePermission {
         proximityManager.setScanStatusListener(createScanStatusListener());
     }
 
-
+    // Button onClick
     public void switchToUnity(View v)
     {
+        mySelf.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mySelf.viewSwitcher.showPrevious();
+            }
+        });
+        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
+    }
+
+    public static void backToNative() {
+        Log.i("Status", "Native Called");
         mySelf.runOnUiThread(new Runnable() {
             @Override
             public void run() {
