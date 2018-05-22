@@ -47,6 +47,11 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -311,6 +316,71 @@ public class MainActivity extends AbsRuntimePermission {
     public void registerODNatve(){
         Log.i("Sample", "Start scanning");
         startScanning();
+    }
+
+    String filename = "auth-token.txt";
+    FileOutputStream outputStream;
+
+
+    public void saveToken(String token){
+        Log.i("Sample", "Save Token "+token);
+        File file = new File(this.getFilesDir(), filename);
+
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(token.getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearToken(){
+        File file = new File(this.getFilesDir(), filename);
+        boolean deleted = file.delete();
+        Log.i("Sample", "Clear Token");
+    }
+
+    public String getToken(){
+        File file = new File(this.getFilesDir(),filename);
+
+        //Read text from file
+        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.i("Sample", "Send Token to Web " + text.toString());
+
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("token", text.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jObject.toString();
+    }
+
+    public void showUnityView(){
+        mySelf.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mySelf.viewSwitcher.showPrevious();
+            }
+        });
+        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
     }
 
     public void update_location(){

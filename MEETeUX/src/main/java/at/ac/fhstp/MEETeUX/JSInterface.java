@@ -76,6 +76,45 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void saveToken(String message){
+        mainActivity.saveToken(message);
+    }
+
+    @JavascriptInterface
+    public void clearToken(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mainActivity.clearToken();
+                mAppView.evaluateJavascript("javascript:logout_success()", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void getToken(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String token = mainActivity.getToken();
+                mAppView.evaluateJavascript("javascript:send_token("+ token +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void getDeviceInfos(){
         mAppView.post(new Runnable() {
             @Override
@@ -97,6 +136,12 @@ public class JSInterface extends AppCompatActivity {
     public void triggerSignal(){
         Log.d("Status","Trigger Signal");
         mainActivity.triggerSignalNative();
+    }
+
+    @JavascriptInterface
+    public void showUnityView(){
+        Log.d("Status","Unity");
+        mainActivity.showUnityView();
     }
 
     // prints message from webview to Logcat
