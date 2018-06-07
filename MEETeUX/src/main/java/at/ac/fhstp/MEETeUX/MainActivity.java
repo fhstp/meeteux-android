@@ -8,6 +8,7 @@ package at.ac.fhstp.MEETeUX;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.media.Ringtone;
@@ -16,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -142,6 +144,7 @@ public class MainActivity extends AbsRuntimePermission {
         // Setup sound for trigger location change
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        clearLastBeacon();
     }
 
     @Override
@@ -399,24 +402,40 @@ public class MainActivity extends AbsRuntimePermission {
 
         nearestBeaconInfos = jObject.toString();
 
-        /*mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("update_location", myWebView.getTitle());
-            }
-        });*/
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String value) {
-                        //Log.i("onReceiveValue! " + value);
-                        Log.d("CheckReceive","Es ist was passiert");
-                    }
-                });
-            }
-        });
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
+        int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
+        if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
+            mySelf.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor ed = sp.edit();
+                    ed.putInt("LastBeaconMinor", nearestBeaconMinor);
+                    ed.putInt("LastBeaconMajor", nearestBeaconMajor);
+                    ed.apply();
+                    myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("CheckReceive","Es ist was passiert");
+                        }
+                    });
+                }
+            });
+        }else {
+            Log.d("update_location", "No new beacon = no update!");
+        }
+
+
+    }
+
+    public void clearLastBeacon(){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor ed = sp.edit();
+        ed.remove("LastBeaconMinor");
+        ed.remove("LastBeaconMajor");
+        ed.apply();
     }
 
     public void triggerSignalNative(){
@@ -454,6 +473,7 @@ public class MainActivity extends AbsRuntimePermission {
     protected void onDestroy() {
         proximityManager.disconnect();
         proximityManager = null;
+        clearLastBeacon();
         Log.i("Sample", "Destroy");
         super.onDestroy();
     }

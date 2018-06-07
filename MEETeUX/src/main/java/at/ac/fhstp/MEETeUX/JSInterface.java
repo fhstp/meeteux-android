@@ -86,6 +86,8 @@ public class JSInterface extends AppCompatActivity {
             @Override
             public void run() {
                 mainActivity.clearToken();
+                mainActivity.clearLastBeacon();
+
                 mAppView.evaluateJavascript("javascript:logout_success()", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
