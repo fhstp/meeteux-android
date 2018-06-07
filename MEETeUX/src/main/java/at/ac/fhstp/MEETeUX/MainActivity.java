@@ -6,10 +6,14 @@ package at.ac.fhstp.MEETeUX;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -19,9 +23,9 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -86,6 +90,14 @@ public class MainActivity extends AbsRuntimePermission {
 
     String nearestBeaconInfos;
 
+    public static NotificationManagerCompat mNotificationManager;
+
+    private static NotificationCompat.Builder mNotificationBuilder;
+    private static final int NOTIFICATION_REQUEST_CODE = 2;
+    private static Notification mNotification;
+
+    private static boolean activityVisible = true;
+
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -145,6 +157,9 @@ public class MainActivity extends AbsRuntimePermission {
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         clearLastBeacon();
+
+        activityVisible = true;
+        mNotificationManager = NotificationManagerCompat.from(this);
     }
 
     @Override
@@ -346,6 +361,7 @@ public class MainActivity extends AbsRuntimePermission {
         Log.i("logout", "Clear Token");
         Log.i("logout", "Stop scanning");
         proximityManager.stopScanning();
+
     }
 
     public String getToken(){
@@ -380,6 +396,58 @@ public class MainActivity extends AbsRuntimePermission {
         return jObject.toString();
     }
 
+    public void showNewLocationNotification(String notificationTitle, String notificationMessage){
+        Log.d("Notification", "JETZT");
+        mNotificationBuilder = //create a builder for the detection notification
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.app_banner) //adding the icon
+                        .setContentTitle(notificationTitle) //adding the title
+                        .setContentText(notificationMessage) //adding the text
+                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
+                        .setOngoing(true); //it's canceled when tapped on it
+
+        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
+
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                NOTIFICATION_REQUEST_CODE,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mNotificationBuilder.setContentIntent(resultPendingIntent);
+
+        mNotification = mNotificationBuilder.build(); //build the notiviation
+
+        mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
+    }
+
+    public void showNewLocationAlert(String alertTitle, String alertMessage){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle(alertTitle)
+                .setMessage(alertMessage)
+                .setPositiveButton("View exhibit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sendLocationUpdate();
+                        proximityManager.startScanning();
+                        mNotificationManager.cancel(NOTIFICATION_REQUEST_CODE);
+                    }
+                })
+                .setNegativeButton("Don't view exhibit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        proximityManager.startScanning();
+                        dialogInterface.cancel();
+                        mNotificationManager.cancel(NOTIFICATION_REQUEST_CODE);
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
     public void showUnityView(){
         mySelf.runOnUiThread(new Runnable() {
             @Override
@@ -406,28 +474,36 @@ public class MainActivity extends AbsRuntimePermission {
         int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
         int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
         if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
-            mySelf.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor ed = sp.edit();
-                    ed.putInt("LastBeaconMinor", nearestBeaconMinor);
-                    ed.putInt("LastBeaconMajor", nearestBeaconMajor);
-                    ed.apply();
-                    myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            //Log.i("onReceiveValue! " + value);
-                            Log.d("CheckReceive","Es ist was passiert");
-                        }
-                    });
-                }
-            });
+            proximityManager.stopScanning();
+            if(!activityVisible) {
+                showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
+            }
+            showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
         }else {
             Log.d("update_location", "No new beacon = no update!");
         }
 
 
+    }
+
+    public void sendLocationUpdate(){
+        mySelf.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor ed = sp.edit();
+                ed.putInt("LastBeaconMinor", nearestBeaconMinor);
+                ed.putInt("LastBeaconMajor", nearestBeaconMajor);
+                ed.apply();
+                myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("CheckReceive","Es ist was passiert");
+                    }
+                });
+            }
+        });
     }
 
     public void clearLastBeacon(){
@@ -450,6 +526,14 @@ public class MainActivity extends AbsRuntimePermission {
         r.play();
     }
 
+    public static void activityInBackground() {
+        activityVisible = false;
+    }
+
+    public static void activityInFront() {
+        activityVisible = true;
+    }
+
     /***************
      *
      *  Overrides for Beacon Manager
@@ -458,8 +542,21 @@ public class MainActivity extends AbsRuntimePermission {
      */
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        activityInFront();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
+        activityInFront();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        activityInBackground();
     }
 
     @Override
@@ -467,6 +564,7 @@ public class MainActivity extends AbsRuntimePermission {
         //Log.i("Sample", "Stop scanning");
         //proximityManager.stopScanning();
         super.onStop();
+        activityInBackground();
     }
 
     @Override
