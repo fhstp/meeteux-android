@@ -338,7 +338,9 @@ public class MainActivity extends AbsRuntimePermission {
     public void clearToken(){
         File file = new File(this.getFilesDir(), filename);
         boolean deleted = file.delete();
-        Log.i("Sample", "Clear Token");
+        Log.i("logout", "Clear Token");
+        Log.i("logout", "Stop scanning");
+        proximityManager.stopScanning();
     }
 
     public String getToken(){
@@ -430,8 +432,8 @@ public class MainActivity extends AbsRuntimePermission {
 
     @Override
     protected void onStop() {
-        Log.i("Sample", "Stop scanning");
-        proximityManager.stopScanning();
+        //Log.i("Sample", "Stop scanning");
+        //proximityManager.stopScanning();
         super.onStop();
     }
 
