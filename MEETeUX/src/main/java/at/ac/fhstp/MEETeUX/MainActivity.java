@@ -82,6 +82,8 @@ public class MainActivity extends AbsRuntimePermission {
     Uri notification;
     Ringtone r;
 
+    String nearestBeaconInfos;
+
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -395,13 +397,24 @@ public class MainActivity extends AbsRuntimePermission {
             e.printStackTrace();
         }
 
-        String nearestBeaconInfos = jObject.toString();
+        nearestBeaconInfos = jObject.toString();
 
-        myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+        /*mySelf.runOnUiThread(new Runnable() {
             @Override
-            public void onReceiveValue(String value) {
-                //Log.i("onReceiveValue! " + value);
-                Log.d("CheckReceive","Es ist was passiert");
+            public void run() {
+                Log.d("update_location", myWebView.getTitle());
+            }
+        });*/
+        mySelf.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("CheckReceive","Es ist was passiert");
+                    }
+                });
             }
         });
     }
