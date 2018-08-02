@@ -52,6 +52,9 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xwalk.core.XWalkPreferences;
+import org.xwalk.core.XWalkSettings;
+import org.xwalk.core.XWalkView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -79,6 +82,8 @@ public class MainActivity extends AbsRuntimePermission {
     static WebView myWebView;
     static MainActivity mySelf;
     static JSInterface myJSInterface;
+    static JSInterfaceX myJSInterfaceX;
+    XWalkView mXWalkView;
 
     IBeaconDevice[] beaconItems;
     IBeaconDevice nearestBeacon;
@@ -131,21 +136,49 @@ public class MainActivity extends AbsRuntimePermission {
         viewSwitcher.addView(this.mUnityPlayer);
         myWebView = (WebView) findViewById(R.id.webView);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            myWebView.setWebContentsDebuggingEnabled(true);
+        mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            //myWebView.setWebContentsDebuggingEnabled(true);
+
+            myWebView.setEnabled(false);
+            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+
+            XWalkSettings xwalkSettings = mXWalkView.getSettings();
+            xwalkSettings.setJavaScriptEnabled(true);
+            xwalkSettings.setCacheMode(XWalkSettings.LOAD_NO_CACHE);
+            xwalkSettings.setDatabaseEnabled(true);
+            xwalkSettings.setDomStorageEnabled(true);
+            xwalkSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+            myJSInterfaceX = new JSInterfaceX(mXWalkView, this);
+            mXWalkView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+            mXWalkView.loadUrl("file:///android_asset/www/index.html");
         }
 
-        WebSettings webSettings = myWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAppCacheEnabled(false);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            mXWalkView.setEnabled(false);
+            myWebView.setWebContentsDebuggingEnabled(true);
+
+            WebSettings webSettings = myWebView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setAppCacheEnabled(false);
+            webSettings.setDatabaseEnabled(true);
+            webSettings.setDomStorageEnabled(true);
+            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+            myJSInterface = new JSInterface(myWebView, this);
+            myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+            myWebView.loadUrl("file:///android_asset/www/index.html");
+        }
+
         //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
-        myJSInterface = new JSInterface(myWebView, this);
-        myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
-        myWebView.loadUrl("file:///android_asset/www/index.html");
+
+
+
+
         ((ViewGroup)super.findViewById(android.R.id.content)).removeView(this.mUnityPlayer);
 
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
@@ -355,6 +388,7 @@ public class MainActivity extends AbsRuntimePermission {
         }
     }
 
+
     public void clearToken(){
         File file = new File(this.getFilesDir(), filename);
         boolean deleted = file.delete();
@@ -473,18 +507,26 @@ public class MainActivity extends AbsRuntimePermission {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
         int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
+        //sendLocationUpdate();
         if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
-            proximityManager.stopScanning();
+            //proximityManager.stopScanning();
+            sendLocationUpdate();
             if(!activityVisible) {
                 showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
             }
-            showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
+            //showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
         }else {
             Log.d("update_location", "No new beacon = no update!");
         }
 
 
     }
+
+    public void changeBeacon(){
+        Log.d("ChangeBeacon", "I got changed");
+        sendLocationUpdate();
+    }
+
 
     public void sendLocationUpdate(){
         mySelf.runOnUiThread(new Runnable() {
@@ -495,15 +537,36 @@ public class MainActivity extends AbsRuntimePermission {
                 ed.putInt("LastBeaconMinor", nearestBeaconMinor);
                 ed.putInt("LastBeaconMajor", nearestBeaconMajor);
                 ed.apply();
-                myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String value) {
-                        //Log.i("onReceiveValue! " + value);
-                        Log.d("CheckReceive","Es ist was passiert");
-                    }
-                });
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    myWebView.evaluateJavascript("javascript:update_location("+ nearestBeaconInfos +")", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("CheckReceive","Es ist was passiert");
+                        }
+                    });
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mXWalkView.evaluateJavascript("javascript:update_location(" + nearestBeaconInfos + ")", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("CheckReceive", "Es ist was passiert");
+                        }
+                    });
+                }
             }
         });
+    }
+
+    public void stopScanner(){
+        proximityManager.stopScanning();
+        Log.d("AlertStopScanning", "stopScanning");
+    }
+
+    public void restartScanner(){
+        proximityManager.startScanning();
+        Log.d("AlertStartScanning", "startScanning");
     }
 
     public void clearLastBeacon(){

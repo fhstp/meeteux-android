@@ -9,11 +9,19 @@ import android.widget.Toast;
 
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 
+import org.xwalk.core.XWalkView;
+
 public class JSInterface extends AppCompatActivity {
 
-    private WebView mAppView;
+    //private WebView mAppView;
     private MainActivity mainActivity;
+    private WebView mAppView;
 
+
+    /*public JSInterface(WebView appView, MainActivity mA) {
+        this.mAppView = appView;
+        this.mainActivity = mA;
+    }*/
 
     public JSInterface(WebView appView, MainActivity mA) {
         this.mAppView = appView;
@@ -141,9 +149,25 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void changeBeacon(){
+        Log.d("Status","Change Beacon");
+        mainActivity.changeBeacon();
+    }
+
+    @JavascriptInterface
     public void showUnityView(){
         Log.d("Status","Unity");
         mainActivity.showUnityView();
+    }
+
+    @JavascriptInterface
+    public void stopScanner(){
+        mainActivity.stopScanner();
+    }
+
+    @JavascriptInterface
+    public void restartScanner(){
+        mainActivity.restartScanner();
     }
 
     // prints message from webview to Logcat
