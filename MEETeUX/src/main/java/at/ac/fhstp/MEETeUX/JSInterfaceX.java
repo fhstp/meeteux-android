@@ -17,32 +17,9 @@ public class JSInterfaceX extends AppCompatActivity {
     private MainActivity mainActivity;
     private XWalkView mAppView;
 
-
-    /*public JSInterface(WebView appView, MainActivity mA) {
-        this.mAppView = appView;
-        this.mainActivity = mA;
-    }*/
-
     public JSInterfaceX(XWalkView appView, MainActivity mA) {
         this.mAppView = appView;
         this.mainActivity = mA;
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void switchToUnity()
-    {
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mainActivity.viewSwitcher.showNext();
-            }
-        });
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void forwardToUnity(String methodname, String command) //type is "monster" or "item"
-    {
-        mainActivity.myUnityPlayer.UnitySendMessage("ExternalCallManager", methodname, command);
     }
 
     /* calls to WebView */
@@ -152,12 +129,6 @@ public class JSInterfaceX extends AppCompatActivity {
     public void changeBeacon(){
         Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void showUnityView(){
-        Log.d("Status","Unity");
-        mainActivity.showUnityView();
     }
 
     @org.xwalk.core.JavascriptInterface

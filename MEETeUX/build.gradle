@@ -24,7 +24,6 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile(name: 'VuforiaWrapper', ext: 'aar')
     compile 'com.kontaktio:sdk:4.0.0'
     compile 'org.altbeacon:android-beacon-library:2.12.2'
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -47,22 +46,17 @@ android {
 		abortOnError false
 	}
 
-	aaptOptions {
-		noCompress '.unity3d', '.ress', '.resource', '.obb','vuforia/vuforiamars_images.dat','vuforia/vuforiamars_images.xml','vuforia/vuforiamars_modeltarget.dat','vuforia/vuforiamars_modeltarget.xml','vuforia/vuforiamars_object_ot.dat','vuforia/vuforiamars_object_ot.xml','vuforia/vuforiamars_vumark.dat','vuforia/vuforiamars_vumark.xml'
-	}
-
 
 	buildTypes {
   		debug {
  			minifyEnabled false
  			useProguard false
- 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-unity.txt'
-  			jniDebuggable true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
   		}
   		release {
  			minifyEnabled false
  			useProguard false
-  			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-unity.txt'
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
   			signingConfig signingConfigs.debug
   		}
 	}

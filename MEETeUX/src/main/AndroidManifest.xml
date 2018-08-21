@@ -2,31 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="at.ac.fhstp.MEETeUX" xmlns:tools="http://schemas.android.com/tools" android:versionName="1.0" android:versionCode="1" android:installLocation="preferExternal">
   <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true" />
 
-  <application android:theme="@style/UnityThemeSelector" android:icon="@drawable/app_icon" android:label="@string/app_name" android:isGame="true" android:banner="@drawable/app_banner">
-    <!--<activity android:label="@string/app_name" android:screenOrientation="portrait" android:launchMode="singleTask" android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density" android:name="at.ac.fhstp.MEETeUX.UnityPlayerActivity">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-      <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
-    </activity>-->
+  <application android:icon="@drawable/app_icon" android:label="@string/app_name">
 
     <activity android:label="@string/app_name" android:screenOrientation="fullSensor" android:launchMode="singleTask" android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection" android:name="at.ac.fhstp.MEETeUX.MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <!--<meta-data android:name="unityplayer.UnityActivity" android:value="true" />
-      <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="false" />-->
     </activity>
 
-    <!--<activity android:name="com.unity3d.player.VideoPlayer" android:label="@string/app_name" android:screenOrientation="portrait" android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen">
-    </activity>-->
-
-
-    <meta-data android:name="unity.build-id" android:value="87f75290-680d-468d-aa42-7c4dea6199bc" />
-    <meta-data android:name="unity.splash-mode" android:value="0" />
-    <meta-data android:name="unity.splash-enable" android:value="True" />
     <meta-data android:name="android.max_aspect" android:value="2.1" />
 
     <meta-data

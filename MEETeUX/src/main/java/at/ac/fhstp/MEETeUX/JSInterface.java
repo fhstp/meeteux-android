@@ -17,32 +17,9 @@ public class JSInterface extends AppCompatActivity {
     private MainActivity mainActivity;
     private WebView mAppView;
 
-
-    /*public JSInterface(WebView appView, MainActivity mA) {
-        this.mAppView = appView;
-        this.mainActivity = mA;
-    }*/
-
     public JSInterface(WebView appView, MainActivity mA) {
         this.mAppView = appView;
         this.mainActivity = mA;
-    }
-
-    @JavascriptInterface
-    public void switchToUnity()
-    {
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mainActivity.viewSwitcher.showNext();
-            }
-        });
-    }
-
-    @JavascriptInterface
-    public void forwardToUnity(String methodname, String command) //type is "monster" or "item"
-    {
-        mainActivity.myUnityPlayer.UnitySendMessage("ExternalCallManager", methodname, command);
     }
 
     /* calls to WebView */
@@ -152,12 +129,6 @@ public class JSInterface extends AppCompatActivity {
     public void changeBeacon(){
         Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();
-    }
-
-    @JavascriptInterface
-    public void showUnityView(){
-        Log.d("Status","Unity");
-        mainActivity.showUnityView();
     }
 
     @JavascriptInterface

@@ -46,7 +46,6 @@ import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusList
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
-import com.unity3d.player.UnityPlayer;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
@@ -76,7 +75,6 @@ public class MainActivity extends AbsRuntimePermission {
     private BackgroundPowerSaver backgroundPowerSaver;
     private BeaconManager beaconManager;
 
-    public static UnityPlayer myUnityPlayer;
     public ViewSwitcher viewSwitcher;
 
     static WebView myWebView;
@@ -109,11 +107,6 @@ public class MainActivity extends AbsRuntimePermission {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
-        mUnityPlayer = new UnityPlayer(this);
-        setContentView(mUnityPlayer);
-        mUnityPlayer.requestFocus();
-
-
         setContentView(R.layout.view_switch);
         beaconManager = BeaconManager.getInstanceForApplication(getApplicationContext());
 
@@ -128,14 +121,8 @@ public class MainActivity extends AbsRuntimePermission {
                 REQUEST_PERMISSION);
 
         mySelf = this;
-        mUnityPlayer = new UnityPlayer(this);
-        myUnityPlayer = this.mUnityPlayer;
         this.setContentView(R.layout.view_switch);
-
-        viewSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitch);
-        viewSwitcher.addView(this.mUnityPlayer);
         myWebView = (WebView) findViewById(R.id.webView);
-
         mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -175,16 +162,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
-
-
-
-
-        ((ViewGroup)super.findViewById(android.R.id.content)).removeView(this.mUnityPlayer);
-
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
-
-        //setContentView(mUnityPlayer);
-        mUnityPlayer.requestFocus();
 
         // Setup sound for trigger location change
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -310,28 +288,6 @@ public class MainActivity extends AbsRuntimePermission {
         });
 
         proximityManager.setScanStatusListener(createScanStatusListener());
-    }
-
-    // Button onClick
-    public void switchToUnity(View v)
-    {
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
-        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
-    }
-
-    public static void backToNative() {
-        Log.i("Status", "Native Called");
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
     }
 
     public IBeaconDevice nearestBeaconDetected(){
@@ -480,16 +436,6 @@ public class MainActivity extends AbsRuntimePermission {
                 .setCancelable(false)
                 .create()
                 .show();
-    }
-
-    public void showUnityView(){
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
-        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
     }
 
     public void update_location(){
