@@ -127,7 +127,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             //myWebView.setWebContentsDebuggingEnabled(true);
-
+            Log.d("CROSSWALK", "I am using crosswalk!");
             myWebView.setEnabled(false);
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
@@ -139,7 +139,7 @@ public class MainActivity extends AbsRuntimePermission {
             xwalkSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
             myJSInterfaceX = new JSInterfaceX(mXWalkView, this);
-            mXWalkView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+            mXWalkView.addJavascriptInterface(myJSInterfaceX, "MEETeUXAndroidAppRoot");
             mXWalkView.loadUrl("file:///android_asset/www/index.html");
         }
 
