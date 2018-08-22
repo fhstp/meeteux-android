@@ -106,8 +106,11 @@ public class MainActivity extends AbsRuntimePermission {
     {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.view_switch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            setContentView(R.layout.view_switchx);
+        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setContentView(R.layout.view_switch);
+        }
         beaconManager = BeaconManager.getInstanceForApplication(getApplicationContext());
 
         requestAppPermissions(new String[]{
@@ -121,14 +124,16 @@ public class MainActivity extends AbsRuntimePermission {
                 REQUEST_PERMISSION);
 
         mySelf = this;
-        this.setContentView(R.layout.view_switch);
-        myWebView = (WebView) findViewById(R.id.webView);
-        mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
+        //this.setContentView(R.layout.view_switch);
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             //myWebView.setWebContentsDebuggingEnabled(true);
             Log.d("CROSSWALK", "I am using crosswalk!");
-            myWebView.setEnabled(false);
+
+            mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
+
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
             XWalkSettings xwalkSettings = mXWalkView.getSettings();
@@ -144,8 +149,8 @@ public class MainActivity extends AbsRuntimePermission {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView = (WebView) findViewById(R.id.webView);
 
-            mXWalkView.setEnabled(false);
             myWebView.setWebContentsDebuggingEnabled(true);
 
             WebSettings webSettings = myWebView.getSettings();
