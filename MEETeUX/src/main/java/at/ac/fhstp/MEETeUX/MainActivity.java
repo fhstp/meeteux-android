@@ -371,7 +371,7 @@ public class MainActivity extends AbsRuntimePermission {
 
             while ((line = br.readLine()) != null) {
                 text.append(line);
-                text.append('\n');
+                //text.append('\n');
             }
             br.close();
         }
