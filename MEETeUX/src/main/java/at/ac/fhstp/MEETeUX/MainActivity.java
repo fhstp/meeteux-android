@@ -459,16 +459,16 @@ public class MainActivity extends AbsRuntimePermission {
         int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
         int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
         //sendLocationUpdate();
-        if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
+        //if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
             //proximityManager.stopScanning();
             sendLocationUpdate();
             if(!activityVisible) {
                 showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
             }
             //showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
-        }else {
-            Log.d("update_location", "No new beacon = no update!");
-        }
+        //}else {
+        //    Log.d("update_location", "No new beacon = no update!");
+        //}
 
 
     }
