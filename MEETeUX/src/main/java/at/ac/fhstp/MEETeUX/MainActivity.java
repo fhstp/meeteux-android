@@ -8,6 +8,7 @@ package at.ac.fhstp.MEETeUX;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -94,12 +95,20 @@ public class MainActivity extends AbsRuntimePermission {
     String nearestBeaconInfos;
 
     public static NotificationManagerCompat mNotificationManager;
+    public static NotificationManager mNotificationManagerOreoAbove;
 
     private static NotificationCompat.Builder mNotificationBuilder;
     private static final int NOTIFICATION_REQUEST_CODE = 2;
     private static Notification mNotification;
+    private static final String NOTIFICATION_CHANNEL_ID = "1";
+    private static CharSequence name = "MeeteuxChannel";// The user-visible name of the channel.
+    public static int importance;
+    public static NotificationChannel mChannel;
 
     private static boolean activityVisible = true;
+
+    private final static int INTERVAL = 1000 * 60 * 1; //2 minutes
+    Handler mHandler = new Handler();
 
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
@@ -170,12 +179,16 @@ public class MainActivity extends AbsRuntimePermission {
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
         // Setup sound for trigger location change
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationManagerOreoAbove = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        }else {
+            mNotificationManager = NotificationManagerCompat.from(this);
+        }
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         clearLastBeacon();
 
         activityVisible = true;
-        mNotificationManager = NotificationManagerCompat.from(this);
     }
 
     @Override
@@ -392,30 +405,52 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
     public void showNewLocationNotification(String notificationTitle, String notificationMessage){
-        Log.d("Notification", "JETZT");
-        mNotificationBuilder = //create a builder for the detection notification
+
+        //Log.d("Notification", "JETZT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
+            mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationBuilder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.app_banner)
+                        .setContentTitle(notificationTitle)
+                        .setChannelId(NOTIFICATION_CHANNEL_ID)
+                        .setContentText(notificationMessage);
+
+        }else {
+            Log.d("Notification", "JETZT");
+            mNotificationBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.app_banner) //adding the icon
-                        .setContentTitle(notificationTitle) //adding the title
-                        .setContentText(notificationMessage) //adding the text
-                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                        .setOngoing(true); //it's canceled when tapped on it
+                        .setSmallIcon(R.drawable.app_banner)
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationMessage)
+                        .setPriority(Notification.PRIORITY_HIGH);
+        }
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
 
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                getApplicationContext(),
+                this,
                 NOTIFICATION_REQUEST_CODE,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         mNotificationBuilder.setContentIntent(resultPendingIntent);
 
-        mNotification = mNotificationBuilder.build(); //build the notiviation
+        mNotification = mNotificationBuilder.build(); //build the notification
+        mNotification.flags = Notification.FLAG_AUTO_CANCEL;
 
-        mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
+            mNotificationManagerOreoAbove.notify(NOTIFICATION_REQUEST_CODE, mNotification);
+        }else {
+            mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
+        }
     }
 
     public void showNewLocationAlert(String alertTitle, String alertMessage){
@@ -462,15 +497,21 @@ public class MainActivity extends AbsRuntimePermission {
         //if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
             //proximityManager.stopScanning();
             sendLocationUpdate();
-            if(!activityVisible) {
+            /*if(!activityVisible) {
                 showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
-            }
+            }*/
             //showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
         //}else {
         //    Log.d("update_location", "No new beacon = no update!");
         //}
 
 
+    }
+
+    public void showNotificationBackground(String exhibit){
+        if(!activityVisible) {
+            showNewLocationNotification("New Exhibit", "Exhibit "+ exhibit);
+        }
     }
 
     public void changeBeacon(){

@@ -126,6 +126,11 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void showBackgroundNotification(String message){
+        mainActivity.showNotificationBackground(message);
+    }
+
+    @JavascriptInterface
     public void changeBeacon(){
         Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();

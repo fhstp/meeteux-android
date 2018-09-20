@@ -126,6 +126,11 @@ public class JSInterfaceX extends AppCompatActivity {
     }
 
     @org.xwalk.core.JavascriptInterface
+    public void showBackgroundNotification(String message){
+        mainActivity.showNotificationBackground(message);
+    }
+
+    @org.xwalk.core.JavascriptInterface
     public void changeBeacon(){
         Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();
