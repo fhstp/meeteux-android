@@ -69,7 +69,7 @@ var WindowRef = /** @class */ (function () {
 /*!********************************************!*\
   !*** ./src/app/actions/LocationActions.ts ***!
   \********************************************/
-/*! exports provided: CHANGE_CURRENT_LOCATION, CHANGE_CONNECTED_EXHIBIT, CHANGE_LOCATION_STATUS, CHANGE_LOCATION_SOCKET_STATUS, CHANGE_AT_EXHIBIT_PARENT_ID, CHANGE_ON_EXHIBIT, CHANGE_LAST_DISMISSED, LocationActions */
+/*! exports provided: CHANGE_CURRENT_LOCATION, CHANGE_CONNECTED_EXHIBIT, CHANGE_LOCATION_STATUS, CHANGE_LOCATION_SOCKET_STATUS, CHANGE_AT_EXHIBIT_PARENT_ID, CHANGE_ON_EXHIBIT, CHANGE_LAST_DISMISSED, CHANGE_SHOW_DISMISSED, CHANGE_LOCATION_SCANNING, LocationActions */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -81,6 +81,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_AT_EXHIBIT_PARENT_ID", function() { return CHANGE_AT_EXHIBIT_PARENT_ID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_ON_EXHIBIT", function() { return CHANGE_ON_EXHIBIT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LAST_DISMISSED", function() { return CHANGE_LAST_DISMISSED; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_SHOW_DISMISSED", function() { return CHANGE_SHOW_DISMISSED; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LOCATION_SCANNING", function() { return CHANGE_LOCATION_SCANNING; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LocationActions", function() { return LocationActions; });
 var CHANGE_CURRENT_LOCATION = 'CHANGE_CURRENT_LOCATION';
 var CHANGE_CONNECTED_EXHIBIT = 'CHANGE_CONNECTED_EXHIBIT';
@@ -89,6 +91,8 @@ var CHANGE_LOCATION_SOCKET_STATUS = 'CHANGE_LOCATION_SOCKET_STATUS';
 var CHANGE_AT_EXHIBIT_PARENT_ID = 'CHANGE_AT_EXHIBIT_PARENT_ID';
 var CHANGE_ON_EXHIBIT = 'CHANGE_ON_EXHIBIT';
 var CHANGE_LAST_DISMISSED = 'CHANGE_LAST_DISMISSED';
+var CHANGE_SHOW_DISMISSED = 'CHANGE_SHOW_DISMISSED';
+var CHANGE_LOCATION_SCANNING = 'CHANGE_LOCATION_SCANNING';
 var LocationActions = /** @class */ (function () {
     function LocationActions() {
     }
@@ -134,6 +138,18 @@ var LocationActions = /** @class */ (function () {
             lastDismissed: dismissedId
         };
     };
+    LocationActions.prototype.changeShowDismissed = function (shown) {
+        return {
+            type: CHANGE_SHOW_DISMISSED,
+            showDismissed: shown
+        };
+    };
+    LocationActions.prototype.changeLocationScanning = function (isScanning) {
+        return {
+            type: CHANGE_LOCATION_SCANNING,
+            locationScanning: isScanning
+        };
+    };
     return LocationActions;
 }());
 
@@ -145,16 +161,18 @@ var LocationActions = /** @class */ (function () {
 /*!******************************************!*\
   !*** ./src/app/actions/StatusActions.ts ***!
   \******************************************/
-/*! exports provided: CHANGE_ERROR_MESSAGE, CHANGE_SUCCESS_MESSAGE, StatusActions */
+/*! exports provided: CHANGE_ERROR_MESSAGE, CHANGE_SUCCESS_MESSAGE, CHANGE_LOGGED_IN, StatusActions */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_ERROR_MESSAGE", function() { return CHANGE_ERROR_MESSAGE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_SUCCESS_MESSAGE", function() { return CHANGE_SUCCESS_MESSAGE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LOGGED_IN", function() { return CHANGE_LOGGED_IN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatusActions", function() { return StatusActions; });
 var CHANGE_ERROR_MESSAGE = 'CHANGE_ERROR_MESSAGE';
 var CHANGE_SUCCESS_MESSAGE = 'CHANGE_SUCCESS_MESSAGE';
+var CHANGE_LOGGED_IN = 'CHANGE_LOGGED_IN';
 var StatusActions = /** @class */ (function () {
     function StatusActions() {
     }
@@ -168,6 +186,12 @@ var StatusActions = /** @class */ (function () {
         return {
             type: CHANGE_SUCCESS_MESSAGE,
             success: success
+        };
+    };
+    StatusActions.prototype.changeLoggedIn = function (isLoggedIn) {
+        return {
+            type: CHANGE_LOGGED_IN,
+            isLoggedIn: isLoggedIn
         };
     };
     return StatusActions;
@@ -344,7 +368,7 @@ var routes = [
     { path: '', component: _register_register_component__WEBPACK_IMPORTED_MODULE_2__["RegisterComponent"] },
     { path: 'mainview', component: _main_view_main_view_component__WEBPACK_IMPORTED_MODULE_4__["MainViewComponent"] },
     { path: 'passive', component: _content_passive_content_passive_component__WEBPACK_IMPORTED_MODULE_5__["ContentPassiveComponent"] },
-    { path: 'tableat', component: _content_table_at_content_table_at_component__WEBPACK_IMPORTED_MODULE_6__["ContentTableAtComponent"] },
+    { path: 'tableat', component: _content_table_at_content_table_at_component__WEBPACK_IMPORTED_MODULE_6__["ContentTableAtComponent"], runGuardsAndResolvers: 'always' },
     { path: 'tableon', component: _content_table_on_content_table_on_component__WEBPACK_IMPORTED_MODULE_7__["ContentTableOnComponent"] },
     // additional routes here
     { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_3__["PageNotFoundComponent"] }
@@ -356,7 +380,7 @@ var AppRoutingModule = /** @class */ (function () {
     AppRoutingModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             imports: [
-                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(routes, { enableTracing: false }) // <-- debugging purposes only)
+                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(routes, { onSameUrlNavigation: 'reload', enableTracing: false }) // <-- debugging purposes only)
             ],
             exports: [_angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"]]
         })
@@ -386,7 +410,7 @@ module.exports = ".example-fill-remaining-space\r\n{\r\n  flex: 1 1 auto;\r\n}\r
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar id=\"header\" color=\"primary\">\r\n  <span>MEETeUX</span>\r\n\r\n  <span class=\"example-fill-remaining-space\"></span>\r\n  <button mat-icon-button [matMenuTriggerFor]=\"menu\">\r\n    <mat-icon>menu</mat-icon>\r\n  </button>\r\n  <mat-menu #menu=\"matMenu\" [overlapTrigger]=\"false\" yPosition=\"below\" xPosition=\"before\">\r\n    <button mat-menu-item (click)=\"logoutUser()\">\r\n      <mat-icon>exit_to_app</mat-icon>\r\n      <span>Logout</span>\r\n    </button>\r\n    <button mat-menu-item (click)=\"showUnityView()\">\r\n      <mat-icon>whatshot</mat-icon>\r\n      <span>Unity</span>\r\n    </button>\r\n  </mat-menu>\r\n</mat-toolbar>\r\n\r\n<router-outlet></router-outlet>\r\n\r\n<button id=\"dismissedButton\" *ngIf=\"dismissedLocation\" (click)=\"openDialogDismissed()\" mat-fab color=\"primary\" [matBadge]=\"dismissedLocation\" matBadgePosition=\"before\" matBadgeColor=\"accent\">\r\n  <mat-icon>room</mat-icon>\r\n</button>\r\n\r\n<button id=\"ghostButton\" class=\"hiddenbutton\" (click)=\"openDialog()\">Ghost</button>\r\n"
+module.exports = "<mat-toolbar id=\"header\" color=\"primary\">\r\n  <span>MEETeUX</span>\r\n\r\n  <span class=\"example-fill-remaining-space\"></span>\r\n  <button mat-icon-button [matMenuTriggerFor]=\"menu\">\r\n    <mat-icon>menu</mat-icon>\r\n  </button>\r\n  <mat-menu #menu=\"matMenu\" [overlapTrigger]=\"false\" yPosition=\"below\" xPosition=\"before\">\r\n    <button mat-menu-item (click)=\"logoutUser()\">\r\n      <mat-icon>exit_to_app</mat-icon>\r\n      <span>Logout</span>\r\n    </button>\r\n    <button mat-menu-item (click)=\"showUnityView()\">\r\n      <mat-icon>whatshot</mat-icon>\r\n      <span>Unity</span>\r\n    </button>\r\n  </mat-menu>\r\n</mat-toolbar>\r\n\r\n<router-outlet></router-outlet>\r\n\r\n<button id=\"dismissedButton\" *ngIf=\"dismissedLocation && showDismissed\" (click)=\"openDialogDismissed()\" mat-fab color=\"primary\" [matBadge]=\"dismissedLocation\" matBadgePosition=\"before\" matBadgeColor=\"accent\">\r\n  <mat-icon>room</mat-icon>\r\n</button>\r\n\r\n<button id=\"ghostButton\" class=\"hiddenbutton\" (click)=\"openDialog()\">Ghost</button>\r\n"
 
 /***/ }),
 
@@ -402,13 +426,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions/UserActions */ "./src/app/actions/UserActions.ts");
-/* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/LocationActions */ "./src/app/actions/LocationActions.ts");
-/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _services_native_communication_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/native-communication.service */ "./src/app/services/native-communication.service.ts");
-/* harmony import */ var _WindowRef__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WindowRef */ "./src/app/WindowRef.ts");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./alert-dialog/alert-dialog.component */ "./src/app/alert-dialog/alert-dialog.component.ts");
-/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actions/LocationActions */ "./src/app/actions/LocationActions.ts");
+/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/utilities.service */ "./src/app/services/utilities.service.ts");
+/* harmony import */ var _services_native_communication_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/native-communication.service */ "./src/app/services/native-communication.service.ts");
+/* harmony import */ var _WindowRef__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WindowRef */ "./src/app/WindowRef.ts");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./alert-dialog/alert-dialog.component */ "./src/app/alert-dialog/alert-dialog.component.ts");
+/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -431,10 +456,12 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var AppComponent = /** @class */ (function () {
-    function AppComponent(appStore, userActions, locationActions, utilitiesService, winRef, dialog, alertService, nativeCommunicationService, snackBar) {
+    function AppComponent(appStore, statusActions, userActions, locationActions, utilitiesService, winRef, dialog, alertService, nativeCommunicationService, snackBar) {
         var _this = this;
         this.appStore = appStore;
+        this.statusActions = statusActions;
         this.userActions = userActions;
         this.locationActions = locationActions;
         this.utilitiesService = utilitiesService;
@@ -450,19 +477,20 @@ var AppComponent = /** @class */ (function () {
             var errorMessage = state.errorMessage;
             var successMessage = state.successMessage;
             _this.dismissedLocation = state.lastDismissed;
+            _this.showDismissed = state.showDismissed;
             if (_this.currentToken !== token && token !== undefined) {
                 _this.utilitiesService.sendToNative(token, 'saveToken');
                 _this.currentToken = token;
             }
             if (errorMessage && errorMessage.code !== _this.currentError) {
-                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBarConfig"]();
+                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBarConfig"]();
                 config.duration = 3000;
                 config.panelClass = ['error-snackbar'];
                 _this.snackBar.open(errorMessage.message, 'OK', config);
                 _this.currentError = errorMessage.code;
             }
             if (successMessage && successMessage.code !== _this.currentSuccess) {
-                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBarConfig"]();
+                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBarConfig"]();
                 config.duration = 3000;
                 config.panelClass = ['success-snackbar'];
                 _this.snackBar.open(successMessage.message, 'OK', config);
@@ -485,13 +513,15 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.openDialog = function () {
         var _this = this;
-        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialogConfig"]();
+        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogConfig"]();
         dialogConfig.disableClose = true;
         dialogConfig.autoFocus = false;
-        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_7__["AlertDialogComponent"], { data: { number: this.registerLocationmessage.location },
+        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertDialogComponent"], { data: { number: this.registerLocationmessage.location },
             disableClose: true,
             autoFocus: false
         });
+        this.utilitiesService.sendToNative('success', 'triggerSignal');
+        this.utilitiesService.sendToNative(this.registerLocationmessage.location, 'showBackgroundNotification');
         this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
             var data = { result: result, location: _this.registerLocationmessage.location, resStatus: _this.registerLocationmessage.resStatus };
             _this.alertService.sendMessageResponse(data);
@@ -499,10 +529,10 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.openDialogDismissed = function () {
         var _this = this;
-        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialogConfig"]();
+        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogConfig"]();
         dialogConfig.disableClose = true;
         dialogConfig.autoFocus = false;
-        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_7__["AlertDialogComponent"], { data: { number: this.dismissedLocation },
+        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertDialogComponent"], { data: { number: this.dismissedLocation },
             disableClose: true,
             autoFocus: false
         });
@@ -545,14 +575,15 @@ var AppComponent = /** @class */ (function () {
         }),
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
         __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
-        __metadata("design:paramtypes", [Object, _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["UserActions"],
-            _actions_LocationActions__WEBPACK_IMPORTED_MODULE_2__["LocationActions"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_3__["UtilitiesService"],
-            _WindowRef__WEBPACK_IMPORTED_MODULE_5__["WindowRef"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialog"],
-            _services_alert_service__WEBPACK_IMPORTED_MODULE_8__["AlertService"],
-            _services_native_communication_service__WEBPACK_IMPORTED_MODULE_4__["NativeCommunicationService"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBar"]])
+        __metadata("design:paramtypes", [Object, _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["StatusActions"],
+            _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["UserActions"],
+            _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__["LocationActions"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_4__["UtilitiesService"],
+            _WindowRef__WEBPACK_IMPORTED_MODULE_6__["WindowRef"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialog"],
+            _services_alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"],
+            _services_native_communication_service__WEBPACK_IMPORTED_MODULE_5__["NativeCommunicationService"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBar"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -783,7 +814,7 @@ var LOGIN_FAILED = 501;
 /*!****************************************!*\
   !*** ./src/app/config/SuccessTypes.ts ***!
   \****************************************/
-/*! exports provided: SUCCESS_OK, SUCCESS_CREATED, SUCCESS_LOGGED_IN, SUCCESS_RECONNECTED_TO_GOD, SUCCESS_RECONNECTED_TO_EXHIBIT */
+/*! exports provided: SUCCESS_OK, SUCCESS_CREATED, SUCCESS_LOGGED_IN, SUCCESS_RECONNECTED_TO_GOD, SUCCESS_RECONNECTED_TO_EXHIBIT, SUCCESS_DISCONNECTED_FROM_EXHIBIT */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -793,11 +824,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_LOGGED_IN", function() { return SUCCESS_LOGGED_IN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_RECONNECTED_TO_GOD", function() { return SUCCESS_RECONNECTED_TO_GOD; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_RECONNECTED_TO_EXHIBIT", function() { return SUCCESS_RECONNECTED_TO_EXHIBIT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_DISCONNECTED_FROM_EXHIBIT", function() { return SUCCESS_DISCONNECTED_FROM_EXHIBIT; });
 var SUCCESS_OK = 200;
 var SUCCESS_CREATED = 201;
 var SUCCESS_LOGGED_IN = 202;
 var SUCCESS_RECONNECTED_TO_GOD = 299;
 var SUCCESS_RECONNECTED_TO_EXHIBIT = 298;
+var SUCCESS_DISCONNECTED_FROM_EXHIBIT = 297;
 
 
 /***/ }),
@@ -918,7 +951,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1>\r\n  Willkommen bei {{location.description}}\r\n</h1>\r\n\r\n\r\n<div *ngIf=\"locationStatusFree\">\r\n  <div *ngIf=\"locationType == 3\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"startOnTableSearch()\">Mitspielen</button>\r\n    <p *ngIf=\"!joinGame\">Bitte lege Dein Handy auf ein Beacon am Table</p>\r\n    <h4 *ngIf=\"locationSocketStatus === 'OCCUPIED'\">Dieses Beacon ist schon belegt!</h4>\r\n\r\n    <div class=\"webdevtools\" *ngIf=\"isWeb && !joinGame\" style=\"margin-top:20px\">\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToOnTable()\">Register Location TableOn</button>\r\n    </div>\r\n  </div>\r\n  <div *ngIf=\"locationType == 6\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"redirectToOnTableBehavior()\">Mitspielen</button>\r\n  </div>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOccupied\">\r\n  <h3>Der Table ist gerade nicht frei, probieren Sie es später erneut!</h3>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOffline\">\r\n  <h3>Beim Table ist leider ein Problem aufgetreten und steht daher zur Zeit nicht zur Verfügung!</h3>\r\n</div>\r\n\r\n<button *ngIf=\"location.liked; else notLiked\" id=\"unlike\" mat-raised-button color=\"warn\" (click)=\"registerLocationUnlike()\">\r\n  <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Unlike\r\n</button>\r\n\r\n<ng-template #notLiked>\r\n  <button id=\"like\" mat-stroked-button color=\"warn\" (click)=\"registerLocationLike()\">\r\n    <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Like\r\n  </button>\r\n</ng-template>\r\n"
+module.exports = "<h1>\r\n  Willkommen bei {{location.description}}\r\n</h1>\r\n\r\n\r\n<div *ngIf=\"locationStatusFree\">\r\n  <div *ngIf=\"locationType == 3\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"startOnTableSearch()\">Mitspielen</button>\r\n    <p *ngIf=\"!joinGame\">Bitte lege Dein Handy auf ein Beacon am Table</p>\r\n    <h4 *ngIf=\"locationSocketStatus === 'OCCUPIED'\">Dieses Beacon ist schon belegt!</h4>\r\n\r\n    <div class=\"webdevtools\" *ngIf=\"isWeb && !joinGame\" style=\"margin-top:20px\">\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToOnTable()\">Register Location TableOn</button>\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToPassiveExhibit()\">Register Location Passive 1009</button>\r\n    </div>\r\n  </div>\r\n  <div *ngIf=\"locationType == 6\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"redirectToOnTableBehavior()\">Mitspielen</button>\r\n  </div>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOccupied\">\r\n  <h3>Der Table ist gerade nicht frei, probieren Sie es später erneut!</h3>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOffline\">\r\n  <h3>Beim Table ist leider ein Problem aufgetreten und steht daher zur Zeit nicht zur Verfügung!</h3>\r\n</div>\r\n\r\n<button *ngIf=\"location.liked; else notLiked\" id=\"unlike\" mat-raised-button color=\"warn\" (click)=\"registerLocationUnlike()\">\r\n  <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Unlike\r\n</button>\r\n\r\n<ng-template #notLiked>\r\n  <button id=\"like\" mat-stroked-button color=\"warn\" (click)=\"registerLocationLike()\">\r\n    <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Like\r\n  </button>\r\n</ng-template>\r\n"
 
 /***/ }),
 
@@ -978,8 +1011,17 @@ var ContentTableAtComponent = /** @class */ (function () {
         this._curLocSubscribe = this.locationService.currentLocation.subscribe(function (value) {
             _this.location = value;
         });
+        this.navigationSubscription = this.router.events.subscribe(function (e) {
+            // If it is a NavigationEnd event re-initalise the component
+            if (e instanceof _angular_router__WEBPACK_IMPORTED_MODULE_3__["NavigationEnd"]) {
+                _this.initialiseInvites();
+            }
+        });
     }
     ContentTableAtComponent.prototype.ngOnInit = function () {
+        this.initialiseInvites();
+    };
+    ContentTableAtComponent.prototype.initialiseInvites = function () {
         var _this = this;
         this.utilitiesService.sendToNative('TABLE-AT', 'print');
         this.location = this.locationService.currentLocation.value;
@@ -1007,6 +1049,9 @@ var ContentTableAtComponent = /** @class */ (function () {
         this.utilitiesService.sendToNative('REDIRECT-TO-TABLE-ON', 'print');
         this.nativeCommunicationService.transmitLocationRegister({ minor: 1000, major: 100 });
     };
+    ContentTableAtComponent.prototype.redirectToPassiveExhibit = function () {
+        this.nativeCommunicationService.transmitLocationRegister({ minor: 1009, major: 10 });
+    };
     ContentTableAtComponent.prototype.redirectToOnTableBehavior = function () {
         this.utilitiesService.sendToNative('REDIRECT-TO-TABLE-ON-Behavior', 'print');
         this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(this.locationId));
@@ -1032,6 +1077,7 @@ var ContentTableAtComponent = /** @class */ (function () {
     // saves ID of current exhibit in localstorage
     ContentTableAtComponent.prototype.startOnTableSearch = function () {
         this.joinGame = false;
+        this.locationService.stopLocationScanning();
         this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(this.locationId));
         // localStorage.setItem('atExhibitParent', JSON.stringify(this.locationId));
     };
@@ -1098,6 +1144,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_location_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/location.service */ "./src/app/services/location.service.ts");
 /* harmony import */ var _services_exhibit_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/exhibit.service */ "./src/app/services/exhibit.service.ts");
 /* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/LocationActions */ "./src/app/actions/LocationActions.ts");
+/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/utilities.service */ "./src/app/services/utilities.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1115,12 +1162,14 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var ContentTableOnComponent = /** @class */ (function () {
-    function ContentTableOnComponent(godService, exhibitService, locationService, appStore, locationActions) {
+    function ContentTableOnComponent(godService, exhibitService, locationService, utilitiesService, appStore, locationActions) {
         var _this = this;
         this.godService = godService;
         this.exhibitService = exhibitService;
         this.locationService = locationService;
+        this.utilitiesService = utilitiesService;
         this.appStore = appStore;
         this.locationActions = locationActions;
         this._unsubscribe = this.appStore.subscribe(function () {
@@ -1138,14 +1187,17 @@ var ContentTableOnComponent = /** @class */ (function () {
         this.exhibitService.connectOD();
         // localStorage.setItem('onExhibit', JSON.stringify(true));
         this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeShowDismissed(false));
+        this.locationService.stopLocationScanning();
     };
     ContentTableOnComponent.prototype.ngOnDestroy = function () {
+        this.exhibitService.disconnect();
         this._unsubscribe();
+        this.appStore.dispatch(this.locationActions.changeShowDismissed(true));
+        this.locationService.startLocationScanning();
     };
     ContentTableOnComponent.prototype.disconnectFromExhibit = function () {
         this.exhibitService.disconnect();
-        this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(0));
-        this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
     };
     ContentTableOnComponent.prototype.sendMessageToExhibit = function () {
         this.exhibitService.sendMessage();
@@ -1156,10 +1208,11 @@ var ContentTableOnComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./content-table-on.component.html */ "./src/app/content-table-on/content-table-on.component.html"),
             styles: [__webpack_require__(/*! ./content-table-on.component.css */ "./src/app/content-table-on/content-table-on.component.css")]
         }),
-        __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
+        __param(4, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
         __metadata("design:paramtypes", [_services_god_service__WEBPACK_IMPORTED_MODULE_1__["GodService"],
             _services_exhibit_service__WEBPACK_IMPORTED_MODULE_3__["ExhibitService"],
-            _services_location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__["LocationActions"]])
+            _services_location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__["UtilitiesService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__["LocationActions"]])
     ], ContentTableOnComponent);
     return ContentTableOnComponent;
 }());
@@ -1398,7 +1451,10 @@ var initialState = {
     onExhibit: undefined,
     errorMessage: undefined,
     successMessage: undefined,
-    lastDismissed: undefined
+    lastDismissed: undefined,
+    showDismissed: true,
+    locationScanning: true,
+    isLoggedIn: false
 };
 function rootReducer(state, action) {
     if (state === void 0) { state = initialState; }
@@ -1417,6 +1473,10 @@ function rootReducer(state, action) {
             return __assign({}, state, { onExhibit: action.onExhibit });
         case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_LAST_DISMISSED"]:
             return __assign({}, state, { lastDismissed: action.lastDismissed });
+        case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_SHOW_DISMISSED"]:
+            return __assign({}, state, { showDismissed: action.showDismissed });
+        case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_LOCATION_SCANNING"]:
+            return __assign({}, state, { locationScanning: action.locationScanning });
         case _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["CHANGE_USER"]:
             return __assign({}, state, { user: action.user });
         case _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["CHANGE_TOKEN"]:
@@ -1429,6 +1489,8 @@ function rootReducer(state, action) {
             return __assign({}, state, { errorMessage: action.error });
         case _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["CHANGE_SUCCESS_MESSAGE"]:
             return __assign({}, state, { successMessage: action.success });
+        case _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["CHANGE_LOGGED_IN"]:
+            return __assign({}, state, { isLoggedIn: action.isLoggedIn });
         default:
             return state;
     }
@@ -1655,8 +1717,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/LocationActions */ "./src/app/actions/LocationActions.ts");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
 /* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _native_communication_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./native-communication.service */ "./src/app/services/native-communication.service.ts");
-/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config/SuccessTypes */ "./src/app/config/SuccessTypes.ts");
+/* harmony import */ var _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../config/ErrorTypes */ "./src/app/config/ErrorTypes.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1680,8 +1743,9 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var ExhibitService = /** @class */ (function () {
-    function ExhibitService(router, winRef, locationService, socket, socketGod, appStore, locationActions, userActions, statusActions, utilitiesService, nativeCommunicationService) {
+    function ExhibitService(router, winRef, locationService, socket, socketGod, appStore, locationActions, userActions, statusActions, utilitiesService) {
         this.router = router;
         this.winRef = winRef;
         this.locationService = locationService;
@@ -1692,7 +1756,6 @@ var ExhibitService = /** @class */ (function () {
         this.userActions = userActions;
         this.statusActions = statusActions;
         this.utilitiesService = utilitiesService;
-        this.nativeCommunicationService = nativeCommunicationService;
     }
     ExhibitService.prototype.establishExhibitConnection = function (url) {
         var _this = this;
@@ -1702,12 +1765,30 @@ var ExhibitService = /** @class */ (function () {
         // this.socket.openNewExhibitConnection(url);
         this.socket.connection.on('connected', function () {
             _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(true));
+            var state = _this.appStore.getState();
+            if (state.successMessage && state.successMessage.code === _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"]) {
+                _this.appStore.dispatch(_this.statusActions.changeSuccessMessage(undefined));
+            }
+        });
+        this.socket.connection.on('reconnect', function () {
+            _this.connectOD();
         });
         this.socket.connection.on('disconnect', function () {
             // const error: Message = {code: ErrorTypes.LOST_CONNECTION_TO_EXHIBIT, message: 'Lost connection to Exhibit'};
             // this.appStore.dispatch(this.statusActions.changeErrorMessage(error));
             var currLoc = _this.locationService.currentLocation.value;
-            _this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
+            var state = _this.appStore.getState();
+            if ((!state.successMessage) || (state.successMessage && state.successMessage.code !==
+                _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"])) {
+                var errorMessage = { message: 'You were disconnected from the Exhibit', code: _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_11__["LOST_CONNECTION_TO_EXHIBIT"] };
+                _this.appStore.dispatch(_this.statusActions.changeErrorMessage(errorMessage));
+            }
+            if (currLoc) {
+                _this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
+                _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(false));
+                _this.appStore.dispatch(_this.locationActions.changeAtExhibitParentId(0));
+                _this.appStore.dispatch(_this.locationActions.changeOnExhibit(false));
+            }
         });
     };
     ExhibitService.prototype.connectOD = function () {
@@ -1729,7 +1810,8 @@ var ExhibitService = /** @class */ (function () {
     ExhibitService.prototype.startAutoResponder = function () {
         var _this = this;
         this.socket.connection.on('exhibitStatusCheck', function () {
-            console.log('Auto Responder Check');
+            console.log('AutoResponderCheck');
+            _this.utilitiesService.sendToNative('AutoResponderCheck', 'print');
             var user = _this.appStore.getState().user;
             _this.socket.connection.emit('exhibitStatusCheckResult', user);
         });
@@ -1745,6 +1827,8 @@ var ExhibitService = /** @class */ (function () {
         this.socket.connection.emit('closeConnection', user);
         this.socket.connection.on('closeConnectionResult', function (result) {
             if (result === 'SUCCESS') {
+                _this.appStore.dispatch(_this.statusActions.changeSuccessMessage({ message: 'You decided to quit',
+                    code: _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"] }));
                 _this.socket.connection.disconnect();
                 _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(false));
                 // const currLoc = this.locationService.currentLocation.value;
@@ -1763,9 +1847,8 @@ var ExhibitService = /** @class */ (function () {
             _exhibit_socket_service__WEBPACK_IMPORTED_MODULE_4__["ExhibitSocketService"],
             _god_service__WEBPACK_IMPORTED_MODULE_5__["GodService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_6__["LocationActions"],
             _actions_UserActions__WEBPACK_IMPORTED_MODULE_7__["UserActions"],
-            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_10__["StatusActions"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"],
-            _native_communication_service__WEBPACK_IMPORTED_MODULE_9__["NativeCommunicationService"]])
+            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_9__["StatusActions"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"]])
     ], ExhibitService);
     return ExhibitService;
 }());
@@ -1908,6 +1991,7 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(res.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(res.locations));
             _this.store.dispatch(_this.userActions.changeToken(res.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 // send success to native & start beacon scan
@@ -1930,6 +2014,7 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(res.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(res.locations));
             _this.store.dispatch(_this.userActions.changeToken(res.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 _this.utilitiesService.sendToNative('success', 'registerOD');
@@ -1957,7 +2042,7 @@ var GodService = /** @class */ (function () {
                 var currLoc = _this.locationService.currentLocation.value;
                 _this.router.navigate([currLoc.contentURL]).then(function () {
                     // send success to native & trigger signal
-                    _this.utilitiesService.sendToNative('success', 'triggerSignal');
+                    // this.utilitiesService.sendToNative('success', 'triggerSignal');
                 });
             }
             _this.socket.removeAllListeners('registerLocationResult');
@@ -2006,6 +2091,7 @@ var GodService = /** @class */ (function () {
     };
     GodService.prototype.disconnectedFromExhibit = function (parentLocation, location) {
         var _this = this;
+        console.log('disconnectedFromExhibit');
         this.socket.emit('disconnectedFromExhibit', { parentLocation: parentLocation, location: location });
         this.socket.on('disconnectedFromExhibitResult', function (result) {
             var res = result.data;
@@ -2016,7 +2102,9 @@ var GodService = /** @class */ (function () {
                 return;
             }
             // console.log('Disconnected from Exhibit-' + res.parent + ': ' + res.location);
-            _this.registerLocation(res.parent, false);
+            if (_this.store.getState().isLoggedIn === true) {
+                _this.registerLocation(res.parent, false);
+            }
             _this.socket.removeAllListeners('disconnectedFromExhibitResult');
         });
     };
@@ -2033,6 +2121,7 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(data.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(data.locations));
             _this.store.dispatch(_this.userActions.changeToken(data.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 // send success to native & start beacon scan
@@ -2157,6 +2246,12 @@ var LocationService = /** @class */ (function () {
         }
         return isSame;
     };
+    LocationService.prototype.stopLocationScanning = function () {
+        this.appStore.dispatch(this.locationActions.changeLocationScanning(false));
+    };
+    LocationService.prototype.startLocationScanning = function () {
+        this.appStore.dispatch(this.locationActions.changeLocationScanning(true));
+    };
     Object.defineProperty(LocationService.prototype, "lookuptable", {
         get: function () {
             return this._lookuptable;
@@ -2203,8 +2298,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities.service */ "./src/app/services/utilities.service.ts");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _alert_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _alert_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _exhibit_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./exhibit.service */ "./src/app/services/exhibit.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2226,8 +2323,10 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
+
 var NativeCommunicationService = /** @class */ (function () {
-    function NativeCommunicationService(router, godService, locationService, appStore, locationActions, utilitiesService, userActions, dialog, alertService) {
+    function NativeCommunicationService(router, godService, locationService, appStore, locationActions, utilitiesService, userActions, statusActions, dialog, alertService, exhibitService) {
         var _this = this;
         this.router = router;
         this.godService = godService;
@@ -2236,8 +2335,10 @@ var NativeCommunicationService = /** @class */ (function () {
         this.locationActions = locationActions;
         this.utilitiesService = utilitiesService;
         this.userActions = userActions;
+        this.statusActions = statusActions;
         this.dialog = dialog;
         this.alertService = alertService;
+        this.exhibitService = exhibitService;
         this.subscription = this.alertService.getMessageResponse().subscribe(function (message) {
             if (message.result === 'confirm') {
                 _this.godService.registerLocation(message.location, false);
@@ -2250,7 +2351,7 @@ var NativeCommunicationService = /** @class */ (function () {
                 _this.appStore.dispatch(_this.locationActions.changeLastDismissed(message.location));
                 _this.godService.registerLocation(message.location, true);
             }
-            _this.utilitiesService.sendToNative('restartScanning', 'restartScanning');
+            _this.locationService.startLocationScanning();
         });
     }
     NativeCommunicationService.prototype.ngOnInit = function () {
@@ -2277,13 +2378,17 @@ var NativeCommunicationService = /** @class */ (function () {
         if (state.lastDismissed === result.minor) {
             return;
         }
+        if (state.locationScanning === false && location.locationTypeId !== 2) {
+            return;
+        }
         if (!location) {
             this.utilitiesService.sendToNative('this is not a valid location', 'print');
             return;
         }
         var currLoc = this.locationService.currentLocation.value;
-        // location is not the same as before
+        // if the location is not the same as before
         if (!this.locationService.sameAsCurrentLocation(location.id)) {
+            // If the current location is from type activeExhibitOn the redirection should be disabled
             if (this.locationService.currentLocation && currLoc.locationTypeId === 2) {
                 this.utilitiesService.sendToNative('this is not a valid location - type 2', 'print');
                 return;
@@ -2304,7 +2409,7 @@ var NativeCommunicationService = /** @class */ (function () {
                     });
                 }
                 else {
-                    this.utilitiesService.sendToNative('stopScanning', 'stopScanning');
+                    this.locationService.stopLocationScanning();
                     var data = { location: location.id, resStatus: null };
                     this.alertService.sendMessageLocationid(data);
                     var elm = document.getElementById('ghostButton');
@@ -2332,7 +2437,7 @@ var NativeCommunicationService = /** @class */ (function () {
     NativeCommunicationService.prototype.autoLogin = function (data) {
         var token = data.token;
         this.utilitiesService.sendToNative('Autologin', 'print');
-        if (token) {
+        if (token !== undefined && token !== null && token !== '') {
             this.godService.autoLogin(token);
         }
     };
@@ -2343,14 +2448,23 @@ var NativeCommunicationService = /** @class */ (function () {
     };
     NativeCommunicationService.prototype.logout = function () {
         this.utilitiesService.sendToNative('clearToken', 'clearToken');
+        if (this.utilitiesService.isWeb === true) {
+            this.logoutSuccess();
+        }
     };
     NativeCommunicationService.prototype.logoutSuccess = function () {
         var _this = this;
-        this.appStore.dispatch(this.userActions.changeToken(undefined));
-        this.appStore.dispatch(this.locationActions);
+        this.appStore.dispatch(this.statusActions.changeLoggedIn(false));
         this.router.navigate(['']).then(function () {
             _this.utilitiesService.sendToNative('User Logged out', 'print');
         });
+        this.appStore.dispatch(this.userActions.changeToken(undefined));
+        this.appStore.dispatch(this.locationActions.changeLocationStatus(undefined));
+        this.appStore.dispatch(this.locationActions.changeLocationSocketStatus(undefined));
+        this.appStore.dispatch(this.locationActions.changeConnectedExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(undefined));
+        this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeLastDismissed(undefined));
     };
     NativeCommunicationService.prototype.transmitLocationLike = function (like) {
         var currLoc = this.locationService.currentLocation.value;
@@ -2370,8 +2484,10 @@ var NativeCommunicationService = /** @class */ (function () {
             _location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__["LocationActions"],
             _utilities_service__WEBPACK_IMPORTED_MODULE_4__["UtilitiesService"],
             _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__["UserActions"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialog"],
-            _alert_service__WEBPACK_IMPORTED_MODULE_8__["AlertService"]])
+            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__["StatusActions"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_8__["MatDialog"],
+            _alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"],
+            _exhibit_service__WEBPACK_IMPORTED_MODULE_10__["ExhibitService"]])
     ], NativeCommunicationService);
     return NativeCommunicationService;
 }());
@@ -2458,11 +2574,8 @@ var UtilitiesService = /** @class */ (function () {
                 case 'getToken':
                     this.winRef.nativeWindow.MEETeUXAndroidAppRoot.getToken();
                     break;
-                case 'stopScanning':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.stopScanner();
-                    break;
-                case 'restartScanning':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.restartScanner();
+                case 'showBackgroundNotification':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.showBackgroundNotification(messageBody);
                     break;
                 default:
                     break;
