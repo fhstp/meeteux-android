@@ -126,6 +126,12 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void getWifiStatusResult(String message){
+        Log.d("Status","WIFI Result");
+        mainActivity.getWifiStatusResultNative(message);
+    }
+
+    @JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }

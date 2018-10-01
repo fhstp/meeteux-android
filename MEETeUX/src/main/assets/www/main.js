@@ -521,7 +521,6 @@ var AppComponent = /** @class */ (function () {
             autoFocus: false
         });
         this.utilitiesService.sendToNative('success', 'triggerSignal');
-        this.utilitiesService.sendToNative(this.registerLocationmessage.location, 'showBackgroundNotification');
         this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
             var data = { result: result, location: _this.registerLocationmessage.location, resStatus: _this.registerLocationmessage.resStatus };
             _this.alertService.sendMessageResponse(data);
@@ -676,12 +675,13 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 var appStore = Object(redux__WEBPACK_IMPORTED_MODULE_22__["createStore"])(_reducers_rootReducer__WEBPACK_IMPORTED_MODULE_23__["rootReducer"], Object(redux__WEBPACK_IMPORTED_MODULE_22__["applyMiddleware"])(redux_logger__WEBPACK_IMPORTED_MODULE_27___default.a));
 var AppModule = /** @class */ (function () {
-    function AppModule(winRef, zone, nativeCommunicationService, utilitiesService) {
+    function AppModule(winRef, zone, nativeCommunicationService, utilitiesService, godService) {
         var _this = this;
         this.winRef = winRef;
         this.zone = zone;
         this.nativeCommunicationService = nativeCommunicationService;
         this.utilitiesService = utilitiesService;
+        this.godService = godService;
         winRef.nativeWindow.angularComponentRef = {
             zone: this.zone,
             componentFn: function (message, value) { return _this.callFromOutside(message, value); },
@@ -707,6 +707,10 @@ var AppModule = /** @class */ (function () {
             }
             case 'send_token': {
                 this.nativeCommunicationService.autoLogin(value);
+                break;
+            }
+            case 'send_wifi_ssid': {
+                this.nativeCommunicationService.checkWifi(value);
                 break;
             }
             default: {
@@ -768,7 +772,8 @@ var AppModule = /** @class */ (function () {
         __metadata("design:paramtypes", [_WindowRef__WEBPACK_IMPORTED_MODULE_12__["WindowRef"],
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"],
             _services_native_communication_service__WEBPACK_IMPORTED_MODULE_9__["NativeCommunicationService"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_13__["UtilitiesService"]])
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_13__["UtilitiesService"],
+            _services_god_service__WEBPACK_IMPORTED_MODULE_10__["GodService"]])
     ], AppModule);
     return AppModule;
 }());
@@ -2130,6 +2135,19 @@ var GodService = /** @class */ (function () {
             _this.socket.removeAllListeners('autoLoginODResult');
         });
     };
+    GodService.prototype.checkWifi = function (wifiSSID) {
+        var _this = this;
+        this.socket.emit('checkWifiSSID', wifiSSID);
+        this.socket.on('checkWifiSSIDResult', function (result) {
+            var isCorrect = result.check;
+            if (isCorrect === true) {
+                _this.utilitiesService.sendToNative('correctWifi', 'getWifiStatusResult');
+            }
+            else {
+                _this.utilitiesService.sendToNative('wrongWifi', 'getWifiStatusResult');
+            }
+        });
+    };
     GodService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
         __param(4, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
@@ -2441,6 +2459,13 @@ var NativeCommunicationService = /** @class */ (function () {
             this.godService.autoLogin(token);
         }
     };
+    NativeCommunicationService.prototype.checkWifi = function (data) {
+        var wifiSSSID = data.ssid;
+        console.log(wifiSSSID);
+        if (wifiSSSID !== undefined && wifiSSSID !== null && wifiSSSID !== '') {
+            this.godService.checkWifi(wifiSSSID);
+        }
+    };
     NativeCommunicationService.prototype.transmitShowUnity = function () {
         // this.utilitiesService.sendToNative('NativeCommService Show Unity before', 'print');
         this.utilitiesService.sendToNative('showUnityView', 'showUnityView');
@@ -2574,8 +2599,8 @@ var UtilitiesService = /** @class */ (function () {
                 case 'getToken':
                     this.winRef.nativeWindow.MEETeUXAndroidAppRoot.getToken();
                     break;
-                case 'showBackgroundNotification':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.showBackgroundNotification(messageBody);
+                case 'getWifiStatusResult':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.getWifiStatusResult(messageBody);
                     break;
                 default:
                     break;

@@ -126,6 +126,12 @@ public class JSInterfaceX extends AppCompatActivity {
     }
 
     @org.xwalk.core.JavascriptInterface
+    public void getWifiStatusResult(String message){
+        Log.d("Status","WIFI Result");
+        mainActivity.getWifiStatusResultNative(message);
+    }
+
+    @org.xwalk.core.JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }
