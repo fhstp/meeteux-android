@@ -11,24 +11,28 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
@@ -61,6 +65,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,6 +75,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ArrayUtils;
 
 public class MainActivity extends AbsRuntimePermission {
 
@@ -107,9 +115,11 @@ public class MainActivity extends AbsRuntimePermission {
 
     private static boolean activityVisible = true;
 
-    private final static int INTERVAL = 1000 * 60 * 1; //2 minutes
+    private final static int INTERVAL = 1000 * 60 /2; //30 seconds
     Handler mHandler = new Handler();
 
+
+    public WifiManager mWifiManger;
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -135,7 +145,8 @@ public class MainActivity extends AbsRuntimePermission {
         mySelf = this;
         //this.setContentView(R.layout.view_switch);
 
-
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             //myWebView.setWebContentsDebuggingEnabled(true);
@@ -189,6 +200,8 @@ public class MainActivity extends AbsRuntimePermission {
         clearLastBeacon();
 
         activityVisible = true;
+        Log.d("CheckWifi", "CheckWifi");
+
     }
 
     @Override
@@ -197,6 +210,7 @@ public class MainActivity extends AbsRuntimePermission {
         Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
 
         KontaktSDK.initialize(this);
+
         proximityManager = ProximityManagerFactory.create(this);
 
 
@@ -369,6 +383,8 @@ public class MainActivity extends AbsRuntimePermission {
         Log.i("logout", "Clear Token");
         Log.i("logout", "Stop scanning");
         proximityManager.stopScanning();
+        stopRepeatingTask();
+        unregisterReceiver(mReceiver);
 
     }
 
@@ -400,7 +416,7 @@ public class MainActivity extends AbsRuntimePermission {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        checkWifiSSID();
         return jObject.toString();
     }
 
@@ -626,7 +642,7 @@ public class MainActivity extends AbsRuntimePermission {
     protected void onDestroy() {
         proximityManager.disconnect();
         proximityManager = null;
-        clearLastBeacon();
+        //clearLastBeacon();
         Log.i("Sample", "Destroy");
         super.onDestroy();
     }
@@ -636,6 +652,7 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onServiceReady() {
                 proximityManager.startScanning();
+                startRepeatingTask();
             }
         });
     }
@@ -673,4 +690,151 @@ public class MainActivity extends AbsRuntimePermission {
             }
         };
     }
+
+    public void getWifiStatusResultNative(String message){
+        if(message.equals("correctWifi")){
+            Log.d("WifiStatus", "Wifi is correct");
+        }else if(message.equals("wrongWifi")){
+            showWifiStatusAlert();
+        }
+    }
+
+    public void checkWifiSSID(){
+        WifiManager wifi = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifi.getConnectionInfo();
+        byte[] myIPAddress = BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
+        ArrayUtils.reverse(myIPAddress);
+        InetAddress myInetIP = null;
+        try {
+            myInetIP = InetAddress.getByAddress(myIPAddress);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        String myIP = myInetIP.getHostAddress();
+        if (wifiInfo != null) {
+            String currentConnectedSSID = wifiInfo.getSSID();
+            Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
+            Log.e("checkWIFIStatusIP", myIP);
+
+            currentConnectedSSID = currentConnectedSSID.replace("\"", "");
+            Log.e("checkWIFIStatusSSID", currentConnectedSSID);
+
+            JSONObject jObject = new JSONObject();
+            try {
+                jObject.put("ssid", currentConnectedSSID);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            String ssid = jObject.toString();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                myWebView.evaluateJavascript("javascript:send_wifi_ssid("+ ssid +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                mXWalkView.evaluateJavascript("javascript:send_wifi_ssid("+ ssid +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        }
+    }
+
+    public void showWifiStatusAlert(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Wifi Status")
+                .setMessage("You are in the wrong Wifi. Please change to the Wifi called MEETeUX!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    Runnable mHandlerTask = new Runnable()
+    {
+        @Override
+        public void run() {
+            checkWifiSSID();
+            checkScanStatus();
+            checkBluetoothStatus();
+            mHandler.postDelayed(mHandlerTask, INTERVAL);
+        }
+    };
+
+    void startRepeatingTask()
+    {
+        mHandlerTask.run();
+    }
+
+    void stopRepeatingTask()
+    {
+        mHandler.removeCallbacks(mHandlerTask);
+    }
+
+    void checkScanStatus(){
+        Log.e("checkScanStatus", "Scanning was checked");
+        if(!proximityManager.isScanning() && proximityManager.isConnected()){
+            //Toast.makeText(this, "Stopped and restarted scanning!", Toast.LENGTH_LONG).show();
+            Log.e("checkScanStatus", "Scanning was stopped and will be restarted");
+            proximityManager.startScanning();
+        }
+        if(proximityManager.isScanning() && proximityManager.isConnected()){
+            Log.e("checkScanStatus", "connected and scanning");
+        }
+    }
+
+    void checkBluetoothStatus(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            //no bluetooth support
+        } else {
+            if (mBluetoothAdapter.isEnabled()) {
+                //Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show();
+                Log.d("checkBluetoothStatus", "Bluetooth is on");
+            }else{
+                Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
+                Log.d("checkBluetoothStatus", "Bluetooth is off");
+            }
+        }
+    }
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        Log.d("BluetoothAdapter", "Bluetooth off");
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        Log.d("BluetoothAdapter", "Bluetooth turned off");
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        Log.d("BluetoothAdapter", "Bluetooth is on");
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        Log.d("BluetoothAdapter", "Bluetooth is turned on");
+                        break;
+                }
+            }
+        }
+    };
 }
