@@ -132,6 +132,30 @@ public class JSInterfaceX extends AppCompatActivity {
     }
 
     @org.xwalk.core.JavascriptInterface
+    public void activateBluetoothCheck(){
+        Log.d("Status","Bluetooth Check");
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mainActivity.checkBluetoothStatus();
+            }
+        });
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void activateBluetooth(){
+        Log.d("Status","Activate Bluetooth");
+        mainActivity.activateBluetoothNative();
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void activateWifiSettings(){
+        Log.d("Status","Activate Bluetooth");
+        mainActivity.activateWifiNative();
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }

@@ -132,6 +132,29 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void activateBluetoothCheck(){
+        Log.d("Status","Bluetooth Check");
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mainActivity.checkBluetoothStatus();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void activateBluetooth(){
+        Log.d("Status","Activate Bluetooth");
+        mainActivity.activateBluetoothNative();
+    }
+
+    @JavascriptInterface
+    public void activateWifiSettings(){
+        Log.d("Status","Activate Bluetooth");
+        mainActivity.activateWifiNative();
+    }
+
+    @JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }

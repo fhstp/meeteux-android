@@ -417,6 +417,7 @@ public class MainActivity extends AbsRuntimePermission {
             e.printStackTrace();
         }
         checkWifiSSID();
+        //checkBluetoothStatus();
         return jObject.toString();
     }
 
@@ -695,7 +696,8 @@ public class MainActivity extends AbsRuntimePermission {
         if(message.equals("correctWifi")){
             Log.d("WifiStatus", "Wifi is correct");
         }else if(message.equals("wrongWifi")){
-            showWifiStatusAlert();
+            //showWifiStatusAlert();
+            Log.d("WifiStatus", "Wifi is wrong");
         }
     }
 
@@ -710,18 +712,49 @@ public class MainActivity extends AbsRuntimePermission {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        String myIP = myInetIP.getHostAddress();
-        if (wifiInfo != null) {
-            String currentConnectedSSID = wifiInfo.getSSID();
-            Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
-            Log.e("checkWIFIStatusIP", myIP);
+        if(myInetIP != null) {
+            String myIP = myInetIP.getHostAddress();
+            if (wifiInfo != null) {
+                String currentConnectedSSID = wifiInfo.getSSID();
+                Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
+                Log.e("checkWIFIStatusIP", myIP);
 
-            currentConnectedSSID = currentConnectedSSID.replace("\"", "");
-            Log.e("checkWIFIStatusSSID", currentConnectedSSID);
+                currentConnectedSSID = currentConnectedSSID.replace("\"", "");
+                Log.e("checkWIFIStatusSSID", currentConnectedSSID);
 
+                JSONObject jObject = new JSONObject();
+                try {
+                    jObject.put("ssid", currentConnectedSSID);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String ssid = jObject.toString();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    myWebView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mXWalkView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+            }
+        }else{
             JSONObject jObject = new JSONObject();
             try {
-                jObject.put("ssid", currentConnectedSSID);
+                jObject.put("ssid", "notAvailable");
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -730,27 +763,27 @@ public class MainActivity extends AbsRuntimePermission {
             String ssid = jObject.toString();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                myWebView.evaluateJavascript("javascript:send_wifi_ssid("+ ssid +")", new ValueCallback<String>() {
+                myWebView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        Log.d("Status", "Callback from send to web");
                     }
                 });
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                mXWalkView.evaluateJavascript("javascript:send_wifi_ssid("+ ssid +")", new ValueCallback<String>() {
+                mXWalkView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        Log.d("Status", "Callback from send to web");
                     }
                 });
             }
         }
     }
 
-    public void showWifiStatusAlert(){
+    /*public void showWifiStatusAlert(){
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle("Wifi Status")
                 .setMessage("You are in the wrong Wifi. Please change to the Wifi called MEETeUX!")
@@ -763,7 +796,7 @@ public class MainActivity extends AbsRuntimePermission {
                 .setCancelable(false)
                 .create()
                 .show();
-    }
+    }*/
 
     Runnable mHandlerTask = new Runnable()
     {
@@ -771,7 +804,7 @@ public class MainActivity extends AbsRuntimePermission {
         public void run() {
             checkWifiSSID();
             checkScanStatus();
-            checkBluetoothStatus();
+            //checkBluetoothStatus();
             mHandler.postDelayed(mHandlerTask, INTERVAL);
         }
     };
@@ -807,11 +840,39 @@ public class MainActivity extends AbsRuntimePermission {
                 //Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show();
                 Log.d("checkBluetoothStatus", "Bluetooth is on");
             }else{
-                Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    myWebView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mXWalkView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+                //Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
                 Log.d("checkBluetoothStatus", "Bluetooth is off");
             }
         }
     }
+
+    public void activateBluetoothNative(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter.enable();
+    }
+
+    public void activateWifiNative(){
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+    }
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
