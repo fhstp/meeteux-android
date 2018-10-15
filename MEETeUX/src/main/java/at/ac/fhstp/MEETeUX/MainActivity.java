@@ -102,6 +102,10 @@ public class MainActivity extends AbsRuntimePermission {
 
     String nearestBeaconInfos;
 
+    boolean proximityManagerToRestart = false;
+    boolean bluetoothTurnedOff = false;
+    boolean bluetoothTurnedOnAgain = false;
+
     public static NotificationManagerCompat mNotificationManager;
     public static NotificationManager mNotificationManagerOreoAbove;
 
@@ -802,7 +806,7 @@ public class MainActivity extends AbsRuntimePermission {
     {
         @Override
         public void run() {
-            checkWifiSSID();
+            //checkWifiSSID();
             checkScanStatus();
             //checkBluetoothStatus();
             mHandler.postDelayed(mHandlerTask, INTERVAL);
@@ -821,10 +825,16 @@ public class MainActivity extends AbsRuntimePermission {
 
     void checkScanStatus(){
         Log.e("checkScanStatus", "Scanning was checked");
+        if(proximityManagerToRestart) {
+            Log.e("checkScanStatus", "Bluetooth was turned off");
+            proximityManagerToRestart = false;
+            proximityManager.restartScanning();
+        }
         if(!proximityManager.isScanning() && proximityManager.isConnected()){
             //Toast.makeText(this, "Stopped and restarted scanning!", Toast.LENGTH_LONG).show();
             Log.e("checkScanStatus", "Scanning was stopped and will be restarted");
-            proximityManager.startScanning();
+
+            proximityManager.restartScanning();
         }
         if(proximityManager.isScanning() && proximityManager.isConnected()){
             Log.e("checkScanStatus", "connected and scanning");
@@ -886,12 +896,21 @@ public class MainActivity extends AbsRuntimePermission {
                         Log.d("BluetoothAdapter", "Bluetooth off");
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
+                        bluetoothTurnedOff = true;
                         Log.d("BluetoothAdapter", "Bluetooth turned off");
                         break;
                     case BluetoothAdapter.STATE_ON:
+                        if(bluetoothTurnedOnAgain){
+                            bluetoothTurnedOnAgain = false;
+                            proximityManagerToRestart = true;
+                        }
                         Log.d("BluetoothAdapter", "Bluetooth is on");
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
+                        if(bluetoothTurnedOff){
+                            bluetoothTurnedOff = false;
+                            bluetoothTurnedOnAgain = true;
+                        }
                         Log.d("BluetoothAdapter", "Bluetooth is turned on");
                         break;
                 }

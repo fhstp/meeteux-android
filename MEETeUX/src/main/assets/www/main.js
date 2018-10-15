@@ -552,7 +552,14 @@ var AppComponent = /** @class */ (function () {
         dialogConfig.autoFocus = false;
         if (this.nativeSettingType === "Wifi") {
             console.log("openNativeSetting " + this.nativeSettingType);
-            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType },
+            var platformSpecificConfirm;
+            if (this.utilitiesService.checkPlatform() === 'Android') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            else if (this.utilitiesService.checkPlatform() === 'IOS') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType, confirmDialogText: platformSpecificConfirm },
                 disableClose: true,
                 autoFocus: false
             });
@@ -562,7 +569,14 @@ var AppComponent = /** @class */ (function () {
             });
         }
         else if (this.nativeSettingType === "Bluetooth") {
-            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType },
+            var platformSpecificConfirm;
+            if (this.utilitiesService.checkPlatform() === 'Android') {
+                platformSpecificConfirm = "Activate Bluetooth";
+            }
+            else if (this.utilitiesService.checkPlatform() === 'IOS') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType, confirmDialogText: platformSpecificConfirm },
                 disableClose: true,
                 autoFocus: false
             });
@@ -1403,7 +1417,7 @@ var MainViewComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h2 matDialogTitle>{{data.settingtype}} deactivated</h2>\r\n<div mat-dialog-content>\r\n  <p>To use the app, please turn on {{data.settingtype}}!</p>\r\n</div>\r\n<mat-dialog-actions align=\"end\">\r\n  <button mat-raised-button color=\"primary\" (tap)=\"cancelDialog()\">No</button>\r\n  <button mat-raised-button color=\"primary\" (tap)=\"confirmDialog()\">To Settings</button>\r\n</mat-dialog-actions>\r\n\r\n"
+module.exports = "<h2 matDialogTitle>{{data.settingtype}} deactivated</h2>\r\n<div mat-dialog-content>\r\n  <p>To use the app, please turn on {{data.settingtype}}!</p>\r\n</div>\r\n<mat-dialog-actions align=\"end\">\r\n  <button mat-raised-button color=\"primary\" (tap)=\"cancelDialog()\">No</button>\r\n  <button mat-raised-button color=\"primary\" (tap)=\"confirmDialog()\">{{data.confirmDialogText}}</button>\r\n</mat-dialog-actions>\r\n\r\n"
 
 /***/ }),
 
