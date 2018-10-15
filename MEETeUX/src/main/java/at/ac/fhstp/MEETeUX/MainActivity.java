@@ -815,7 +815,8 @@ public class MainActivity extends AbsRuntimePermission {
 
     void startRepeatingTask()
     {
-        mHandlerTask.run();
+        mHandler.postDelayed(mHandlerTask, INTERVAL);
+        //mHandlerTask.run();
     }
 
     void stopRepeatingTask()
@@ -829,6 +830,15 @@ public class MainActivity extends AbsRuntimePermission {
             Log.e("checkScanStatus", "Bluetooth was turned off");
             proximityManagerToRestart = false;
             proximityManager.restartScanning();
+        }
+        if(!proximityManager.isConnected()){
+            Log.e("checkScanStatus", "Not connected and will be restarted");
+            proximityManager.connect(new OnServiceReadyListener() {
+                @Override
+                public void onServiceReady() {
+                    proximityManager.startScanning();
+                }
+            });
         }
         if(!proximityManager.isScanning() && proximityManager.isConnected()){
             //Toast.makeText(this, "Stopped and restarted scanning!", Toast.LENGTH_LONG).show();
