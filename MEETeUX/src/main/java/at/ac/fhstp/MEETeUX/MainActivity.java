@@ -420,7 +420,7 @@ public class MainActivity extends AbsRuntimePermission {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        checkWifiSSID();
+        //checkWifiSSID();
         //checkBluetoothStatus();
         return jObject.toString();
     }
@@ -647,6 +647,7 @@ public class MainActivity extends AbsRuntimePermission {
     protected void onDestroy() {
         proximityManager.disconnect();
         proximityManager = null;
+        unregisterReceiver(mReceiver);
         //clearLastBeacon();
         Log.i("Sample", "Destroy");
         super.onDestroy();
@@ -658,6 +659,7 @@ public class MainActivity extends AbsRuntimePermission {
             public void onServiceReady() {
                 proximityManager.startScanning();
                 startRepeatingTask();
+                checkWifiSSID();
             }
         });
     }
@@ -927,4 +929,17 @@ public class MainActivity extends AbsRuntimePermission {
             }
         }
     };
+
+    @Override
+    public void onBackPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView.evaluateJavascript("javascript:back_button_pressed()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    //Log.i("onReceiveValue! " + value);
+                    Log.d("Status", "Callback from send to web");
+                }
+            });
+        }
+    }
 }
