@@ -55,6 +55,7 @@ public class JSInterface extends AppCompatActivity {
         mainActivity.update_location();
     }
 
+
     @JavascriptInterface
     public void registerOD(){
         mainActivity.registerODNatve();
@@ -174,6 +175,9 @@ public class JSInterface extends AppCompatActivity {
     public void restartScanner(){
         mainActivity.restartScanner();
     }
+
+    @JavascriptInterface
+    public void openWifiDialogNative(){ mainActivity.openWifiDialogNative();}
 
     // prints message from webview to Logcat
     @JavascriptInterface

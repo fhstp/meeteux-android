@@ -32,6 +32,7 @@ dependencies {
     compile 'com.android.support:design:27.1.1'
 	compile 'org.apache.commons:commons-lang3:3.6'
     implementation project(':CrosswalkWebview')
+	compile group: 'commons-collections', name: 'commons-collections', version: '3.0'
 }
 
 android {

@@ -55,6 +55,7 @@ public class JSInterfaceX extends AppCompatActivity {
         mainActivity.update_location();
     }
 
+
     @org.xwalk.core.JavascriptInterface
     public void registerOD(){
         mainActivity.registerODNatve();
@@ -181,6 +182,9 @@ public class JSInterfaceX extends AppCompatActivity {
     public void print(String message){
         Log.d("WWW",message);
     }
+
+    @org.xwalk.core.JavascriptInterface
+    public void openWifiDialogNative(){ mainActivity.openWifiDialogNative();}
 
    /* @JavascriptInterface
     public void run(final String scriptSrc){
