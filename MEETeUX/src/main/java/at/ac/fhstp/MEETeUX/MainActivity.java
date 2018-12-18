@@ -178,6 +178,7 @@ public class MainActivity extends AbsRuntimePermission {
             xwalkSettings.setDatabaseEnabled(true);
             xwalkSettings.setDomStorageEnabled(true);
             xwalkSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            xwalkSettings.setAllowFileAccessFromFileURLs(true);
 
             myJSInterfaceX = new JSInterfaceX(mXWalkView, this);
             mXWalkView.addJavascriptInterface(myJSInterfaceX, "MEETeUXAndroidAppRoot");
@@ -204,6 +205,8 @@ public class MainActivity extends AbsRuntimePermission {
             webSettings.setDatabaseEnabled(true);
             webSettings.setDomStorageEnabled(true);
             webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            webSettings.setAllowFileAccessFromFileURLs(true);
+
 
             myJSInterface = new JSInterface(myWebView, this);
             myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
