@@ -353,7 +353,11 @@ public class MainActivity extends AbsRuntimePermission {
                         //String helpString = newList.get(i).getProximity() + "";
                         //if(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR")) {
                         if(!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()))){
-                            beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(12));
+                            if(String.valueOf(newList.get(i).getMajor()).length()==3){
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
+                            }else{
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(12));
+                            }
                             CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()));
                             helpBuffer.add(newList.get(i).getRssi());
                             beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), helpBuffer);
@@ -406,7 +410,7 @@ public class MainActivity extends AbsRuntimePermission {
                                 helpdouble[i] = Double.valueOf(helpStringArray[i]);
                             }
 
-                            if(median(helpdouble)>nearestBeaconRSSI){
+                            if(median(helpdouble)>nearestBeaconRSSI && pair.getKey().toString().length()!=8){ //8 because 4 digits minor, / as split and 3 digits major
                                 nearestBeaconRSSI = median(helpdouble);
                                 nearestBeaconKey = pair.getKey().toString();
                             }
@@ -507,9 +511,10 @@ public class MainActivity extends AbsRuntimePermission {
     public void clearToken(){
         File file = new File(this.getFilesDir(), filename);
         boolean deleted = file.delete();
-        Log.i("logout", "Clear Token");
-        Log.i("logout", "Stop scanning");
+        //Log.i("logout", "Clear Token");
+        //Log.i("logout", "Stop scanning");
         proximityManager.stopScanning();
+        beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
         stopRepeatingTask();
         //unregisterReceiver(mReceiver);
 
@@ -771,10 +776,12 @@ public class MainActivity extends AbsRuntimePermission {
     @Override
     protected void onDestroy() {
         proximityManager.disconnect();
+        beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
+        stopRepeatingTask();
         proximityManager = null;
         unregisterReceiver(mReceiver);
         //clearLastBeacon();
-        Log.i("Sample", "Destroy");
+        //Log.i("Sample", "Destroy");
         super.onDestroy();
     }
 
