@@ -62,16 +62,23 @@
       window.angularComponentRef.componentFn("logout_success",message);
     };
 
+    window.send_closest_exhibit = function(message){
+      //console.log("call from native: send_device_infos" + deviceinfos);
+      window.angularComponentRef.componentFn("send_closest_exhibit",message);
+    };
+
     // call from native
     // gets deviceInfos, calls registerOD
     window.send_wifi_ssid = function(message){
-      //console.log("call from native: send_device_infos" + deviceinfos);
       window.angularComponentRef.componentFn("send_wifi_ssid",message);
     };
 
     window.send_bluetooth_check = function(message){
-      //console.log("call from native: send_device_infos" + deviceinfos);
       window.angularComponentRef.componentFn("send_bluetooth_check",message);
+    };
+
+    window.back_button_pressed = function(message){
+      window.angularComponentRef.componentFn("back_button_pressed",message);
     };
 
     window.callfromnative = function(theParameter){
