@@ -166,7 +166,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             //myWebView.setWebContentsDebuggingEnabled(true);
-            Log.d("CROSSWALK", "I am using crosswalk!");
+            //Log.d("CROSSWALK", "I am using crosswalk!");
 
             mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
 
@@ -237,7 +237,7 @@ public class MainActivity extends AbsRuntimePermission {
         clearLastBeacon();
 
         activityVisible = true;
-        Log.d("CheckWifi", "CheckWifi");
+        //Log.d("CheckWifi", "CheckWifi");
 
     }
 
@@ -269,7 +269,7 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon discovered
-                Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
+                //Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
 
 
             }
@@ -286,7 +286,7 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
                 //Beacons updated
-                Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
+                //Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
                 //readBeaconData(iBeacons);
                 beaconItems = new IBeaconDevice[iBeacons.size()];
@@ -356,7 +356,7 @@ public class MainActivity extends AbsRuntimePermission {
                             if(String.valueOf(newList.get(i).getMajor()).length()==3){
                                 beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
                             }else{
-                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(12));
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(21));
                             }
                             CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()));
                             helpBuffer.add(newList.get(i).getRssi());
@@ -419,11 +419,11 @@ public class MainActivity extends AbsRuntimePermission {
                         }
                     }
                     if(nearestBeaconKey != null) {
-                        Log.d("NearestBeacon", nearestBeaconKey + " " + nearestBeaconRSSI);
+                        //Log.d("NearestBeacon", nearestBeaconKey + " " + nearestBeaconRSSI);
                         String[] beaconValues = nearestBeaconKey.split("/");
                         nearestBeaconMajor = Integer.valueOf(beaconValues[1]);
                         nearestBeaconMinor = Integer.valueOf(beaconValues[0]);
-                        Log.d("NearestBeaconInt", beaconValues[0] + " " + beaconValues[1]);
+                        //Log.d("NearestBeaconInt", beaconValues[0] + " " + beaconValues[1]);
 
                         update_location();
                         nearestBeaconKey = null;
@@ -436,7 +436,7 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onIBeaconLost(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon lost
-                Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
+                //Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
             }
         });
 
@@ -480,13 +480,13 @@ public class MainActivity extends AbsRuntimePermission {
 
         String deviceInfos = jObject.toString();
 
-        Log.d("DeviceInfos", deviceInfos);
+        //Log.d("DeviceInfos", deviceInfos);
 
         return deviceInfos;
     }
 
     public void registerODNatve(){
-        Log.i("Sample", "Start scanning");
+        //Log.i("Sample", "Start scanning");
         startScanning();
     }
 
@@ -495,7 +495,7 @@ public class MainActivity extends AbsRuntimePermission {
 
 
     public void saveToken(String token){
-        Log.i("Sample", "Save Token "+token);
+        //Log.i("Sample", "Save Token "+token);
         File file = new File(this.getFilesDir(), filename);
 
         try {
@@ -539,7 +539,7 @@ public class MainActivity extends AbsRuntimePermission {
         catch (IOException e) {
             e.printStackTrace();
         }
-        Log.i("Sample", "Send Token to Web " + text.toString());
+        //Log.i("Sample", "Send Token to Web " + text.toString());
 
         JSONObject jObject = new JSONObject();
         try {
@@ -570,7 +570,7 @@ public class MainActivity extends AbsRuntimePermission {
                         .setContentText(notificationMessage);
 
         }else {
-            Log.d("Notification", "JETZT");
+            //Log.d("Notification", "JETZT");
             mNotificationBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.app_banner)
@@ -666,7 +666,7 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
     public void changeBeacon(){
-        Log.d("ChangeBeacon", "I got changed");
+        //Log.d("ChangeBeacon", "I got changed");
         sendLocationUpdate();
     }
 
@@ -685,7 +685,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("CheckReceive","Es ist was passiert");
+                            //Log.d("CheckReceive","Es ist was passiert");
                         }
                     });
                 }
@@ -694,7 +694,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("CheckReceive", "Es ist was passiert");
+                            //Log.d("CheckReceive", "Es ist was passiert");
                         }
                     });
                 }
@@ -704,12 +704,12 @@ public class MainActivity extends AbsRuntimePermission {
 
     public void stopScanner(){
         proximityManager.stopScanning();
-        Log.d("AlertStopScanning", "stopScanning");
+        //Log.d("AlertStopScanning", "stopScanning");
     }
 
     public void restartScanner(){
         proximityManager.startScanning();
-        Log.d("AlertStartScanning", "startScanning");
+        //Log.d("AlertStartScanning", "startScanning");
     }
 
     public void clearLastBeacon(){
@@ -721,7 +721,7 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
     public void triggerSignalNative(){
-        Log.d("Status", "Trigger signal native");
+        //Log.d("Status", "Trigger signal native");
 
         // vibrate
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -800,8 +800,8 @@ public class MainActivity extends AbsRuntimePermission {
         return new SimpleIBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
-                Log.i("Sample", "Beacon discovered");
-                Log.i("Sample", "IBeacon discovered: " + ibeacon.toString());
+                //Log.i("Sample", "Beacon discovered");
+                //Log.i("Sample", "IBeacon discovered: " + ibeacon.toString());
             }
         };
     }
@@ -832,10 +832,10 @@ public class MainActivity extends AbsRuntimePermission {
 
     public void getWifiStatusResultNative(String message){
         if(message.equals("correctWifi")){
-            Log.d("WifiStatus", "Wifi is correct");
+            //Log.d("WifiStatus", "Wifi is correct");
         }else if(message.equals("wrongWifi")){
             //showWifiStatusAlert();
-            Log.d("WifiStatus", "Wifi is wrong");
+            //Log.d("WifiStatus", "Wifi is wrong");
         }
     }
 
@@ -854,11 +854,11 @@ public class MainActivity extends AbsRuntimePermission {
             String myIP = myInetIP.getHostAddress();
             if (wifiInfo != null) {
                 String currentConnectedSSID = wifiInfo.getSSID();
-                Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
-                Log.e("checkWIFIStatusIP", myIP);
+                //Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
+                //Log.e("checkWIFIStatusIP", myIP);
 
                 currentConnectedSSID = currentConnectedSSID.replace("\"", "");
-                Log.e("checkWIFIStatusSSID", currentConnectedSSID);
+                //Log.e("checkWIFIStatusSSID", currentConnectedSSID);
 
                 JSONObject jObject = new JSONObject();
                 try {
@@ -875,7 +875,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("Status", "Callback from send to web");
+                            //Log.d("Status", "Callback from send to web");
                         }
                     });
                 }
@@ -884,7 +884,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("Status", "Callback from send to web");
+                            //Log.d("Status", "Callback from send to web");
                         }
                     });
                 }
@@ -905,7 +905,7 @@ public class MainActivity extends AbsRuntimePermission {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status", "Callback from send to web");
+                        //Log.d("Status", "Callback from send to web");
                     }
                 });
             }
@@ -914,7 +914,7 @@ public class MainActivity extends AbsRuntimePermission {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status", "Callback from send to web");
+                        //Log.d("Status", "Callback from send to web");
                     }
                 });
             }
@@ -981,14 +981,14 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
     void checkScanStatus(){
-        Log.e("checkScanStatus", "Scanning was checked");
+        //Log.e("checkScanStatus", "Scanning was checked");
         if(proximityManagerToRestart) {
-            Log.e("checkScanStatus", "Bluetooth was turned off");
+            //Log.e("checkScanStatus", "Bluetooth was turned off");
             proximityManagerToRestart = false;
             proximityManager.restartScanning();
         }
         if(!proximityManager.isConnected()){
-            Log.e("checkScanStatus", "Not connected and will be restarted");
+            //Log.e("checkScanStatus", "Not connected and will be restarted");
             proximityManager.connect(new OnServiceReadyListener() {
                 @Override
                 public void onServiceReady() {
@@ -998,12 +998,12 @@ public class MainActivity extends AbsRuntimePermission {
         }
         if(!proximityManager.isScanning() && proximityManager.isConnected()){
             //Toast.makeText(this, "Stopped and restarted scanning!", Toast.LENGTH_LONG).show();
-            Log.e("checkScanStatus", "Scanning was stopped and will be restarted");
+            //Log.e("checkScanStatus", "Scanning was stopped and will be restarted");
 
             proximityManager.restartScanning();
         }
         if(proximityManager.isScanning() && proximityManager.isConnected()){
-            Log.e("checkScanStatus", "connected and scanning");
+            //Log.e("checkScanStatus", "connected and scanning");
         }
     }
 
@@ -1014,7 +1014,7 @@ public class MainActivity extends AbsRuntimePermission {
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 //Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show();
-                Log.d("checkBluetoothStatus", "Bluetooth is on");
+                //Log.d("checkBluetoothStatus", "Bluetooth is on");
             }else{
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setTitle("Bluetooth Status")
@@ -1053,7 +1053,7 @@ public class MainActivity extends AbsRuntimePermission {
                     });
                 }*/
                 //Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
-                Log.d("checkBluetoothStatus", "Bluetooth is off");
+                //Log.d("checkBluetoothStatus", "Bluetooth is off");
             }
         }
     }
@@ -1077,25 +1077,25 @@ public class MainActivity extends AbsRuntimePermission {
                         BluetoothAdapter.ERROR);
                 switch (state) {
                     case BluetoothAdapter.STATE_OFF:
-                        Log.d("BluetoothAdapter", "Bluetooth off");
+                        //Log.d("BluetoothAdapter", "Bluetooth off");
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
                         bluetoothTurnedOff = true;
-                        Log.d("BluetoothAdapter", "Bluetooth turned off");
+                        //Log.d("BluetoothAdapter", "Bluetooth turned off");
                         break;
                     case BluetoothAdapter.STATE_ON:
                         if(bluetoothTurnedOnAgain){
                             bluetoothTurnedOnAgain = false;
                             proximityManagerToRestart = true;
                         }
-                        Log.d("BluetoothAdapter", "Bluetooth is on");
+                        //Log.d("BluetoothAdapter", "Bluetooth is on");
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
                         if(bluetoothTurnedOff){
                             bluetoothTurnedOff = false;
                             bluetoothTurnedOnAgain = true;
                         }
-                        Log.d("BluetoothAdapter", "Bluetooth is turned on");
+                        //Log.d("BluetoothAdapter", "Bluetooth is turned on");
                         break;
                 }
             }
@@ -1109,7 +1109,7 @@ public class MainActivity extends AbsRuntimePermission {
                 @Override
                 public void onReceiveValue(String value) {
                     //Log.i("onReceiveValue! " + value);
-                    Log.d("Status", "Callback from send to web");
+                    //Log.d("Status", "Callback from send to web");
                 }
             });
         }

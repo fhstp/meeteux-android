@@ -78,7 +78,7 @@ public class JSInterface extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -95,7 +95,7 @@ public class JSInterface extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -112,7 +112,7 @@ public class JSInterface extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -122,19 +122,19 @@ public class JSInterface extends AppCompatActivity {
     // triggers signal, when location is updated
     @JavascriptInterface
     public void triggerSignal(){
-        Log.d("Status","Trigger Signal");
+        //Log.d("Status","Trigger Signal");
         mainActivity.triggerSignalNative();
     }
 
     @JavascriptInterface
     public void getWifiStatusResult(String message){
-        Log.d("Status","WIFI Result");
+        //Log.d("Status","WIFI Result");
         mainActivity.getWifiStatusResultNative(message);
     }
 
     @JavascriptInterface
     public void activateBluetoothCheck(){
-        Log.d("Status","Bluetooth Check");
+        //Log.d("Status","Bluetooth Check");
         mAppView.post(new Runnable() {
             @Override
             public void run() {
@@ -145,13 +145,13 @@ public class JSInterface extends AppCompatActivity {
 
     @JavascriptInterface
     public void activateBluetooth(){
-        Log.d("Status","Activate Bluetooth");
+        //Log.d("Status","Activate Bluetooth");
         mainActivity.activateBluetoothNative();
     }
 
     @JavascriptInterface
     public void activateWifiSettings(){
-        Log.d("Status","Activate Bluetooth");
+        //Log.d("Status","Activate Bluetooth");
         mainActivity.activateWifiNative();
     }
 
@@ -162,7 +162,7 @@ public class JSInterface extends AppCompatActivity {
 
     @JavascriptInterface
     public void changeBeacon(){
-        Log.d("Status","Change Beacon");
+        //Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();
     }
 
@@ -182,7 +182,7 @@ public class JSInterface extends AppCompatActivity {
     // prints message from webview to Logcat
     @JavascriptInterface
     public void print(String message){
-        Log.d("WWW",message);
+        //Log.d("WWW",message);
     }
 
    /* @JavascriptInterface

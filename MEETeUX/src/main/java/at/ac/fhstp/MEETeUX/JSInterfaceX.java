@@ -78,7 +78,7 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -95,7 +95,7 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -112,7 +112,7 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -122,19 +122,19 @@ public class JSInterfaceX extends AppCompatActivity {
     // triggers signal, when location is updated
     @org.xwalk.core.JavascriptInterface
     public void triggerSignal(){
-        Log.d("Status","Trigger Signal");
+        //Log.d("Status","Trigger Signal");
         mainActivity.triggerSignalNative();
     }
 
     @org.xwalk.core.JavascriptInterface
     public void getWifiStatusResult(String message){
-        Log.d("Status","WIFI Result");
+        //Log.d("Status","WIFI Result");
         mainActivity.getWifiStatusResultNative(message);
     }
 
     @org.xwalk.core.JavascriptInterface
     public void activateBluetoothCheck(){
-        Log.d("Status","Bluetooth Check");
+        //Log.d("Status","Bluetooth Check");
         mAppView.post(new Runnable() {
             @Override
             public void run() {
@@ -145,13 +145,13 @@ public class JSInterfaceX extends AppCompatActivity {
 
     @org.xwalk.core.JavascriptInterface
     public void activateBluetooth(){
-        Log.d("Status","Activate Bluetooth");
+        //Log.d("Status","Activate Bluetooth");
         mainActivity.activateBluetoothNative();
     }
 
     @org.xwalk.core.JavascriptInterface
     public void activateWifiSettings(){
-        Log.d("Status","Activate Bluetooth");
+        //Log.d("Status","Activate Bluetooth");
         mainActivity.activateWifiNative();
     }
 
@@ -163,7 +163,7 @@ public class JSInterfaceX extends AppCompatActivity {
 
     @org.xwalk.core.JavascriptInterface
     public void changeBeacon(){
-        Log.d("Status","Change Beacon");
+        //Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();
     }
 
@@ -180,7 +180,7 @@ public class JSInterfaceX extends AppCompatActivity {
     // prints message from webview to Logcat
     @org.xwalk.core.JavascriptInterface
     public void print(String message){
-        Log.d("WWW",message);
+        //Log.d("WWW",message);
     }
 
     @org.xwalk.core.JavascriptInterface
