@@ -352,22 +352,27 @@ public class MainActivity extends AbsRuntimePermission {
                     for(int i = 0; i<newList.size();i++) {
                         //String helpString = newList.get(i).getProximity() + "";
                         //if(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR")) {
-                        if(!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()))){
-                            if(String.valueOf(newList.get(i).getMajor()).length()==3){
-                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
-                            }else{
-                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(21));
+                        if((String.valueOf(newList.get(i).getMajor()).matches("10|20|30|40|50|60") || String.valueOf(newList.get(i).getMajor()).length() == 3) && String.valueOf(String.valueOf(newList.get(i).getMinor()).charAt(0)).matches("1|2|3|4|5|6") && (String.valueOf(newList.get(i).getProximity()).equals("NEAR") || String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))){
+                            if (!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()))) {
+                                if (String.valueOf(newList.get(i).getMajor()).length() == 3) {
+                                    Log.d("BeaconValue", "Minor 3 " + newList.get(i).getMinor());
+                                    beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
+                                } else {
+                                    Log.d("BeaconValue", "Minor 4 " + newList.get(i).getMinor());
+                                    beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(21));
+                                }
+                                CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                                helpBuffer.add(newList.get(i).getRssi());
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), helpBuffer);
+                            } else {
+                                CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                                helpBuffer.add(newList.get(i).getRssi());
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), helpBuffer);
                             }
-                            CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()));
-                            helpBuffer.add(newList.get(i).getRssi());
-                            beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), helpBuffer);
+                            receivedBeacons.add(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
                         }else{
-                            CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()));
-                            helpBuffer.add(newList.get(i).getRssi());
-                            beaconBufferDict.put(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()), helpBuffer);
+                            //Log.d("beaconNOT", String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
                         }
-                        receivedBeacons.add(String.valueOf(newList.get(i).getMinor())+'/'+String.valueOf(newList.get(i).getMajor()));
-
 
                         /*String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
                         String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
@@ -410,7 +415,7 @@ public class MainActivity extends AbsRuntimePermission {
                                 helpdouble[i] = Double.valueOf(helpStringArray[i]);
                             }
 
-                            if(median(helpdouble)>nearestBeaconRSSI && pair.getKey().toString().length()!=8){ //8 because 4 digits minor, / as split and 3 digits major
+                            if(median(helpdouble)>nearestBeaconRSSI && pair.getKey().toString().length()!=9){ //8 because 4 digits minor, / as split and 3 digits major
                                 nearestBeaconRSSI = median(helpdouble);
                                 nearestBeaconKey = pair.getKey().toString();
                             }
