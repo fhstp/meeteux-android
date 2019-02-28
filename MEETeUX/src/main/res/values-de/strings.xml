@@ -4,7 +4,6 @@
     <string name="msg">Bitte aktivieren Sie alle Berechtigungen</string>
     <string name="notification_title">Getreuer Untertan,</string>
     <string name="notification_subtitle">Du hast Dich in meiner Ausstellung fortbewegt.</string>
-    <string name="notification_body">Öffne die App, um mehr über mich und die Ausstellungsstücke zu erfahren.</string>
     <string name="wifi_title">Überprüfe die Wifi-Settings</string>
     <string name="wifi_message">Die Inhalte in dieser App können nur in der Ausstellung \'Des Kaisers neuer Heiliger\' freigeschalten werden. Sofern Du nicht schon im Stift Klosterneuburg bist, mach Dich auf den Weg täglich vom 9. März bis 17. November. Um alle Funktionen dieser App nutzen zu können, wechsle bitte in das Wifi \'DesKaisersNeuerHeiliger\' (Passwort \'maximilian\').</string>
     <string name="bluetooth_title">Bluetooth ist ausgeschalten</string>
@@ -12,4 +11,5 @@
     <string name="button_settings">Einstellungen</string>
     <string name="button_cancel">Abbrechen</string>
     <string name="button_confirm">Bestätigen</string>
+    <string name="notification_body">Öffne die App, um mehr über mich und die Ausstellungsstücke zu erfahren.</string>
 </resources>
