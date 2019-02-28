@@ -572,7 +572,9 @@ public class MainActivity extends AbsRuntimePermission {
                         .setSmallIcon(R.drawable.app_banner)
                         .setContentTitle(notificationTitle)
                         .setChannelId(NOTIFICATION_CHANNEL_ID)
-                        .setContentText(notificationMessage);
+                        .setContentText(notificationMessage)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(getResources().getString(R.string.notification_body)));
 
         }else {
             //Log.d("Notification", "JETZT");
@@ -666,7 +668,8 @@ public class MainActivity extends AbsRuntimePermission {
 
     public void showNotificationBackground(String exhibit){
         if(!activityVisible) {
-            showNewLocationNotification("New Exhibit", "Exhibit "+ exhibit);
+            // showNewLocationNotification("New Exhibit", "Exhibit "+ exhibit);
+            showNewLocationNotification(getResources().getString(R.string.notification_title), getResources().getString(R.string.notification_subtitle));
         }
     }
 
@@ -928,16 +931,16 @@ public class MainActivity extends AbsRuntimePermission {
 
     public void openWifiDialogNative(){
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("Wifi Status")
-                .setMessage("You are in the wrong Wifi. Please change to the Wifi called MEETeUX!")
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        alertBuilder.setTitle(getResources().getString(R.string.wifi_title))
+                .setMessage(getResources().getString(R.string.wifi_message))
+                .setPositiveButton(getResources().getString(R.string.button_settings), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         activateWifiNative();
                         checkBluetoothStatus();
                     }
                 })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         checkBluetoothStatus();
@@ -1022,15 +1025,15 @@ public class MainActivity extends AbsRuntimePermission {
                 //Log.d("checkBluetoothStatus", "Bluetooth is on");
             }else{
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-                alertBuilder.setTitle("Bluetooth Status")
-                        .setMessage("Bluetooth is not activated. Do you want to activate it?")
-                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                alertBuilder.setTitle(getResources().getString(R.string.bluetooth_title))
+                        .setMessage(getResources().getString(R.string.bluetooth_message))
+                        .setPositiveButton(getResources().getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 activateBluetoothNative();
                             }
                         })
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
