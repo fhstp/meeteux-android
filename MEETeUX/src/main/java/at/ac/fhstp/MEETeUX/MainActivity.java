@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -153,7 +154,8 @@ public class MainActivity extends AbsRuntimePermission {
                         Manifest.permission.BLUETOOTH,
                         Manifest.permission.INTERNET,
                         Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.ACCESS_NETWORK_STATE
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.CHANGE_WIFI_STATE
                 },
                 R.string.msg,
                 REQUEST_PERMISSION);
@@ -244,12 +246,12 @@ public class MainActivity extends AbsRuntimePermission {
     @Override
     public void onPermissionsGranted(int requestCode){
         // Do anything when permission granted
-        Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
+        checkForActivatedLocation();
+        // Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
 
         KontaktSDK.initialize(this);
 
         proximityManager = ProximityManagerFactory.create(this);
-
 
         Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
 
@@ -263,13 +265,13 @@ public class MainActivity extends AbsRuntimePermission {
 
         proximityManager.spaces().iBeaconRegions(beaconRegions);
         //  proximityManager.configuration().activityCheckConfiguration(ActivityCheckConfiguration.MINIMAL);
-        proximityManager.configuration().deviceUpdateCallbackInterval(250);
+        proximityManager.configuration().deviceUpdateCallbackInterval(200);
 
         proximityManager.setIBeaconListener(new IBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon discovered
-                //Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
+                Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
 
 
             }
@@ -355,10 +357,10 @@ public class MainActivity extends AbsRuntimePermission {
                         if((String.valueOf(newList.get(i).getMajor()).matches("10|20|30|40|50|60") || String.valueOf(newList.get(i).getMajor()).length() == 3) && String.valueOf(String.valueOf(newList.get(i).getMinor()).charAt(0)).matches("1|2|3|4|5|6") && (String.valueOf(newList.get(i).getProximity()).equals("NEAR") || String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))){
                             if (!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()))) {
                                 if (String.valueOf(newList.get(i).getMajor()).length() == 3) {
-                                    Log.d("BeaconValue", "Minor 3 " + newList.get(i).getMinor());
+                                    //Log.d("BeaconValue", "Minor 3 " + newList.get(i).getMinor());
                                     beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
                                 } else {
-                                    Log.d("BeaconValue", "Minor 4 " + newList.get(i).getMinor());
+                                    //Log.d("BeaconValue", "Minor 4 " + newList.get(i).getMinor());
                                     beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(21));
                                 }
                                 CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
@@ -400,7 +402,7 @@ public class MainActivity extends AbsRuntimePermission {
                             }
                         }
                         if(!alreadyReceived){
-                            helpbuffer.add(-200);
+                            helpbuffer.add(-100);
                         }
                         alreadyReceived = false;
                         if(helpbuffer.isFull()){
@@ -429,10 +431,10 @@ public class MainActivity extends AbsRuntimePermission {
                         nearestBeaconMajor = Integer.valueOf(beaconValues[1]);
                         nearestBeaconMinor = Integer.valueOf(beaconValues[0]);
                         //Log.d("NearestBeaconInt", beaconValues[0] + " " + beaconValues[1]);
-
+                        Log.d("BeaconMedianValue", nearestBeaconKey + ' ' + nearestBeaconRSSI);
                         update_location();
                         nearestBeaconKey = null;
-                        nearestBeaconRSSI = -200;
+                        nearestBeaconRSSI = -100;
                     }
                     receivedBeacons.clear();
                 }
@@ -868,6 +870,7 @@ public class MainActivity extends AbsRuntimePermission {
                 JSONObject jObject = new JSONObject();
                 try {
                     jObject.put("ssid", currentConnectedSSID);
+                    Log.d("WIfiName", currentConnectedSSID);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1118,5 +1121,42 @@ public class MainActivity extends AbsRuntimePermission {
                 }
             });
         }
+    }
+
+
+    private void checkForActivatedLocation(){
+        LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if(!isNetworkEnabled){
+            activateLocationDialog();
+        }
+
+    }
+
+    private void activateLocationDialog(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Location Status")
+                .setMessage("Location is not activated. Do you want to activate it?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        activateLocationNative();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    private void activateLocationNative(){
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
     }
 }
