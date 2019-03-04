@@ -571,7 +571,7 @@ public class MainActivity extends AbsRuntimePermission {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mNotificationBuilder =
                 new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.app_banner)
+                        .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle(notificationTitle)
                         .setChannelId(NOTIFICATION_CHANNEL_ID)
                         .setContentText(notificationMessage)
@@ -582,7 +582,7 @@ public class MainActivity extends AbsRuntimePermission {
             //Log.d("Notification", "JETZT");
             mNotificationBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.app_banner)
+                        .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationMessage)
                         .setPriority(Notification.PRIORITY_HIGH);
