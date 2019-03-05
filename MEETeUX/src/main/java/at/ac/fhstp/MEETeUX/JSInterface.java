@@ -156,6 +156,11 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void  receiveWifiData(String message){
+        mainActivity.checkWifiData(message);
+    }
+
+    @JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }

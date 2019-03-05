@@ -155,6 +155,10 @@ public class JSInterfaceX extends AppCompatActivity {
         mainActivity.activateWifiNative();
     }
 
+    @org.xwalk.core.JavascriptInterface
+    public void  receiveWifiData(String message){
+        mainActivity.checkWifiData(message);
+    }
 
     @org.xwalk.core.JavascriptInterface
     public void showBackgroundNotification(String message){

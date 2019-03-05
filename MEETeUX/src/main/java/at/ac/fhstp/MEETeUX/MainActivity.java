@@ -23,6 +23,7 @@ import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -35,6 +36,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.Window;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -43,6 +45,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.google.gson.JsonIOException;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.device.BeaconRegion;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
@@ -137,6 +140,8 @@ public class MainActivity extends AbsRuntimePermission {
     double nearestBeaconRSSI = -200;
 
     public WifiManager mWifiManger;
+    public String wifiSSID;
+    public String wifiPassword;
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -190,6 +195,30 @@ public class MainActivity extends AbsRuntimePermission {
                 public boolean shouldOverrideUrlLoading(XWalkView view, String url){
                     return false;
                 }
+
+                @Override
+                public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
+                    String message;
+                    switch (error.getPrimaryError()) {
+                        case SslError.SSL_UNTRUSTED:
+                            message = "The certificate authority is not trusted.";
+                            Log.d("SSL Certificate error", "The certificate authority is not trusted.");
+                            break;
+                        case SslError.SSL_EXPIRED:
+                            message = "The certificate has expired.";
+                            Log.d("SSL Certificate error", "The certificate has expired.");
+                            break;
+                        case SslError.SSL_IDMISMATCH:
+                            message = "The certificate Hostname mismatch.";
+                            Log.d("SSL Certificate error", "The certificate Hostname mismatch.");
+                            break;
+                        case SslError.SSL_NOTYETVALID:
+                            message = "The certificate is not yet valid.";
+                            Log.d("SSL Certificate error", "The certificate is not yet valid.");
+                            break;
+                    }
+
+                }
             };
             mXWalkView.setResourceClient(client);
 
@@ -218,6 +247,31 @@ public class MainActivity extends AbsRuntimePermission {
                 public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){
                     return false;
                 }
+
+                @Override
+                public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                    String message;
+                    switch (error.getPrimaryError()) {
+                        case SslError.SSL_UNTRUSTED:
+                            message = "The certificate authority is not trusted.";
+                            Log.d("SSL Certificate error", "The certificate authority is not trusted.");
+                            break;
+                        case SslError.SSL_EXPIRED:
+                            message = "The certificate has expired.";
+                            Log.d("SSL Certificate error", "The certificate has expired.");
+                            break;
+                        case SslError.SSL_IDMISMATCH:
+                            message = "The certificate Hostname mismatch.";
+                            Log.d("SSL Certificate error", "The certificate Hostname mismatch.");
+                            break;
+                        case SslError.SSL_NOTYETVALID:
+                            message = "The certificate is not yet valid.";
+                            Log.d("SSL Certificate error", "The certificate is not yet valid.");
+                            break;
+                    }
+
+                }
+
             };
             myWebView.setWebViewClient(client);
 
@@ -242,6 +296,8 @@ public class MainActivity extends AbsRuntimePermission {
         //Log.d("CheckWifi", "CheckWifi");
 
     }
+
+
 
     @Override
     public void onPermissionsGranted(int requestCode){
@@ -870,6 +926,7 @@ public class MainActivity extends AbsRuntimePermission {
                 currentConnectedSSID = currentConnectedSSID.replace("\"", "");
                 //Log.e("checkWIFIStatusSSID", currentConnectedSSID);
 
+
                 JSONObject jObject = new JSONObject();
                 try {
                     jObject.put("ssid", currentConnectedSSID);
@@ -880,9 +937,10 @@ public class MainActivity extends AbsRuntimePermission {
                 }
 
                 String ssid = jObject.toString();
+                wifiSSID = currentConnectedSSID;
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    myWebView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                    myWebView.evaluateJavascript("javascript:send_wifi_ssid()", new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
@@ -891,7 +949,7 @@ public class MainActivity extends AbsRuntimePermission {
                     });
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    mXWalkView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                    mXWalkView.evaluateJavascript("javascript:send_wifi_ssid()", new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
@@ -911,6 +969,7 @@ public class MainActivity extends AbsRuntimePermission {
 
             String ssid = jObject.toString();
 
+            wifiSSID = "notAvailable";
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 myWebView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
                     @Override
@@ -930,6 +989,17 @@ public class MainActivity extends AbsRuntimePermission {
                 });
             }
         }
+    }
+
+    public void checkWifiData(String message){
+        String[] WIFI = message.split(" ");
+        if(!wifiSSID.equals(WIFI[0])){
+            openWifiDialogNative();
+        }else{
+            checkBluetoothStatus();
+        }
+        Log.d("checkWifiData", "SSID " + WIFI[0]);
+        Log.d("checkWifiData", "Password " + WIFI[1]);
     }
 
     public void openWifiDialogNative(){
@@ -1130,8 +1200,10 @@ public class MainActivity extends AbsRuntimePermission {
     private void checkForActivatedLocation(){
         LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        Log.d("checkForActivatedLoc", isNetworkEnabled + " " + isGPSEnabled);
 
-        if(!isNetworkEnabled){
+        if(!isNetworkEnabled && !isGPSEnabled){
             activateLocationDialog();
         }
 
