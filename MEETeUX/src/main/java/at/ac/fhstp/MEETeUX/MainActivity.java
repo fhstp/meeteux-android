@@ -627,7 +627,7 @@ public class MainActivity extends AbsRuntimePermission {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mNotificationBuilder =
                 new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.notification_icon)
+                        .setSmallIcon(getNotificationIcon())
                         .setContentTitle(notificationTitle)
                         .setChannelId(NOTIFICATION_CHANNEL_ID)
                         .setContentText(notificationMessage)
@@ -638,7 +638,7 @@ public class MainActivity extends AbsRuntimePermission {
             //Log.d("Notification", "JETZT");
             mNotificationBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.notification_icon)
+                        .setSmallIcon(getNotificationIcon())
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationMessage)
                         .setPriority(Notification.PRIORITY_HIGH);
@@ -665,6 +665,11 @@ public class MainActivity extends AbsRuntimePermission {
         }else {
             mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
         }
+    }
+
+    private int getNotificationIcon() {
+        boolean useWhiteIcon = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP);
+        return useWhiteIcon ? R.drawable.silhouette_icon : R.drawable.notification_icon;
     }
 
     public void showNewLocationAlert(String alertTitle, String alertMessage){

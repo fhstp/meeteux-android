@@ -5,9 +5,9 @@
     <string name="notification_title">Getreuer Untertan,</string>
     <string name="notification_subtitle">Du hast Dich in meiner Ausstellung fortbewegt.</string>
     <string name="wifi_title">Überprüfe die Wifi-Settings</string>
-    <string name="wifi_message">Die Inhalte in dieser App können nur in der Ausstellung \'Des Kaisers neuer Heiliger\' freigeschalten werden.\n Sofern Du nicht schon im Stift Klosterneuburg bist, mach Dich auf den Weg täglich vom 9. März bis 17. November.\n Um alle Funktionen dieser App nutzen zu können, wechsle bitte in das Wifi \'DesKaisersNeuerHeiliger\' (Passwort \'maximilian\').</string>
+    <string name="wifi_message">Die Inhalte in dieser App können nur in der Ausstellung \'Des Kaisers neuer Heiliger\' freigeschalten werden. Sofern Du nicht schon im Stift Klosterneuburg bist, mach Dich auf den Weg täglich vom 9. März bis 17. November.\n\nUm alle Funktionen dieser App nutzen zu können, wechsle bitte in das Wifi \'DesKaisersNeuerHeiliger\' \n(Passwort \'maximilian\').</string>
     <string name="bluetooth_title">Bluetooth ist ausgeschalten</string>
-    <string name="bluetooth_message">Der Bluetooth-Zugriff ist notwendig, um zu wissen, wo Du Dich in der Ausstellung befindest.\n Bitte schalte Bluetooth ein.</string>
+    <string name="bluetooth_message">Der Bluetooth-Zugriff ist notwendig, um zu wissen, wo Du Dich in der Ausstellung befindest.\n\nBitte schalte Bluetooth ein.</string>
     <string name="button_settings">Einstellungen</string>
     <string name="button_cancel">Abbrechen</string>
     <string name="button_confirm">Bestätigen</string>
