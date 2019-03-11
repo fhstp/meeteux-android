@@ -103,6 +103,23 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void getLanguage(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String mlanguage = mainActivity.getLanguage();
+                mAppView.evaluateJavascript("javascript:send_language("+ mlanguage +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void getDeviceInfos(){
         mAppView.post(new Runnable() {
             @Override

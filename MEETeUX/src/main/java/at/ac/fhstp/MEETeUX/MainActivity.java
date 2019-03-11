@@ -83,6 +83,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -613,6 +614,19 @@ public class MainActivity extends AbsRuntimePermission {
         }
         //checkWifiSSID();
         //checkBluetoothStatus();
+        return jObject.toString();
+    }
+
+    public String getLanguage(){
+        String lang = Locale.getDefault().getLanguage();
+
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("language", lang);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return jObject.toString();
     }
 
