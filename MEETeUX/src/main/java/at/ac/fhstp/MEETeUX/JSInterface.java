@@ -183,7 +183,8 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
-    public void triggerAR(){
+    public void triggerAr(){
+        Log.d("TriggerAR", "Triggered");
         mainActivity.launchImageTargets();
     }
 

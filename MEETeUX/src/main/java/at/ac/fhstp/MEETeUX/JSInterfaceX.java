@@ -178,7 +178,7 @@ public class JSInterfaceX extends AppCompatActivity {
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void triggerAR(){
+    public void triggerAr(){
         mainActivity.launchImageTargets();
     }
 
