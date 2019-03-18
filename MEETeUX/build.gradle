@@ -46,7 +46,7 @@ android {
 			// e.g. gradle -PabiList=x86 clean assembleDebug
 			abiFilters ((project.findProperty('abiList') ?: 'armeabi-v7a, arm64-v8a, x86').split(/,\s*/))
 		}
-        minSdkVersion 19
+        minSdkVersion 21
     }
 
 	archivesBaseName = rootProject.projectDir.getName()
