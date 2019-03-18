@@ -310,7 +310,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         KontaktSDK.initialize(this);
 
-        launchImageTargets();
+        //launchImageTargets();
 
         proximityManager = ProximityManagerFactory.create(this);
 
