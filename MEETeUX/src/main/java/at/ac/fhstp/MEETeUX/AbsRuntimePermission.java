@@ -14,7 +14,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 
-public abstract class AbsRuntimePermission extends UnityPlayerActivity {
+public abstract class AbsRuntimePermission extends Activity {
     private SparseIntArray mErrorString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

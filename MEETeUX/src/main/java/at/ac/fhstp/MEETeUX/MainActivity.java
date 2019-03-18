@@ -8,33 +8,44 @@ package at.ac.fhstp.MEETeUX;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.http.SslError;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.google.gson.JsonIOException;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.device.BeaconRegion;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
@@ -46,13 +57,14 @@ import com.kontakt.sdk.android.ble.manager.listeners.simple.SimpleScanStatusList
 import com.kontakt.sdk.android.common.KontaktSDK;
 import com.kontakt.sdk.android.common.profile.IBeaconDevice;
 import com.kontakt.sdk.android.common.profile.IBeaconRegion;
-import com.unity3d.player.UnityPlayer;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
+import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkSettings;
 import org.xwalk.core.XWalkView;
 
@@ -61,13 +73,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ArrayUtils;
 
 public class MainActivity extends AbsRuntimePermission {
 
@@ -76,7 +96,6 @@ public class MainActivity extends AbsRuntimePermission {
     private BackgroundPowerSaver backgroundPowerSaver;
     private BeaconManager beaconManager;
 
-    public static UnityPlayer myUnityPlayer;
     public ViewSwitcher viewSwitcher;
 
     static WebView myWebView;
@@ -95,26 +114,45 @@ public class MainActivity extends AbsRuntimePermission {
 
     String nearestBeaconInfos;
 
+    boolean proximityManagerToRestart = false;
+    boolean bluetoothTurnedOff = false;
+    boolean bluetoothTurnedOnAgain = false;
+
     public static NotificationManagerCompat mNotificationManager;
+    public static NotificationManager mNotificationManagerOreoAbove;
 
     private static NotificationCompat.Builder mNotificationBuilder;
     private static final int NOTIFICATION_REQUEST_CODE = 2;
     private static Notification mNotification;
+    private static final String NOTIFICATION_CHANNEL_ID = "1";
+    private static CharSequence name = "MeeteuxChannel";// The user-visible name of the channel.
+    public static int importance;
+    public static NotificationChannel mChannel;
 
     private static boolean activityVisible = true;
 
+    private final static int INTERVAL = 1000 * 60 /6; //30 seconds
+    Handler mHandler = new Handler();
+
+    boolean useCircularBuffer = true;
+    List<String> receivedBeacons = new ArrayList<String>();
+    Map<String, CircularFifoBuffer> beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
+    String nearestBeaconKey = null;
+    double nearestBeaconRSSI = -200;
+
+    public WifiManager mWifiManger;
+    public String wifiSSID;
+    public String wifiPassword;
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-
-        mUnityPlayer = new UnityPlayer(this);
-        setContentView(mUnityPlayer);
-        mUnityPlayer.requestFocus();
-
-
-        setContentView(R.layout.view_switch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            setContentView(R.layout.view_switchx);
+        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setContentView(R.layout.view_switch);
+        }
         beaconManager = BeaconManager.getInstanceForApplication(getApplicationContext());
 
         requestAppPermissions(new String[]{
@@ -122,26 +160,25 @@ public class MainActivity extends AbsRuntimePermission {
                         Manifest.permission.BLUETOOTH,
                         Manifest.permission.INTERNET,
                         Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.ACCESS_NETWORK_STATE
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.CHANGE_WIFI_STATE,
+                        Manifest.permission.CAMERA
                 },
                 R.string.msg,
                 REQUEST_PERMISSION);
 
         mySelf = this;
-        mUnityPlayer = new UnityPlayer(this);
-        myUnityPlayer = this.mUnityPlayer;
-        this.setContentView(R.layout.view_switch);
+        //this.setContentView(R.layout.view_switch);
 
-        viewSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitch);
-        viewSwitcher.addView(this.mUnityPlayer);
-        myWebView = (WebView) findViewById(R.id.webView);
-
-        mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             //myWebView.setWebContentsDebuggingEnabled(true);
+            //Log.d("CROSSWALK", "I am using crosswalk!");
 
-            myWebView.setEnabled(false);
+            mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
+
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
             XWalkSettings xwalkSettings = mXWalkView.getSettings();
@@ -150,15 +187,50 @@ public class MainActivity extends AbsRuntimePermission {
             xwalkSettings.setDatabaseEnabled(true);
             xwalkSettings.setDomStorageEnabled(true);
             xwalkSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            xwalkSettings.setAllowFileAccessFromFileURLs(true);
 
             myJSInterfaceX = new JSInterfaceX(mXWalkView, this);
-            mXWalkView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+            mXWalkView.addJavascriptInterface(myJSInterfaceX, "MEETeUXAndroidAppRoot");
+
+            XWalkResourceClient client = new XWalkResourceClient(mXWalkView){
+                @Override
+                public boolean shouldOverrideUrlLoading(XWalkView view, String url){
+                    return false;
+                }
+
+                @Override
+                public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
+                    String message;
+                    switch (error.getPrimaryError()) {
+                        case SslError.SSL_UNTRUSTED:
+                            message = "The certificate authority is not trusted.";
+                            Log.d("SSL Certificate error", "The certificate authority is not trusted.");
+                            break;
+                        case SslError.SSL_EXPIRED:
+                            message = "The certificate has expired.";
+                            Log.d("SSL Certificate error", "The certificate has expired.");
+                            break;
+                        case SslError.SSL_IDMISMATCH:
+                            message = "The certificate Hostname mismatch.";
+                            Log.d("SSL Certificate error", "The certificate Hostname mismatch.");
+                            break;
+                        case SslError.SSL_NOTYETVALID:
+                            message = "The certificate is not yet valid.";
+                            Log.d("SSL Certificate error", "The certificate is not yet valid.");
+                            break;
+                    }
+
+                }
+            };
+            mXWalkView.setResourceClient(client);
+
             mXWalkView.loadUrl("file:///android_asset/www/index.html");
+
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView = (WebView) findViewById(R.id.webView);
 
-            mXWalkView.setEnabled(false);
             myWebView.setWebContentsDebuggingEnabled(true);
 
             WebSettings webSettings = myWebView.getSettings();
@@ -167,42 +239,80 @@ public class MainActivity extends AbsRuntimePermission {
             webSettings.setDatabaseEnabled(true);
             webSettings.setDomStorageEnabled(true);
             webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            webSettings.setAllowFileAccessFromFileURLs(true);
+
 
             myJSInterface = new JSInterface(myWebView, this);
             myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
+
+            WebViewClient client = new WebViewClient(){
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){
+                    return false;
+                }
+
+                @Override
+                public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                    String message;
+                    switch (error.getPrimaryError()) {
+                        case SslError.SSL_UNTRUSTED:
+                            message = "The certificate authority is not trusted.";
+                            Log.d("SSL Certificate error", "The certificate authority is not trusted.");
+                            break;
+                        case SslError.SSL_EXPIRED:
+                            message = "The certificate has expired.";
+                            Log.d("SSL Certificate error", "The certificate has expired.");
+                            break;
+                        case SslError.SSL_IDMISMATCH:
+                            message = "The certificate Hostname mismatch.";
+                            Log.d("SSL Certificate error", "The certificate Hostname mismatch.");
+                            break;
+                        case SslError.SSL_NOTYETVALID:
+                            message = "The certificate is not yet valid.";
+                            Log.d("SSL Certificate error", "The certificate is not yet valid.");
+                            break;
+                    }
+
+                }
+
+            };
+            myWebView.setWebViewClient(client);
+
             myWebView.loadUrl("file:///android_asset/www/index.html");
         }
 
         //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
-
-
-
-
-        ((ViewGroup)super.findViewById(android.R.id.content)).removeView(this.mUnityPlayer);
-
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
-        //setContentView(mUnityPlayer);
-        mUnityPlayer.requestFocus();
-
         // Setup sound for trigger location change
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationManagerOreoAbove = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        }else {
+            mNotificationManager = NotificationManagerCompat.from(this);
+        }
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         clearLastBeacon();
 
         activityVisible = true;
-        mNotificationManager = NotificationManagerCompat.from(this);
+        //Log.d("CheckWifi", "CheckWifi");
+
     }
+
+
 
     @Override
     public void onPermissionsGranted(int requestCode){
         // Do anything when permission granted
-        Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
+        checkForActivatedLocation();
+        // Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
 
         KontaktSDK.initialize(this);
-        proximityManager = ProximityManagerFactory.create(this);
 
+        //launchImageTargets();
+
+        proximityManager = ProximityManagerFactory.create(this);
 
         Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
 
@@ -216,7 +326,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         proximityManager.spaces().iBeaconRegions(beaconRegions);
         //  proximityManager.configuration().activityCheckConfiguration(ActivityCheckConfiguration.MINIMAL);
-        proximityManager.configuration().deviceUpdateCallbackInterval(500);
+        proximityManager.configuration().deviceUpdateCallbackInterval(200);
 
         proximityManager.setIBeaconListener(new IBeaconListener() {
             @Override
@@ -239,7 +349,7 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
                 //Beacons updated
-                Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
+                //Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
                 //readBeaconData(iBeacons);
                 beaconItems = new IBeaconDevice[iBeacons.size()];
@@ -260,79 +370,156 @@ public class MainActivity extends AbsRuntimePermission {
                     }
                 });
 
-                int helpCounter = 0;
-                for(int i = 0; i<newList.size();i++) {
-                    if((String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("NEAR"))||(String.valueOf(newList.get(i).getMajor()).length()==2&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
-                        beaconItems[helpCounter] = newList.get(i);
-                        helpCounter++;
-                    }else if(String.valueOf(newList.get(i).getMajor()).length()==3&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
-                        beaconItems[helpCounter] = newList.get(i);
+                if(!useCircularBuffer) {
+                    int helpCounter = 0;
+                    for (int i = 0; i < newList.size(); i++) {
+                        if ((String.valueOf(newList.get(i).getMajor()).length() == 2 && String.valueOf(newList.get(i).getProximity()).equals("NEAR")) || (String.valueOf(newList.get(i).getMajor()).length() == 2 && String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))) {
+                            beaconItems[helpCounter] = newList.get(i);
+                            helpCounter++;
+                        } else if (String.valueOf(newList.get(i).getMajor()).length() == 3 && String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")) {
+                            beaconItems[helpCounter] = newList.get(i);
+                            helpCounter++;
+                        } else {
+                            beaconItems[helpCounter] = null;
+                            helpCounter++;
+                        }
+                    }
+                    int beaconItemsArraySize = 0;
+                    for (int i = 0; i < beaconItems.length; i++) {
+                        if (beaconItems[i] != null) {
+                            beaconItemsArraySize++;
+                        }
+                    }
+
+                    IBeaconDevice[] triggeredBeaconDevices = new IBeaconDevice[beaconItemsArraySize];
+                    int helpCounterBeacons = 0;
+                    for (int i = 0; i < beaconItems.length; i++) {
+                        if (beaconItems[i] != null) {
+                            triggeredBeaconDevices[helpCounterBeacons] = beaconItems[i];
+                            helpCounterBeacons++;
+                        }
+                    }
+
+
+                    for (int i = 0; i < triggeredBeaconDevices.length; i++) {
+                        if (i == 0) {
+                            nearestBeacon = triggeredBeaconDevices[0];
+                            nearestBeaconMajor = triggeredBeaconDevices[0].getMajor();
+                            nearestBeaconMinor = triggeredBeaconDevices[0].getMinor();
+
+                            update_location();
+                        }
+                    }
+                }else{
+                    //int helpCounter = 0;
+                    for(int i = 0; i<newList.size();i++) {
+                        //String helpString = newList.get(i).getProximity() + "";
+                        //if(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR")) {
+                        if((String.valueOf(newList.get(i).getMajor()).matches("10|20|30|40|50|60") || String.valueOf(newList.get(i).getMajor()).length() == 3) && String.valueOf(String.valueOf(newList.get(i).getMinor()).charAt(0)).matches("1|2|3|4|5|6") && (String.valueOf(newList.get(i).getProximity()).equals("NEAR") || String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))){
+                            if (!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()))) {
+                                if (String.valueOf(newList.get(i).getMajor()).length() == 3) {
+                                    //Log.d("BeaconValue", "Minor 3 " + newList.get(i).getMinor());
+                                    beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(1));
+                                } else {
+                                    //Log.d("BeaconValue", "Minor 4 " + newList.get(i).getMinor());
+                                    beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), new CircularFifoBuffer(21));
+                                }
+                                CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                                helpBuffer.add(newList.get(i).getRssi());
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), helpBuffer);
+                            } else {
+                                CircularFifoBuffer helpBuffer = beaconBufferDict.get(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                                helpBuffer.add(newList.get(i).getRssi());
+                                beaconBufferDict.put(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()), helpBuffer);
+                            }
+                            receivedBeacons.add(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                        }else{
+                            //Log.d("beaconNOT", String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
+                        }
+
+                        /*String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = beaconName + " " + beaconRssi;
+                        helpCounter++;*/
+                    /*}else if(newList.get(i).getMajor()==10&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
+                        String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
+                        String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
+                        beaconItems[helpCounter] = beaconName + " " + beaconRssi;
                         helpCounter++;
                     }else{
-                        beaconItems[helpCounter]=null;
+                        beaconItems[helpCounter]="";
                         helpCounter++;
+                    }*/
                     }
-                }
-                int beaconItemsArraySize = 0;
-                for(int i = 0; i<beaconItems.length;i++){
-                    if(beaconItems[i]!=null){
-                        beaconItemsArraySize++;
+                    //TODO: CHECK If circularbuffer is full
+                    Iterator it = beaconBufferDict.entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        CircularFifoBuffer helpbuffer = (CircularFifoBuffer) pair.getValue();
+                        boolean alreadyReceived = false;
+                        for(int i = 0; i<receivedBeacons.size(); i++){
+                            if(pair.getKey().equals(receivedBeacons.get(i))){
+                                alreadyReceived = true;
+                            }
+                        }
+                        if(!alreadyReceived){
+                            helpbuffer.add(-100);
+                        }
+                        alreadyReceived = false;
+                        if(helpbuffer.isFull()){
+                            //TODO: CALCULATE median of full circularbuffer
+                            double[] helpdouble = new double[helpbuffer.size()];
+                            String helpstring = helpbuffer.toString();
+                            helpstring = helpstring.replace("[","");
+                            helpstring = helpstring.replace("]","");
+                            String[] helpStringArray = helpstring.split(", ");
+
+                            for(int i = 0; i<helpbuffer.size(); i++){
+                                helpdouble[i] = Double.valueOf(helpStringArray[i]);
+                            }
+
+                            if(median(helpdouble)>nearestBeaconRSSI && pair.getKey().toString().length()!=9){ //8 because 4 digits minor, / as split and 3 digits major
+                                nearestBeaconRSSI = median(helpdouble);
+                                nearestBeaconKey = pair.getKey().toString();
+                            }
+                        }else{
+                            //Log.d("CircBuffer", pair.getKey() + " is not full");
+                        }
                     }
-                }
-
-                IBeaconDevice[] triggeredBeaconDevices = new IBeaconDevice[beaconItemsArraySize];
-                int helpCounterBeacons = 0;
-                for(int i = 0; i<beaconItems.length;i++){
-                    if(beaconItems[i]!=null){
-                        triggeredBeaconDevices[helpCounterBeacons] = beaconItems[i];
-                        helpCounterBeacons++;
-                    }
-                }
-
-
-
-                for(int i = 0; i<triggeredBeaconDevices.length;i++) {
-                    if(i==0){
-                        nearestBeacon = triggeredBeaconDevices[0];
-                        nearestBeaconMajor = triggeredBeaconDevices[0].getMajor();
-                        nearestBeaconMinor = triggeredBeaconDevices[0].getMinor();
-
+                    if(nearestBeaconKey != null) {
+                        //Log.d("NearestBeacon", nearestBeaconKey + " " + nearestBeaconRSSI);
+                        String[] beaconValues = nearestBeaconKey.split("/");
+                        nearestBeaconMajor = Integer.valueOf(beaconValues[1]);
+                        nearestBeaconMinor = Integer.valueOf(beaconValues[0]);
+                        //Log.d("NearestBeaconInt", beaconValues[0] + " " + beaconValues[1]);
+                        Log.d("BeaconMedianValue", nearestBeaconKey + ' ' + nearestBeaconRSSI);
                         update_location();
+                        nearestBeaconKey = null;
+                        nearestBeaconRSSI = -100;
                     }
+                    receivedBeacons.clear();
                 }
             }
 
             @Override
             public void onIBeaconLost(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon lost
-                Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
+                //Log.i("Sample", "IBeacon lost: " + iBeacon.toString());
             }
         });
 
         proximityManager.setScanStatusListener(createScanStatusListener());
     }
 
-    // Button onClick
-    public void switchToUnity(View v)
-    {
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
-        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
+    public static double median(double[] m) {
+        int middle = m.length/2;
+        if (m.length%2 == 1) {
+            return m[middle];
+        } else {
+            return (m[middle-1] + m[middle]) / 2.0;
+        }
     }
 
-    public static void backToNative() {
-        Log.i("Status", "Native Called");
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
-    }
 
     public IBeaconDevice nearestBeaconDetected(){
         return nearestBeacon;
@@ -361,13 +548,13 @@ public class MainActivity extends AbsRuntimePermission {
 
         String deviceInfos = jObject.toString();
 
-        Log.d("DeviceInfos", deviceInfos);
+        //Log.d("DeviceInfos", deviceInfos);
 
         return deviceInfos;
     }
 
     public void registerODNatve(){
-        Log.i("Sample", "Start scanning");
+        //Log.i("Sample", "Start scanning");
         startScanning();
     }
 
@@ -376,7 +563,7 @@ public class MainActivity extends AbsRuntimePermission {
 
 
     public void saveToken(String token){
-        Log.i("Sample", "Save Token "+token);
+        //Log.i("Sample", "Save Token "+token);
         File file = new File(this.getFilesDir(), filename);
 
         try {
@@ -392,9 +579,12 @@ public class MainActivity extends AbsRuntimePermission {
     public void clearToken(){
         File file = new File(this.getFilesDir(), filename);
         boolean deleted = file.delete();
-        Log.i("logout", "Clear Token");
-        Log.i("logout", "Stop scanning");
+        //Log.i("logout", "Clear Token");
+        //Log.i("logout", "Stop scanning");
         proximityManager.stopScanning();
+        beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
+        stopRepeatingTask();
+        //unregisterReceiver(mReceiver);
 
     }
 
@@ -410,14 +600,14 @@ public class MainActivity extends AbsRuntimePermission {
 
             while ((line = br.readLine()) != null) {
                 text.append(line);
-                text.append('\n');
+                //text.append('\n');
             }
             br.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        Log.i("Sample", "Send Token to Web " + text.toString());
+        //Log.i("Sample", "Send Token to Web " + text.toString());
 
         JSONObject jObject = new JSONObject();
         try {
@@ -426,35 +616,78 @@ public class MainActivity extends AbsRuntimePermission {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        //checkWifiSSID();
+        //checkBluetoothStatus();
+        return jObject.toString();
+    }
+
+    public String getLanguage(){
+        String lang = Locale.getDefault().getLanguage();
+
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("language", lang);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return jObject.toString();
     }
 
     public void showNewLocationNotification(String notificationTitle, String notificationMessage){
-        Log.d("Notification", "JETZT");
-        mNotificationBuilder = //create a builder for the detection notification
+
+        //Log.d("Notification", "JETZT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
+            mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationBuilder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(getNotificationIcon())
+                        .setContentTitle(notificationTitle)
+                        .setChannelId(NOTIFICATION_CHANNEL_ID)
+                        .setContentText(notificationMessage)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(getResources().getString(R.string.notification_body)));
+
+        }else {
+            //Log.d("Notification", "JETZT");
+            mNotificationBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.app_banner) //adding the icon
-                        .setContentTitle(notificationTitle) //adding the title
-                        .setContentText(notificationMessage) //adding the text
-                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                        .setOngoing(true); //it's canceled when tapped on it
+                        .setSmallIcon(getNotificationIcon())
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationMessage)
+                        .setPriority(Notification.PRIORITY_HIGH);
+        }
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
 
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                getApplicationContext(),
+                this,
                 NOTIFICATION_REQUEST_CODE,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         mNotificationBuilder.setContentIntent(resultPendingIntent);
 
-        mNotification = mNotificationBuilder.build(); //build the notiviation
+        mNotification = mNotificationBuilder.build(); //build the notification
+        mNotification.flags = Notification.FLAG_AUTO_CANCEL;
 
-        mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
+            mNotificationManagerOreoAbove.notify(NOTIFICATION_REQUEST_CODE, mNotification);
+        }else {
+            mNotificationManager.notify(NOTIFICATION_REQUEST_CODE, mNotification); //activate the notification with the notification itself and its id
+        }
+    }
+
+    private int getNotificationIcon() {
+        boolean useWhiteIcon = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP);
+        return useWhiteIcon ? R.drawable.silhouette_icon : R.drawable.notification_icon;
     }
 
     public void showNewLocationAlert(String alertTitle, String alertMessage){
@@ -482,15 +715,7 @@ public class MainActivity extends AbsRuntimePermission {
                 .show();
     }
 
-    public void showUnityView(){
-        mySelf.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mySelf.viewSwitcher.showPrevious();
-            }
-        });
-        myUnityPlayer.UnitySendMessage("ExternalCallManager", "calledFromNative", "this is the message");
-    }
+
 
     public void update_location(){
         JSONObject jObject = new JSONObject();
@@ -508,22 +733,29 @@ public class MainActivity extends AbsRuntimePermission {
         int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
         int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
         //sendLocationUpdate();
-        if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
+        //if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
             //proximityManager.stopScanning();
             sendLocationUpdate();
-            if(!activityVisible) {
+            /*if(!activityVisible) {
                 showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
-            }
+            }*/
             //showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
-        }else {
-            Log.d("update_location", "No new beacon = no update!");
-        }
+        //}else {
+        //    Log.d("update_location", "No new beacon = no update!");
+        //}
 
 
     }
 
+    public void showNotificationBackground(String exhibit){
+        if(!activityVisible) {
+            // showNewLocationNotification("New Exhibit", "Exhibit "+ exhibit);
+            showNewLocationNotification(getResources().getString(R.string.notification_title), getResources().getString(R.string.notification_subtitle));
+        }
+    }
+
     public void changeBeacon(){
-        Log.d("ChangeBeacon", "I got changed");
+        //Log.d("ChangeBeacon", "I got changed");
         sendLocationUpdate();
     }
 
@@ -542,7 +774,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("CheckReceive","Es ist was passiert");
+                            //Log.d("CheckReceive","Es ist was passiert");
                         }
                     });
                 }
@@ -551,7 +783,7 @@ public class MainActivity extends AbsRuntimePermission {
                         @Override
                         public void onReceiveValue(String value) {
                             //Log.i("onReceiveValue! " + value);
-                            Log.d("CheckReceive", "Es ist was passiert");
+                            //Log.d("CheckReceive", "Es ist was passiert");
                         }
                     });
                 }
@@ -561,12 +793,12 @@ public class MainActivity extends AbsRuntimePermission {
 
     public void stopScanner(){
         proximityManager.stopScanning();
-        Log.d("AlertStopScanning", "stopScanning");
+        //Log.d("AlertStopScanning", "stopScanning");
     }
 
     public void restartScanner(){
         proximityManager.startScanning();
-        Log.d("AlertStartScanning", "startScanning");
+        //Log.d("AlertStartScanning", "startScanning");
     }
 
     public void clearLastBeacon(){
@@ -578,7 +810,7 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
     public void triggerSignalNative(){
-        Log.d("Status", "Trigger signal native");
+        //Log.d("Status", "Trigger signal native");
 
         // vibrate
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -633,9 +865,12 @@ public class MainActivity extends AbsRuntimePermission {
     @Override
     protected void onDestroy() {
         proximityManager.disconnect();
+        beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
+        stopRepeatingTask();
         proximityManager = null;
-        clearLastBeacon();
-        Log.i("Sample", "Destroy");
+        unregisterReceiver(mReceiver);
+        //clearLastBeacon();
+        //Log.i("Sample", "Destroy");
         super.onDestroy();
     }
 
@@ -644,6 +879,8 @@ public class MainActivity extends AbsRuntimePermission {
             @Override
             public void onServiceReady() {
                 proximityManager.startScanning();
+                startRepeatingTask();
+                checkWifiSSID();
             }
         });
     }
@@ -652,8 +889,8 @@ public class MainActivity extends AbsRuntimePermission {
         return new SimpleIBeaconListener() {
             @Override
             public void onIBeaconDiscovered(IBeaconDevice ibeacon, IBeaconRegion region) {
-                Log.i("Sample", "Beacon discovered");
-                Log.i("Sample", "IBeacon discovered: " + ibeacon.toString());
+                //Log.i("Sample", "Beacon discovered");
+                //Log.i("Sample", "IBeacon discovered: " + ibeacon.toString());
             }
         };
     }
@@ -680,5 +917,352 @@ public class MainActivity extends AbsRuntimePermission {
                 showToast("Scanning stopped");
             }
         };
+    }
+
+    public void getWifiStatusResultNative(String message){
+        if(message.equals("correctWifi")){
+            //Log.d("WifiStatus", "Wifi is correct");
+        }else if(message.equals("wrongWifi")){
+            //showWifiStatusAlert();
+            //Log.d("WifiStatus", "Wifi is wrong");
+        }
+    }
+
+    public void checkWifiSSID(){
+        WifiManager wifi = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifi.getConnectionInfo();
+        byte[] myIPAddress = BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
+        ArrayUtils.reverse(myIPAddress);
+        InetAddress myInetIP = null;
+        try {
+            myInetIP = InetAddress.getByAddress(myIPAddress);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        if(myInetIP != null) {
+            String myIP = myInetIP.getHostAddress();
+            if (wifiInfo != null) {
+                String currentConnectedSSID = wifiInfo.getSSID();
+                //Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
+                //Log.e("checkWIFIStatusIP", myIP);
+
+                currentConnectedSSID = currentConnectedSSID.replace("\"", "");
+                //Log.e("checkWIFIStatusSSID", currentConnectedSSID);
+
+
+                JSONObject jObject = new JSONObject();
+                try {
+                    jObject.put("ssid", currentConnectedSSID);
+                    Log.d("WIfiName", currentConnectedSSID);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String ssid = jObject.toString();
+                wifiSSID = currentConnectedSSID;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    myWebView.evaluateJavascript("javascript:send_wifi_ssid()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            //Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mXWalkView.evaluateJavascript("javascript:send_wifi_ssid()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            //Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+            }
+        }else{
+            JSONObject jObject = new JSONObject();
+            try {
+                jObject.put("ssid", "notAvailable");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            String ssid = jObject.toString();
+
+            wifiSSID = "notAvailable";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                myWebView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status", "Callback from send to web");
+                    }
+                });
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                mXWalkView.evaluateJavascript("javascript:send_wifi_ssid(" + ssid + ")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status", "Callback from send to web");
+                    }
+                });
+            }
+        }
+    }
+
+    public void checkWifiData(String message){
+        String[] WIFI = message.split(" ");
+        if(!wifiSSID.equals(WIFI[0])){
+            openWifiDialogNative();
+        }else{
+            checkBluetoothStatus();
+        }
+        Log.d("checkWifiData", "SSID " + WIFI[0]);
+        Log.d("checkWifiData", "Password " + WIFI[1]);
+    }
+
+    public void openWifiDialogNative(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle(getResources().getString(R.string.wifi_title))
+                .setMessage(getResources().getString(R.string.wifi_message))
+                .setPositiveButton(getResources().getString(R.string.button_settings), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        activateWifiNative();
+                        checkBluetoothStatus();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkBluetoothStatus();
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    /*public void showWifiStatusAlert(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Wifi Status")
+                .setMessage("You are in the wrong Wifi. Please change to the Wifi called MEETeUX!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }*/
+
+    Runnable mHandlerTask = new Runnable()
+    {
+        @Override
+        public void run() {
+            //checkWifiSSID();
+            checkScanStatus();
+            //checkBluetoothStatus();
+            mHandler.postDelayed(mHandlerTask, INTERVAL);
+        }
+    };
+
+    void startRepeatingTask()
+    {
+        mHandler.postDelayed(mHandlerTask, INTERVAL);
+        //mHandlerTask.run();
+    }
+
+    void stopRepeatingTask()
+    {
+        mHandler.removeCallbacks(mHandlerTask);
+    }
+
+    void checkScanStatus(){
+        //Log.e("checkScanStatus", "Scanning was checked");
+        if(proximityManagerToRestart) {
+            //Log.e("checkScanStatus", "Bluetooth was turned off");
+            proximityManagerToRestart = false;
+            proximityManager.restartScanning();
+        }
+        if(!proximityManager.isConnected()){
+            //Log.e("checkScanStatus", "Not connected and will be restarted");
+            proximityManager.connect(new OnServiceReadyListener() {
+                @Override
+                public void onServiceReady() {
+                    proximityManager.startScanning();
+                }
+            });
+        }
+        if(!proximityManager.isScanning() && proximityManager.isConnected()){
+            //Toast.makeText(this, "Stopped and restarted scanning!", Toast.LENGTH_LONG).show();
+            //Log.e("checkScanStatus", "Scanning was stopped and will be restarted");
+
+            proximityManager.restartScanning();
+        }
+        if(proximityManager.isScanning() && proximityManager.isConnected()){
+            //Log.e("checkScanStatus", "connected and scanning");
+        }
+    }
+
+    void checkBluetoothStatus(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            //no bluetooth support
+        } else {
+            if (mBluetoothAdapter.isEnabled()) {
+                //Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show();
+                //Log.d("checkBluetoothStatus", "Bluetooth is on");
+            }else{
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                alertBuilder.setTitle(getResources().getString(R.string.bluetooth_title))
+                        .setMessage(getResources().getString(R.string.bluetooth_message))
+                        .setPositiveButton(getResources().getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                activateBluetoothNative();
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setCancelable(false)
+                        .create()
+                        .show();
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    myWebView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    mXWalkView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            //Log.i("onReceiveValue! " + value);
+                            Log.d("Status", "Callback from send to web");
+                        }
+                    });
+                }*/
+                //Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
+                //Log.d("checkBluetoothStatus", "Bluetooth is off");
+            }
+        }
+    }
+
+    public void activateBluetoothNative(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter.enable();
+    }
+
+    public void activateWifiNative(){
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        //Log.d("BluetoothAdapter", "Bluetooth off");
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        bluetoothTurnedOff = true;
+                        //Log.d("BluetoothAdapter", "Bluetooth turned off");
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        if(bluetoothTurnedOnAgain){
+                            bluetoothTurnedOnAgain = false;
+                            proximityManagerToRestart = true;
+                        }
+                        //Log.d("BluetoothAdapter", "Bluetooth is on");
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        if(bluetoothTurnedOff){
+                            bluetoothTurnedOff = false;
+                            bluetoothTurnedOnAgain = true;
+                        }
+                        //Log.d("BluetoothAdapter", "Bluetooth is turned on");
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView.evaluateJavascript("javascript:back_button_pressed()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    //Log.i("onReceiveValue! " + value);
+                    //Log.d("Status", "Callback from send to web");
+                }
+            });
+        }
+    }
+
+
+    private void checkForActivatedLocation(){
+        LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        Log.d("checkForActivatedLoc", isNetworkEnabled + " " + isGPSEnabled);
+
+        if(!isNetworkEnabled && !isGPSEnabled){
+            activateLocationDialog();
+        }
+
+    }
+
+    private void activateLocationDialog(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Location Status")
+                .setMessage("Location is not activated. Do you want to activate it?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        activateLocationNative();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    private void activateLocationNative(){
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
+    }
+
+    public void launchImageTargets(){
+        Intent i = new Intent();
+        Log.d("imagetargetpackagename", getPackageName());
+        i.setClassName( getPackageName(),  getPackageName()+".vuforia.engine.ImageTargets");
+        startActivity(i);
+
     }
 }

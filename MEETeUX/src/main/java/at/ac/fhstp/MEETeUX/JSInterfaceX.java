@@ -17,32 +17,9 @@ public class JSInterfaceX extends AppCompatActivity {
     private MainActivity mainActivity;
     private XWalkView mAppView;
 
-
-    /*public JSInterface(WebView appView, MainActivity mA) {
-        this.mAppView = appView;
-        this.mainActivity = mA;
-    }*/
-
     public JSInterfaceX(XWalkView appView, MainActivity mA) {
         this.mAppView = appView;
         this.mainActivity = mA;
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void switchToUnity()
-    {
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mainActivity.viewSwitcher.showNext();
-            }
-        });
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void forwardToUnity(String methodname, String command) //type is "monster" or "item"
-    {
-        mainActivity.myUnityPlayer.UnitySendMessage("ExternalCallManager", methodname, command);
     }
 
     /* calls to WebView */
@@ -78,6 +55,7 @@ public class JSInterfaceX extends AppCompatActivity {
         mainActivity.update_location();
     }
 
+
     @org.xwalk.core.JavascriptInterface
     public void registerOD(){
         mainActivity.registerODNatve();
@@ -100,7 +78,7 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -117,7 +95,24 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void getLanguage(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String mlanguage = mainActivity.getLanguage();
+                mAppView.evaluateJavascript("javascript:send_language("+ mlanguage +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -134,7 +129,7 @@ public class JSInterfaceX extends AppCompatActivity {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
-                        Log.d("Status","Callback from send to web");
+                        //Log.d("Status","Callback from send to web");
                     }
                 });
             }
@@ -144,20 +139,58 @@ public class JSInterfaceX extends AppCompatActivity {
     // triggers signal, when location is updated
     @org.xwalk.core.JavascriptInterface
     public void triggerSignal(){
-        Log.d("Status","Trigger Signal");
+        //Log.d("Status","Trigger Signal");
         mainActivity.triggerSignalNative();
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void changeBeacon(){
-        Log.d("Status","Change Beacon");
-        mainActivity.changeBeacon();
+    public void getWifiStatusResult(String message){
+        //Log.d("Status","WIFI Result");
+        mainActivity.getWifiStatusResultNative(message);
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void showUnityView(){
-        Log.d("Status","Unity");
-        mainActivity.showUnityView();
+    public void activateBluetoothCheck(){
+        //Log.d("Status","Bluetooth Check");
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mainActivity.checkBluetoothStatus();
+            }
+        });
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void activateBluetooth(){
+        //Log.d("Status","Activate Bluetooth");
+        mainActivity.activateBluetoothNative();
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void activateWifiSettings(){
+        //Log.d("Status","Activate Bluetooth");
+        mainActivity.activateWifiNative();
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void  receiveWifiData(String message){
+        mainActivity.checkWifiData(message);
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void triggerAr(){
+        mainActivity.launchImageTargets();
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void showBackgroundNotification(String message){
+        mainActivity.showNotificationBackground(message);
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void changeBeacon(){
+        //Log.d("Status","Change Beacon");
+        mainActivity.changeBeacon();
     }
 
     @org.xwalk.core.JavascriptInterface
@@ -173,8 +206,11 @@ public class JSInterfaceX extends AppCompatActivity {
     // prints message from webview to Logcat
     @org.xwalk.core.JavascriptInterface
     public void print(String message){
-        Log.d("WWW",message);
+        //Log.d("WWW",message);
     }
+
+    @org.xwalk.core.JavascriptInterface
+    public void openWifiDialogNative(){ mainActivity.openWifiDialogNative();}
 
    /* @JavascriptInterface
     public void run(final String scriptSrc){

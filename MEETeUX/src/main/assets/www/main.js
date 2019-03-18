@@ -69,7 +69,7 @@ var WindowRef = /** @class */ (function () {
 /*!********************************************!*\
   !*** ./src/app/actions/LocationActions.ts ***!
   \********************************************/
-/*! exports provided: CHANGE_CURRENT_LOCATION, CHANGE_CONNECTED_EXHIBIT, CHANGE_LOCATION_STATUS, CHANGE_LOCATION_SOCKET_STATUS, CHANGE_AT_EXHIBIT_PARENT_ID, CHANGE_ON_EXHIBIT, LocationActions */
+/*! exports provided: CHANGE_CURRENT_LOCATION, CHANGE_CONNECTED_EXHIBIT, CHANGE_LOCATION_STATUS, CHANGE_LOCATION_SOCKET_STATUS, CHANGE_AT_EXHIBIT_PARENT_ID, CHANGE_ON_EXHIBIT, CHANGE_LAST_DISMISSED, CHANGE_SHOW_DISMISSED, CHANGE_LOCATION_SCANNING, LocationActions */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -80,6 +80,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LOCATION_SOCKET_STATUS", function() { return CHANGE_LOCATION_SOCKET_STATUS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_AT_EXHIBIT_PARENT_ID", function() { return CHANGE_AT_EXHIBIT_PARENT_ID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_ON_EXHIBIT", function() { return CHANGE_ON_EXHIBIT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LAST_DISMISSED", function() { return CHANGE_LAST_DISMISSED; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_SHOW_DISMISSED", function() { return CHANGE_SHOW_DISMISSED; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LOCATION_SCANNING", function() { return CHANGE_LOCATION_SCANNING; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LocationActions", function() { return LocationActions; });
 var CHANGE_CURRENT_LOCATION = 'CHANGE_CURRENT_LOCATION';
 var CHANGE_CONNECTED_EXHIBIT = 'CHANGE_CONNECTED_EXHIBIT';
@@ -87,6 +90,9 @@ var CHANGE_LOCATION_STATUS = 'CHANGE_LOCATION_STATUS';
 var CHANGE_LOCATION_SOCKET_STATUS = 'CHANGE_LOCATION_SOCKET_STATUS';
 var CHANGE_AT_EXHIBIT_PARENT_ID = 'CHANGE_AT_EXHIBIT_PARENT_ID';
 var CHANGE_ON_EXHIBIT = 'CHANGE_ON_EXHIBIT';
+var CHANGE_LAST_DISMISSED = 'CHANGE_LAST_DISMISSED';
+var CHANGE_SHOW_DISMISSED = 'CHANGE_SHOW_DISMISSED';
+var CHANGE_LOCATION_SCANNING = 'CHANGE_LOCATION_SCANNING';
 var LocationActions = /** @class */ (function () {
     function LocationActions() {
     }
@@ -126,6 +132,24 @@ var LocationActions = /** @class */ (function () {
             onExhibit: isOnExhibit
         };
     };
+    LocationActions.prototype.changeLastDismissed = function (dismissedId) {
+        return {
+            type: CHANGE_LAST_DISMISSED,
+            lastDismissed: dismissedId
+        };
+    };
+    LocationActions.prototype.changeShowDismissed = function (shown) {
+        return {
+            type: CHANGE_SHOW_DISMISSED,
+            showDismissed: shown
+        };
+    };
+    LocationActions.prototype.changeLocationScanning = function (isScanning) {
+        return {
+            type: CHANGE_LOCATION_SCANNING,
+            locationScanning: isScanning
+        };
+    };
     return LocationActions;
 }());
 
@@ -137,16 +161,18 @@ var LocationActions = /** @class */ (function () {
 /*!******************************************!*\
   !*** ./src/app/actions/StatusActions.ts ***!
   \******************************************/
-/*! exports provided: CHANGE_ERROR_MESSAGE, CHANGE_SUCCESS_MESSAGE, StatusActions */
+/*! exports provided: CHANGE_ERROR_MESSAGE, CHANGE_SUCCESS_MESSAGE, CHANGE_LOGGED_IN, StatusActions */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_ERROR_MESSAGE", function() { return CHANGE_ERROR_MESSAGE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_SUCCESS_MESSAGE", function() { return CHANGE_SUCCESS_MESSAGE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHANGE_LOGGED_IN", function() { return CHANGE_LOGGED_IN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatusActions", function() { return StatusActions; });
 var CHANGE_ERROR_MESSAGE = 'CHANGE_ERROR_MESSAGE';
 var CHANGE_SUCCESS_MESSAGE = 'CHANGE_SUCCESS_MESSAGE';
+var CHANGE_LOGGED_IN = 'CHANGE_LOGGED_IN';
 var StatusActions = /** @class */ (function () {
     function StatusActions() {
     }
@@ -160,6 +186,12 @@ var StatusActions = /** @class */ (function () {
         return {
             type: CHANGE_SUCCESS_MESSAGE,
             success: success
+        };
+    };
+    StatusActions.prototype.changeLoggedIn = function (isLoggedIn) {
+        return {
+            type: CHANGE_LOGGED_IN,
+            isLoggedIn: isLoggedIn
         };
     };
     return StatusActions;
@@ -278,11 +310,11 @@ var AlertDialogComponent = /** @class */ (function () {
     };
     AlertDialogComponent.prototype.cancelDialog = function () {
         this.thisDialogRef.close('cancel');
-        console.log("canceled");
+        // console.log("canceled");
     };
     AlertDialogComponent.prototype.confirmDialog = function () {
         this.thisDialogRef.close('confirm');
-        console.log("confirmed");
+        // console.log("confirmed");
     };
     AlertDialogComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -336,7 +368,7 @@ var routes = [
     { path: '', component: _register_register_component__WEBPACK_IMPORTED_MODULE_2__["RegisterComponent"] },
     { path: 'mainview', component: _main_view_main_view_component__WEBPACK_IMPORTED_MODULE_4__["MainViewComponent"] },
     { path: 'passive', component: _content_passive_content_passive_component__WEBPACK_IMPORTED_MODULE_5__["ContentPassiveComponent"] },
-    { path: 'tableat', component: _content_table_at_content_table_at_component__WEBPACK_IMPORTED_MODULE_6__["ContentTableAtComponent"] },
+    { path: 'tableat', component: _content_table_at_content_table_at_component__WEBPACK_IMPORTED_MODULE_6__["ContentTableAtComponent"], runGuardsAndResolvers: 'always' },
     { path: 'tableon', component: _content_table_on_content_table_on_component__WEBPACK_IMPORTED_MODULE_7__["ContentTableOnComponent"] },
     // additional routes here
     { path: '**', component: _page_not_found_page_not_found_component__WEBPACK_IMPORTED_MODULE_3__["PageNotFoundComponent"] }
@@ -348,7 +380,7 @@ var AppRoutingModule = /** @class */ (function () {
     AppRoutingModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             imports: [
-                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(routes, { enableTracing: false }) // <-- debugging purposes only)
+                _angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(routes, { onSameUrlNavigation: 'reload', enableTracing: false }) // <-- debugging purposes only)
             ],
             exports: [_angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"]]
         })
@@ -378,7 +410,7 @@ module.exports = ".example-fill-remaining-space\r\n{\r\n  flex: 1 1 auto;\r\n}\r
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar id=\"header\" color=\"primary\">\r\n  <span>MEETeUX</span>\r\n\r\n  <span class=\"example-fill-remaining-space\"></span>\r\n  <button mat-icon-button [matMenuTriggerFor]=\"menu\">\r\n    <mat-icon>menu</mat-icon>\r\n  </button>\r\n  <mat-menu #menu=\"matMenu\" [overlapTrigger]=\"false\" yPosition=\"below\" xPosition=\"before\">\r\n    <button mat-menu-item (click)=\"logoutUser()\">\r\n      <mat-icon>exit_to_app</mat-icon>\r\n      <span>Logout</span>\r\n    </button>\r\n    <button mat-menu-item (click)=\"showUnityView()\">\r\n      <mat-icon>whatshot</mat-icon>\r\n      <span>Unity</span>\r\n    </button>\r\n  </mat-menu>\r\n</mat-toolbar>\r\n\r\n<router-outlet></router-outlet>\r\n<button id=\"ghostButton\" class=\"hiddenbutton\" (click)=\"openDialog()\">Ghost</button>\r\n <button *ngIf=\"registered\" (click)=\"changeToNearestBeacon()\">Next Beacon</button>\r\n"
+module.exports = "<mat-toolbar id=\"header\" color=\"primary\">\r\n  <span>MEETeUX</span>\r\n\r\n  <span class=\"example-fill-remaining-space\"></span>\r\n  <button mat-icon-button [matMenuTriggerFor]=\"menu\">\r\n    <mat-icon>menu</mat-icon>\r\n  </button>\r\n  <mat-menu #menu=\"matMenu\" [overlapTrigger]=\"false\" yPosition=\"below\" xPosition=\"before\">\r\n    <button mat-menu-item (click)=\"logoutUser()\">\r\n      <mat-icon>exit_to_app</mat-icon>\r\n      <span>Logout</span>\r\n    </button>\r\n    <button mat-menu-item (click)=\"showUnityView()\">\r\n      <mat-icon>whatshot</mat-icon>\r\n      <span>Unity</span>\r\n    </button>\r\n  </mat-menu>\r\n</mat-toolbar>\r\n\r\n<router-outlet></router-outlet>\r\n\r\n<button id=\"dismissedButton\" *ngIf=\"dismissedLocation && showDismissed\" (click)=\"openDialogDismissed()\" mat-fab color=\"primary\" [matBadge]=\"dismissedLocation\" matBadgePosition=\"before\" matBadgeColor=\"accent\">\r\n  <mat-icon>room</mat-icon>\r\n</button>\r\n\r\n<button id=\"ghostButton\" class=\"hiddenbutton\" (click)=\"openDialog()\">Ghost</button>\r\n<button id=\"ghostButtonWifi\" class=\"hiddenbutton\" (click)=\"openNativeSetting()\">GhostSetting</button>\r\n<button id=\"ghostButtonBluetooth\" class=\"hiddenbutton\" (click)=\"openNativeSetting()\">GhostSetting</button>\r\n"
 
 /***/ }),
 
@@ -394,14 +426,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions/UserActions */ "./src/app/actions/UserActions.ts");
-/* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/LocationActions */ "./src/app/actions/LocationActions.ts");
-/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _services_native_communication_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/native-communication.service */ "./src/app/services/native-communication.service.ts");
-/* harmony import */ var _WindowRef__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WindowRef */ "./src/app/WindowRef.ts");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./alert-dialog/alert-dialog.component */ "./src/app/alert-dialog/alert-dialog.component.ts");
-/* harmony import */ var rxjs_Subject__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/Subject */ "./node_modules/rxjs-compat/_esm5/Subject.js");
-/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actions/LocationActions */ "./src/app/actions/LocationActions.ts");
+/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/utilities.service */ "./src/app/services/utilities.service.ts");
+/* harmony import */ var _services_native_communication_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/native-communication.service */ "./src/app/services/native-communication.service.ts");
+/* harmony import */ var _WindowRef__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WindowRef */ "./src/app/WindowRef.ts");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./alert-dialog/alert-dialog.component */ "./src/app/alert-dialog/alert-dialog.component.ts");
+/* harmony import */ var _native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./native-setting-dialog/native-setting-dialog.component */ "./src/app/native-setting-dialog/native-setting-dialog.component.ts");
+/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -425,10 +458,12 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var AppComponent = /** @class */ (function () {
-    function AppComponent(appStore, userActions, locationActions, utilitiesService, winRef, dialog, alertService, nativeCommunicationService, snackBar) {
+    function AppComponent(appStore, statusActions, userActions, locationActions, utilitiesService, winRef, dialog, alertService, nativeCommunicationService, snackBar) {
         var _this = this;
         this.appStore = appStore;
+        this.statusActions = statusActions;
         this.userActions = userActions;
         this.locationActions = locationActions;
         this.utilitiesService = utilitiesService;
@@ -438,40 +473,44 @@ var AppComponent = /** @class */ (function () {
         this.nativeCommunicationService = nativeCommunicationService;
         this.snackBar = snackBar;
         this.title = 'app';
-        this.subject = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_8__["Subject"]();
         this._unsubscribe = this.appStore.subscribe(function () {
             var state = _this.appStore.getState();
             var token = state.token;
             var errorMessage = state.errorMessage;
             var successMessage = state.successMessage;
+            _this.dismissedLocation = state.lastDismissed;
+            _this.showDismissed = state.showDismissed;
             if (_this.currentToken !== token && token !== undefined) {
                 _this.utilitiesService.sendToNative(token, 'saveToken');
                 _this.currentToken = token;
             }
             if (errorMessage && errorMessage.code !== _this.currentError) {
-                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBarConfig"]();
+                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBarConfig"]();
                 config.duration = 3000;
                 config.panelClass = ['error-snackbar'];
-                var snackBarRef = _this.snackBar.open(errorMessage.message, 'OK', config);
+                _this.snackBar.open(errorMessage.message, 'OK', config);
+                _this.currentError = errorMessage.code;
             }
             if (successMessage && successMessage.code !== _this.currentSuccess) {
-                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBarConfig"]();
+                var config = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBarConfig"]();
                 config.duration = 3000;
                 config.panelClass = ['success-snackbar'];
-                var snackBarRef = _this.snackBar.open(successMessage.message, 'OK', config);
+                _this.snackBar.open(successMessage.message, 'OK', config);
+                _this.currentSuccess = successMessage.code;
             }
         });
-        this.subscription = this.alertService.getMessage().subscribe(function (message) {
-            console.log('hi ' + message.location + ' ' + message.resStatus);
-            _this.openDialog();
-        });
+        // this.subscription = this.alertService.getMessage().subscribe(message => {
+        //   console.log('hi ' + message.location + ' ' + message.resStatus);
+        //   this.openDialog(/*message*/);
+        // });
         this.subscriptionLocationid = this.alertService.getMessageLocationid().subscribe(function (message) {
-            console.log('hi ' + message.location + ' ' + message.resStatus);
             _this.registerLocationmessage = message;
+        });
+        this.subscriptionNativeSettingCheckResult = this.alertService.getMessageNativeSettingCheck().subscribe(function (message) {
+            _this.nativeSettingType = message.nativeSettingType;
         });
     }
     AppComponent.prototype.ngOnInit = function () {
-        this.registered = true;
         this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(0));
         this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
         this.requestCheckedPlatform();
@@ -479,18 +518,73 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.openDialog = function () {
         var _this = this;
-        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialogConfig"]();
+        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogConfig"]();
         dialogConfig.disableClose = true;
         dialogConfig.autoFocus = false;
-        console.log('appcomponent:openDialog() ', this.registerLocationmessage);
-        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_7__["AlertDialogComponent"], { data: { number: this.registerLocationmessage.location },
+        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertDialogComponent"], { data: { number: this.registerLocationmessage.location },
             disableClose: true,
             autoFocus: false
         });
+        this.utilitiesService.sendToNative('success', 'triggerSignal');
         this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
             var data = { result: result, location: _this.registerLocationmessage.location, resStatus: _this.registerLocationmessage.resStatus };
             _this.alertService.sendMessageResponse(data);
         });
+    };
+    AppComponent.prototype.openDialogDismissed = function () {
+        var _this = this;
+        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogConfig"]();
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = false;
+        var dialogRef = this.dialog.open(_alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_8__["AlertDialogComponent"], { data: { number: this.dismissedLocation },
+            disableClose: true,
+            autoFocus: false
+        });
+        this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
+            var data = { result: result, location: _this.dismissedLocation, resStatus: _this.registerLocationmessage.resStatus };
+            _this.alertService.sendMessageResponse(data);
+        });
+    };
+    AppComponent.prototype.openNativeSetting = function () {
+        var _this = this;
+        var dialogConfig = new _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialogConfig"]();
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = false;
+        if (this.nativeSettingType === "Wifi") {
+            console.log("openNativeSetting " + this.nativeSettingType);
+            var platformSpecificConfirm;
+            if (this.utilitiesService.checkPlatform() === 'Android') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            else if (this.utilitiesService.checkPlatform() === 'IOS') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType, confirmDialogText: platformSpecificConfirm },
+                disableClose: true,
+                autoFocus: false
+            });
+            this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
+                var data = { result: result };
+                _this.alertService.sendMessageNativeWifiSettingCheckResult(data);
+            });
+        }
+        else if (this.nativeSettingType === "Bluetooth") {
+            var platformSpecificConfirm;
+            if (this.utilitiesService.checkPlatform() === 'Android') {
+                platformSpecificConfirm = "Activate Bluetooth";
+            }
+            else if (this.utilitiesService.checkPlatform() === 'IOS') {
+                platformSpecificConfirm = "To the Settings";
+            }
+            var dialogRef = this.dialog.open(_native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_9__["NativeSettingDialogComponent"], { data: { settingtype: this.nativeSettingType, confirmDialogText: platformSpecificConfirm },
+                disableClose: true,
+                autoFocus: false
+            });
+            this.subscriptionBack = dialogRef.afterClosed().subscribe(function (result) {
+                var data = { result: result };
+                _this.alertService.sendMessageNativeBluetoothSettingCheckResult(data);
+            });
+        }
     };
     AppComponent.prototype.ngOnDestroy = function () {
         this._unsubscribe();
@@ -518,9 +612,6 @@ var AppComponent = /** @class */ (function () {
     AppComponent.prototype.logoutUser = function () {
         this.nativeCommunicationService.logout();
     };
-    AppComponent.prototype.changeToNearestBeacon = function () {
-        this.nativeCommunicationService.changeBeacon();
-    };
     AppComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-root',
@@ -529,14 +620,15 @@ var AppComponent = /** @class */ (function () {
         }),
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
         __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
-        __metadata("design:paramtypes", [Object, _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["UserActions"],
-            _actions_LocationActions__WEBPACK_IMPORTED_MODULE_2__["LocationActions"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_3__["UtilitiesService"],
-            _WindowRef__WEBPACK_IMPORTED_MODULE_5__["WindowRef"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatDialog"],
-            _services_alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"],
-            _services_native_communication_service__WEBPACK_IMPORTED_MODULE_4__["NativeCommunicationService"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatSnackBar"]])
+        __metadata("design:paramtypes", [Object, _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["StatusActions"],
+            _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["UserActions"],
+            _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__["LocationActions"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_4__["UtilitiesService"],
+            _WindowRef__WEBPACK_IMPORTED_MODULE_6__["WindowRef"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialog"],
+            _services_alert_service__WEBPACK_IMPORTED_MODULE_10__["AlertService"],
+            _services_native_communication_service__WEBPACK_IMPORTED_MODULE_5__["NativeCommunicationService"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatSnackBar"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -586,7 +678,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! redux-logger */ "./node_modules/redux-logger/dist/redux-logger.js");
 /* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(redux_logger__WEBPACK_IMPORTED_MODULE_27__);
 /* harmony import */ var _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./alert-dialog/alert-dialog.component */ "./src/app/alert-dialog/alert-dialog.component.ts");
-/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./native-setting-dialog/native-setting-dialog.component */ "./src/app/native-setting-dialog/native-setting-dialog.component.ts");
+/* harmony import */ var _services_alert_service__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./services/alert.service */ "./src/app/services/alert.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -627,14 +720,16 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var appStore = Object(redux__WEBPACK_IMPORTED_MODULE_22__["createStore"])(_reducers_rootReducer__WEBPACK_IMPORTED_MODULE_23__["rootReducer"], Object(redux__WEBPACK_IMPORTED_MODULE_22__["applyMiddleware"])(redux_logger__WEBPACK_IMPORTED_MODULE_27___default.a));
 var AppModule = /** @class */ (function () {
-    function AppModule(winRef, zone, nativeCommunicationService, utilitiesService) {
+    function AppModule(winRef, zone, nativeCommunicationService, utilitiesService, godService) {
         var _this = this;
         this.winRef = winRef;
         this.zone = zone;
         this.nativeCommunicationService = nativeCommunicationService;
         this.utilitiesService = utilitiesService;
+        this.godService = godService;
         winRef.nativeWindow.angularComponentRef = {
             zone: this.zone,
             componentFn: function (message, value) { return _this.callFromOutside(message, value); },
@@ -646,6 +741,7 @@ var AppModule = /** @class */ (function () {
         this.utilitiesService.sendToNative('calledFromOutside ' + message, 'print');
         switch (message) {
             case 'update_location': {
+                this.utilitiesService.sendToNative('Received Location Register ' + value.minor, 'print');
                 this.nativeCommunicationService.transmitLocationRegister(value);
                 break;
             }
@@ -659,6 +755,14 @@ var AppModule = /** @class */ (function () {
             }
             case 'send_token': {
                 this.nativeCommunicationService.autoLogin(value);
+                break;
+            }
+            case 'send_wifi_ssid': {
+                this.nativeCommunicationService.checkWifi(value);
+                break;
+            }
+            case 'send_bluetooth_check': {
+                this.nativeCommunicationService.checkBluetooth();
                 break;
             }
             default: {
@@ -676,7 +780,8 @@ var AppModule = /** @class */ (function () {
                 _content_table_at_content_table_at_component__WEBPACK_IMPORTED_MODULE_18__["ContentTableAtComponent"],
                 _content_table_on_content_table_on_component__WEBPACK_IMPORTED_MODULE_19__["ContentTableOnComponent"],
                 _content_passive_content_passive_component__WEBPACK_IMPORTED_MODULE_20__["ContentPassiveComponent"],
-                _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_28__["AlertDialogComponent"]
+                _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_28__["AlertDialogComponent"],
+                _native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_29__["NativeSettingDialogComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
@@ -693,6 +798,7 @@ var AppModule = /** @class */ (function () {
                 _angular_material__WEBPACK_IMPORTED_MODULE_3__["MatFormFieldModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_3__["MatInputModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_3__["MatProgressSpinnerModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_3__["MatBadgeModule"],
                 _app_routing_module__WEBPACK_IMPORTED_MODULE_7__["AppRoutingModule"],
                 _angular_forms__WEBPACK_IMPORTED_MODULE_8__["FormsModule"],
             ],
@@ -709,17 +815,19 @@ var AppModule = /** @class */ (function () {
                 _actions_UserActions__WEBPACK_IMPORTED_MODULE_25__["UserActions"],
                 _actions_StatusActions__WEBPACK_IMPORTED_MODULE_26__["StatusActions"],
                 _services_utilities_service__WEBPACK_IMPORTED_MODULE_13__["UtilitiesService"],
-                _services_alert_service__WEBPACK_IMPORTED_MODULE_29__["AlertService"]
+                _services_alert_service__WEBPACK_IMPORTED_MODULE_30__["AlertService"]
             ],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_14__["AppComponent"]],
             entryComponents: [
-                _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_28__["AlertDialogComponent"]
+                _alert_dialog_alert_dialog_component__WEBPACK_IMPORTED_MODULE_28__["AlertDialogComponent"],
+                _native_setting_dialog_native_setting_dialog_component__WEBPACK_IMPORTED_MODULE_29__["NativeSettingDialogComponent"]
             ]
         }),
         __metadata("design:paramtypes", [_WindowRef__WEBPACK_IMPORTED_MODULE_12__["WindowRef"],
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"],
             _services_native_communication_service__WEBPACK_IMPORTED_MODULE_9__["NativeCommunicationService"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_13__["UtilitiesService"]])
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_13__["UtilitiesService"],
+            _services_god_service__WEBPACK_IMPORTED_MODULE_10__["GodService"]])
     ], AppModule);
     return AppModule;
 }());
@@ -765,7 +873,7 @@ var LOGIN_FAILED = 501;
 /*!****************************************!*\
   !*** ./src/app/config/SuccessTypes.ts ***!
   \****************************************/
-/*! exports provided: SUCCESS_OK, SUCCESS_CREATED, SUCCESS_LOGGED_IN, SUCCESS_RECONNECTED_TO_GOD, SUCCESS_RECONNECTED_TO_EXHIBIT */
+/*! exports provided: SUCCESS_OK, SUCCESS_CREATED, SUCCESS_LOGGED_IN, SUCCESS_RECONNECTED_TO_GOD, SUCCESS_RECONNECTED_TO_EXHIBIT, SUCCESS_DISCONNECTED_FROM_EXHIBIT */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -775,11 +883,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_LOGGED_IN", function() { return SUCCESS_LOGGED_IN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_RECONNECTED_TO_GOD", function() { return SUCCESS_RECONNECTED_TO_GOD; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_RECONNECTED_TO_EXHIBIT", function() { return SUCCESS_RECONNECTED_TO_EXHIBIT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SUCCESS_DISCONNECTED_FROM_EXHIBIT", function() { return SUCCESS_DISCONNECTED_FROM_EXHIBIT; });
 var SUCCESS_OK = 200;
 var SUCCESS_CREATED = 201;
 var SUCCESS_LOGGED_IN = 202;
 var SUCCESS_RECONNECTED_TO_GOD = 299;
 var SUCCESS_RECONNECTED_TO_EXHIBIT = 298;
+var SUCCESS_DISCONNECTED_FROM_EXHIBIT = 297;
 
 
 /***/ }),
@@ -802,7 +912,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1>\r\n  Willkommen bei {{locationName}}\r\n</h1>\r\n<p>{{locationId}} - Passives Exibit</p>\r\n"
+module.exports = "<h1>\r\n  Willkommen bei {{location.description}}\r\n</h1>\r\n<p>{{location.id}} - Passives Exibit</p>\r\n\r\n<button *ngIf=\"location.liked; else notLiked\" id=\"unlike\" mat-raised-button color=\"warn\" (click)=\"registerLocationUnlike()\">\r\n  <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Unlike\r\n</button>\r\n\r\n<ng-template #notLiked>\r\n  <button id=\"like\" mat-stroked-button color=\"warn\" (click)=\"registerLocationLike()\">\r\n    <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Like\r\n  </button>\r\n</ng-template>\r\n"
 
 /***/ }),
 
@@ -818,6 +928,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ContentPassiveComponent", function() { return ContentPassiveComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _services_location_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/location.service */ "./src/app/services/location.service.ts");
+/* harmony import */ var _services_native_communication_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/native-communication.service */ "./src/app/services/native-communication.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -832,14 +943,19 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 };
 
 
+
 var ContentPassiveComponent = /** @class */ (function () {
-    function ContentPassiveComponent(locationService, appStore) {
+    function ContentPassiveComponent(locationService, nativeCommunicationService, appStore) {
         var _this = this;
         this.locationService = locationService;
+        this.nativeCommunicationService = nativeCommunicationService;
         this.appStore = appStore;
         this._unsubscribe = this.appStore.subscribe(function () {
             var state = _this.appStore.getState();
             _this.updateLocationInformation(state.currentLocation);
+        });
+        this._curLocSubscribe = this.locationService.currentLocation.subscribe(function (value) {
+            _this.location = value;
         });
     }
     ContentPassiveComponent.prototype.ngOnInit = function () {
@@ -847,12 +963,17 @@ var ContentPassiveComponent = /** @class */ (function () {
         this.updateLocationInformation(state.currentLocation);
     };
     ContentPassiveComponent.prototype.updateLocationInformation = function (value) {
-        this._location = value;
-        this.locationName = this._location.description;
-        this.locationId = this._location.id;
+        this.location = value;
     };
     ContentPassiveComponent.prototype.ngOnDestroy = function () {
         this._unsubscribe();
+        this._curLocSubscribe.unsubscribe();
+    };
+    ContentPassiveComponent.prototype.registerLocationLike = function () {
+        this.nativeCommunicationService.transmitLocationLike(true);
+    };
+    ContentPassiveComponent.prototype.registerLocationUnlike = function () {
+        this.nativeCommunicationService.transmitLocationLike(false);
     };
     ContentPassiveComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -860,8 +981,9 @@ var ContentPassiveComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./content-passive.component.html */ "./src/app/content-passive/content-passive.component.html"),
             styles: [__webpack_require__(/*! ./content-passive.component.css */ "./src/app/content-passive/content-passive.component.css")]
         }),
-        __param(1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
-        __metadata("design:paramtypes", [_services_location_service__WEBPACK_IMPORTED_MODULE_1__["LocationService"], Object])
+        __param(2, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
+        __metadata("design:paramtypes", [_services_location_service__WEBPACK_IMPORTED_MODULE_1__["LocationService"],
+            _services_native_communication_service__WEBPACK_IMPORTED_MODULE_2__["NativeCommunicationService"], Object])
     ], ContentPassiveComponent);
     return ContentPassiveComponent;
 }());
@@ -888,7 +1010,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1>\r\n  Willkommen bei {{locationName}}\r\n</h1>\r\n\r\n\r\n<div *ngIf=\"locationStatusFree\">\r\n  <div *ngIf=\"locationType == 3\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"startOnTableSearch()\">Mitspielen</button>\r\n    <p *ngIf=\"!joinGame\">Bitte lege Dein Handy auf ein Beacon am Table</p>\r\n    <h4 *ngIf=\"locationSocketStatus === 'OCCUPIED'\">Dieses Beacon ist schon belegt!</h4>\r\n\r\n    <div class=\"webdevtools\" *ngIf=\"isWeb && !joinGame\" style=\"margin-top:20px\">\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToOnTable()\">Register Location TableOn</button>\r\n    </div>\r\n  </div>\r\n  <div *ngIf=\"locationType == 6\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"redirectToOnTableBehavior()\">Mitspielen</button>\r\n  </div>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOccupied\">\r\n  <h3>Der Table ist gerade nicht frei, probieren Sie es später erneut!</h3>\r\n</div>\r\n\r\n<button id=\"like\" mat-stroked-button color=\"warn\" (click)=\"registerLocationLike()\">\r\n  <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Like\r\n</button>\r\n"
+module.exports = "<h1>\r\n  Willkommen bei {{location.description}}\r\n</h1>\r\n\r\n\r\n<div *ngIf=\"locationStatusFree\">\r\n  <div *ngIf=\"locationType == 3\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"startOnTableSearch()\">Mitspielen</button>\r\n    <p *ngIf=\"!joinGame\">Bitte lege Dein Handy auf ein Beacon am Table</p>\r\n    <h4 *ngIf=\"locationSocketStatus === 'OCCUPIED'\">Dieses Beacon ist schon belegt!</h4>\r\n\r\n    <div class=\"webdevtools\" *ngIf=\"isWeb && !joinGame\" style=\"margin-top:20px\">\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToOnTable()\">Register Location TableOn</button>\r\n      <button mat-raised-button color=\"primary\" (click)=\"redirectToPassiveExhibit()\">Register Location Passive 1009</button>\r\n    </div>\r\n  </div>\r\n  <div *ngIf=\"locationType == 6\">\r\n    <h3>Table ist frei</h3>\r\n    <button *ngIf=\"joinGame\" mat-raised-button color=\"primary\" (click)=\"redirectToOnTableBehavior()\">Mitspielen</button>\r\n  </div>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOccupied\">\r\n  <h3>Der Table ist gerade nicht frei, probieren Sie es später erneut!</h3>\r\n</div>\r\n\r\n<div *ngIf=\"locationStatusOffline\">\r\n  <h3>Beim Table ist leider ein Problem aufgetreten und steht daher zur Zeit nicht zur Verfügung!</h3>\r\n</div>\r\n\r\n<button *ngIf=\"location.liked; else notLiked\" id=\"unlike\" mat-raised-button color=\"warn\" (click)=\"registerLocationUnlike()\">\r\n  <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Unlike\r\n</button>\r\n\r\n<ng-template #notLiked>\r\n  <button id=\"like\" mat-stroked-button color=\"warn\" (click)=\"registerLocationLike()\">\r\n    <mat-icon aria-label=\"Example icon-button with a heart icon\">favorite</mat-icon>&nbsp;Like\r\n  </button>\r\n</ng-template>\r\n"
 
 /***/ }),
 
@@ -945,8 +1067,20 @@ var ContentTableAtComponent = /** @class */ (function () {
             _this.updateLocationStatus(state.locationStatus);
             _this.locationSocketStatus = state.locationSocketStatus;
         });
+        this._curLocSubscribe = this.locationService.currentLocation.subscribe(function (value) {
+            _this.location = value;
+        });
+        this.navigationSubscription = this.router.events.subscribe(function (e) {
+            // If it is a NavigationEnd event re-initalise the component
+            if (e instanceof _angular_router__WEBPACK_IMPORTED_MODULE_3__["NavigationEnd"]) {
+                _this.initialiseInvites();
+            }
+        });
     }
     ContentTableAtComponent.prototype.ngOnInit = function () {
+        this.initialiseInvites();
+    };
+    ContentTableAtComponent.prototype.initialiseInvites = function () {
         var _this = this;
         this.utilitiesService.sendToNative('TABLE-AT', 'print');
         this.location = this.locationService.currentLocation.value;
@@ -954,6 +1088,7 @@ var ContentTableAtComponent = /** @class */ (function () {
         this.locationId = this.location.id;
         this.locationStatusFree = false;
         this.locationStatusOccupied = false;
+        this.locationStatusOffline = false;
         this.locationType = this.location.locationTypeId;
         this.joinGame = true;
         this.isWeb = this.utilitiesService.isWeb;
@@ -967,10 +1102,14 @@ var ContentTableAtComponent = /** @class */ (function () {
         // Stop the timer
         this._statusTimerSubscription.unsubscribe();
         this._unsubscribe();
+        this._curLocSubscribe.unsubscribe();
     };
     ContentTableAtComponent.prototype.redirectToOnTable = function () {
         this.utilitiesService.sendToNative('REDIRECT-TO-TABLE-ON', 'print');
         this.nativeCommunicationService.transmitLocationRegister({ minor: 1000, major: 100 });
+    };
+    ContentTableAtComponent.prototype.redirectToPassiveExhibit = function () {
+        this.nativeCommunicationService.transmitLocationRegister({ minor: 1009, major: 10 });
     };
     ContentTableAtComponent.prototype.redirectToOnTableBehavior = function () {
         this.utilitiesService.sendToNative('REDIRECT-TO-TABLE-ON-Behavior', 'print');
@@ -981,15 +1120,23 @@ var ContentTableAtComponent = /** @class */ (function () {
         if (status === 'FREE') {
             this.locationStatusFree = true;
             this.locationStatusOccupied = false;
+            this.locationStatusOffline = false;
         }
-        if (status === 'OCCUPIED') {
+        else if (status === 'OCCUPIED') {
             this.locationStatusFree = false;
             this.locationStatusOccupied = true;
+            this.locationStatusOffline = false;
+        }
+        else if (status === 'OFFLINE') {
+            this.locationStatusOffline = true;
+            this.locationStatusFree = false;
+            this.locationStatusOccupied = false;
         }
     };
     // saves ID of current exhibit in localstorage
     ContentTableAtComponent.prototype.startOnTableSearch = function () {
         this.joinGame = false;
+        this.locationService.stopLocationScanning();
         this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(this.locationId));
         // localStorage.setItem('atExhibitParent', JSON.stringify(this.locationId));
     };
@@ -1056,6 +1203,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_location_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/location.service */ "./src/app/services/location.service.ts");
 /* harmony import */ var _services_exhibit_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/exhibit.service */ "./src/app/services/exhibit.service.ts");
 /* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/LocationActions */ "./src/app/actions/LocationActions.ts");
+/* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/utilities.service */ "./src/app/services/utilities.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1073,12 +1221,14 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var ContentTableOnComponent = /** @class */ (function () {
-    function ContentTableOnComponent(godService, exhibitService, locationService, appStore, locationActions) {
+    function ContentTableOnComponent(godService, exhibitService, locationService, utilitiesService, appStore, locationActions) {
         var _this = this;
         this.godService = godService;
         this.exhibitService = exhibitService;
         this.locationService = locationService;
+        this.utilitiesService = utilitiesService;
         this.appStore = appStore;
         this.locationActions = locationActions;
         this._unsubscribe = this.appStore.subscribe(function () {
@@ -1096,15 +1246,17 @@ var ContentTableOnComponent = /** @class */ (function () {
         this.exhibitService.connectOD();
         // localStorage.setItem('onExhibit', JSON.stringify(true));
         this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeShowDismissed(false));
+        this.locationService.stopLocationScanning();
     };
     ContentTableOnComponent.prototype.ngOnDestroy = function () {
-        this.disconnectFromExhibit();
+        this.exhibitService.disconnect();
         this._unsubscribe();
+        this.appStore.dispatch(this.locationActions.changeShowDismissed(true));
+        this.locationService.startLocationScanning();
     };
     ContentTableOnComponent.prototype.disconnectFromExhibit = function () {
         this.exhibitService.disconnect();
-        this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(0));
-        this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
     };
     ContentTableOnComponent.prototype.sendMessageToExhibit = function () {
         this.exhibitService.sendMessage();
@@ -1115,10 +1267,11 @@ var ContentTableOnComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./content-table-on.component.html */ "./src/app/content-table-on/content-table-on.component.html"),
             styles: [__webpack_require__(/*! ./content-table-on.component.css */ "./src/app/content-table-on/content-table-on.component.css")]
         }),
-        __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
+        __param(4, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
         __metadata("design:paramtypes", [_services_god_service__WEBPACK_IMPORTED_MODULE_1__["GodService"],
             _services_exhibit_service__WEBPACK_IMPORTED_MODULE_3__["ExhibitService"],
-            _services_location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__["LocationActions"]])
+            _services_location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__["UtilitiesService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_4__["LocationActions"]])
     ], ContentTableOnComponent);
     return ContentTableOnComponent;
 }());
@@ -1257,6 +1410,85 @@ var MainViewComponent = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/native-setting-dialog/native-setting-dialog.component.html":
+/*!****************************************************************************!*\
+  !*** ./src/app/native-setting-dialog/native-setting-dialog.component.html ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<h2 matDialogTitle>{{data.settingtype}} deactivated</h2>\r\n<div mat-dialog-content>\r\n  <p>To use the app, please turn on {{data.settingtype}}!</p>\r\n</div>\r\n<mat-dialog-actions align=\"end\">\r\n  <button mat-raised-button color=\"primary\" (tap)=\"cancelDialog()\">No</button>\r\n  <button mat-raised-button color=\"primary\" (tap)=\"confirmDialog()\">{{data.confirmDialogText}}</button>\r\n</mat-dialog-actions>\r\n\r\n"
+
+/***/ }),
+
+/***/ "./src/app/native-setting-dialog/native-setting-dialog.component.scss":
+/*!****************************************************************************!*\
+  !*** ./src/app/native-setting-dialog/native-setting-dialog.component.scss ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ".mat-elevation-z0{box-shadow:0 0 0 0 rgba(0,0,0,.2),0 0 0 0 rgba(0,0,0,.14),0 0 0 0 rgba(0,0,0,.12)}.mat-elevation-z1{box-shadow:0 2px 1px -1px rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 1px 3px 0 rgba(0,0,0,.12)}.mat-elevation-z2{box-shadow:0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12)}.mat-elevation-z3{box-shadow:0 3px 3px -2px rgba(0,0,0,.2),0 3px 4px 0 rgba(0,0,0,.14),0 1px 8px 0 rgba(0,0,0,.12)}.mat-elevation-z4{box-shadow:0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12)}.mat-elevation-z5{box-shadow:0 3px 5px -1px rgba(0,0,0,.2),0 5px 8px 0 rgba(0,0,0,.14),0 1px 14px 0 rgba(0,0,0,.12)}.mat-elevation-z6{box-shadow:0 3px 5px -1px rgba(0,0,0,.2),0 6px 10px 0 rgba(0,0,0,.14),0 1px 18px 0 rgba(0,0,0,.12)}.mat-elevation-z7{box-shadow:0 4px 5px -2px rgba(0,0,0,.2),0 7px 10px 1px rgba(0,0,0,.14),0 2px 16px 1px rgba(0,0,0,.12)}.mat-elevation-z8{box-shadow:0 5px 5px -3px rgba(0,0,0,.2),0 8px 10px 1px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12)}.mat-elevation-z9{box-shadow:0 5px 6px -3px rgba(0,0,0,.2),0 9px 12px 1px rgba(0,0,0,.14),0 3px 16px 2px rgba(0,0,0,.12)}.mat-elevation-z10{box-shadow:0 6px 6px -3px rgba(0,0,0,.2),0 10px 14px 1px rgba(0,0,0,.14),0 4px 18px 3px rgba(0,0,0,.12)}.mat-elevation-z11{box-shadow:0 6px 7px -4px rgba(0,0,0,.2),0 11px 15px 1px rgba(0,0,0,.14),0 4px 20px 3px rgba(0,0,0,.12)}.mat-elevation-z12{box-shadow:0 7px 8px -4px rgba(0,0,0,.2),0 12px 17px 2px rgba(0,0,0,.14),0 5px 22px 4px rgba(0,0,0,.12)}.mat-elevation-z13{box-shadow:0 7px 8px -4px rgba(0,0,0,.2),0 13px 19px 2px rgba(0,0,0,.14),0 5px 24px 4px rgba(0,0,0,.12)}.mat-elevation-z14{box-shadow:0 7px 9px -4px rgba(0,0,0,.2),0 14px 21px 2px rgba(0,0,0,.14),0 5px 26px 4px rgba(0,0,0,.12)}.mat-elevation-z15{box-shadow:0 8px 9px -5px rgba(0,0,0,.2),0 15px 22px 2px rgba(0,0,0,.14),0 6px 28px 5px rgba(0,0,0,.12)}.mat-elevation-z16{box-shadow:0 8px 10px -5px rgba(0,0,0,.2),0 16px 24px 2px rgba(0,0,0,.14),0 6px 30px 5px rgba(0,0,0,.12)}.mat-elevation-z17{box-shadow:0 8px 11px -5px rgba(0,0,0,.2),0 17px 26px 2px rgba(0,0,0,.14),0 6px 32px 5px rgba(0,0,0,.12)}.mat-elevation-z18{box-shadow:0 9px 11px -5px rgba(0,0,0,.2),0 18px 28px 2px rgba(0,0,0,.14),0 7px 34px 6px rgba(0,0,0,.12)}.mat-elevation-z19{box-shadow:0 9px 12px -6px rgba(0,0,0,.2),0 19px 29px 2px rgba(0,0,0,.14),0 7px 36px 6px rgba(0,0,0,.12)}.mat-elevation-z20{box-shadow:0 10px 13px -6px rgba(0,0,0,.2),0 20px 31px 3px rgba(0,0,0,.14),0 8px 38px 7px rgba(0,0,0,.12)}.mat-elevation-z21{box-shadow:0 10px 13px -6px rgba(0,0,0,.2),0 21px 33px 3px rgba(0,0,0,.14),0 8px 40px 7px rgba(0,0,0,.12)}.mat-elevation-z22{box-shadow:0 10px 14px -6px rgba(0,0,0,.2),0 22px 35px 3px rgba(0,0,0,.14),0 8px 42px 7px rgba(0,0,0,.12)}.mat-elevation-z23{box-shadow:0 11px 14px -7px rgba(0,0,0,.2),0 23px 36px 3px rgba(0,0,0,.14),0 9px 44px 8px rgba(0,0,0,.12)}.mat-elevation-z24{box-shadow:0 11px 15px -7px rgba(0,0,0,.2),0 24px 38px 3px rgba(0,0,0,.14),0 9px 46px 8px rgba(0,0,0,.12)}.mat-badge-content{font-weight:600;font-size:12px;font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-badge-small .mat-badge-content{font-size:6px}.mat-badge-large .mat-badge-content{font-size:24px}.mat-h1,.mat-headline,.mat-typography h1{font:400 24px/32px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 16px}.mat-h2,.mat-title,.mat-typography h2{font:500 20px/32px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 16px}.mat-h3,.mat-subheading-2,.mat-typography h3{font:400 16px/28px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 16px}.mat-h4,.mat-subheading-1,.mat-typography h4{font:400 15px/24px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 16px}.mat-h5,.mat-typography h5{font:400 11.62px/20px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 12px}.mat-h6,.mat-typography h6{font:400 9.38px/20px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 12px}.mat-body-2,.mat-body-strong{font:500 14px/24px Roboto,\"Helvetica Neue\",sans-serif}.mat-body,.mat-body-1,.mat-typography{font:400 14px/20px Roboto,\"Helvetica Neue\",sans-serif}.mat-body p,.mat-body-1 p,.mat-typography p{margin:0 0 12px}.mat-caption,.mat-small{font:400 12px/20px Roboto,\"Helvetica Neue\",sans-serif}.mat-display-4,.mat-typography .mat-display-4{font:300 112px/112px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 56px;letter-spacing:-.05em}.mat-display-3,.mat-typography .mat-display-3{font:400 56px/56px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 64px;letter-spacing:-.02em}.mat-display-2,.mat-typography .mat-display-2{font:400 45px/48px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 64px;letter-spacing:-.005em}.mat-display-1,.mat-typography .mat-display-1{font:400 34px/40px Roboto,\"Helvetica Neue\",sans-serif;margin:0 0 64px}.mat-bottom-sheet-container{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:16px;font-weight:400}.mat-button,.mat-fab,.mat-flat-button,.mat-icon-button,.mat-mini-fab,.mat-raised-button,.mat-stroked-button{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:14px;font-weight:500}.mat-button-toggle{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-card{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-card-title{font-size:24px;font-weight:400}.mat-card-content,.mat-card-header .mat-card-title,.mat-card-subtitle{font-size:14px}.mat-checkbox{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-checkbox-layout .mat-checkbox-label{line-height:24px}.mat-chip{font-size:13px;line-height:18px}.mat-chip .mat-chip-remove.mat-icon,.mat-chip .mat-chip-trailing-icon.mat-icon{font-size:18px}.mat-table{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-header-cell{font-size:12px;font-weight:500}.mat-cell,.mat-footer-cell{font-size:14px}.mat-calendar{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-calendar-body{font-size:13px}.mat-calendar-body-label,.mat-calendar-period-button{font-size:14px;font-weight:500}.mat-calendar-table-header th{font-size:11px;font-weight:400}.mat-dialog-title{font:500 20px/32px Roboto,\"Helvetica Neue\",sans-serif}.mat-expansion-panel-header{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:15px;font-weight:400}.mat-expansion-panel-content{font:400 14px/20px Roboto,\"Helvetica Neue\",sans-serif}.mat-form-field{font-size:inherit;font-weight:400;line-height:1.125;font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-form-field-wrapper{padding-bottom:1.34375em}.mat-form-field-prefix .mat-icon,.mat-form-field-suffix .mat-icon{font-size:150%;line-height:1.125}.mat-form-field-prefix .mat-icon-button,.mat-form-field-suffix .mat-icon-button{height:1.5em;width:1.5em}.mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field-suffix .mat-icon-button .mat-icon{height:1.125em;line-height:1.125}.mat-form-field-infix{padding:.5em 0;border-top:.84375em solid transparent}.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{-webkit-transform:translateY(-1.34375em) scale(.75);transform:translateY(-1.34375em) scale(.75);width:133.33333%}.mat-form-field-can-float .mat-input-server[label]:not(:label-shown)+.mat-form-field-label-wrapper .mat-form-field-label{-webkit-transform:translateY(-1.34374em) scale(.75);transform:translateY(-1.34374em) scale(.75);width:133.33334%}.mat-form-field-label-wrapper{top:-.84375em;padding-top:.84375em}.mat-form-field-label{top:1.34375em}.mat-form-field-underline{bottom:1.34375em}.mat-form-field-subscript-wrapper{font-size:75%;margin-top:.66667em;top:calc(100% - 1.79167em)}.mat-form-field-appearance-legacy .mat-form-field-wrapper{padding-bottom:1.25em}.mat-form-field-appearance-legacy .mat-form-field-infix{padding:.4375em 0}.mat-form-field-appearance-legacy.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-appearance-legacy.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{-webkit-transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.001px);transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.001px);-ms-transform:translateY(-1.28125em) scale(.75);width:133.33333%}.mat-form-field-appearance-legacy.mat-form-field-can-float .mat-form-field-autofill-control:-webkit-autofill+.mat-form-field-label-wrapper .mat-form-field-label{-webkit-transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.00101px);transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.00101px);-ms-transform:translateY(-1.28124em) scale(.75);width:133.33334%}.mat-form-field-appearance-legacy.mat-form-field-can-float .mat-input-server[label]:not(:label-shown)+.mat-form-field-label-wrapper .mat-form-field-label{-webkit-transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.00102px);transform:translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.00102px);-ms-transform:translateY(-1.28123em) scale(.75);width:133.33335%}.mat-form-field-appearance-legacy .mat-form-field-label{top:1.28125em}.mat-form-field-appearance-legacy .mat-form-field-underline{bottom:1.25em}.mat-form-field-appearance-legacy .mat-form-field-subscript-wrapper{margin-top:.54167em;top:calc(100% - 1.66667em)}.mat-form-field-appearance-fill .mat-form-field-infix{padding:.25em 0 .75em 0}.mat-form-field-appearance-fill .mat-form-field-label{top:1.09375em;margin-top:-.5em}.mat-form-field-appearance-fill.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-appearance-fill.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{-webkit-transform:translateY(-.59375em) scale(.75);transform:translateY(-.59375em) scale(.75);width:133.33333%}.mat-form-field-appearance-fill.mat-form-field-can-float .mat-input-server[label]:not(:label-shown)+.mat-form-field-label-wrapper .mat-form-field-label{-webkit-transform:translateY(-.59374em) scale(.75);transform:translateY(-.59374em) scale(.75);width:133.33334%}.mat-form-field-appearance-outline .mat-form-field-infix{padding:1em 0 1em 0}.mat-form-field-appearance-outline .mat-form-field-label{top:1.84375em;margin-top:-.25em}.mat-form-field-appearance-outline.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{-webkit-transform:translateY(-1.59375em) scale(.75);transform:translateY(-1.59375em) scale(.75);width:133.33333%}.mat-form-field-appearance-outline.mat-form-field-can-float .mat-input-server[label]:not(:label-shown)+.mat-form-field-label-wrapper .mat-form-field-label{-webkit-transform:translateY(-1.59374em) scale(.75);transform:translateY(-1.59374em) scale(.75);width:133.33334%}.mat-grid-tile-footer,.mat-grid-tile-header{font-size:14px}.mat-grid-tile-footer .mat-line,.mat-grid-tile-header .mat-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box}.mat-grid-tile-footer .mat-line:nth-child(n+2),.mat-grid-tile-header .mat-line:nth-child(n+2){font-size:12px}input.mat-input-element{margin-top:-.0625em}.mat-menu-item{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:16px;font-weight:400}.mat-paginator,.mat-paginator-page-size .mat-select-trigger{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:12px}.mat-radio-button{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-select{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-select-trigger{height:1.125em}.mat-slide-toggle-content{font:400 14px/20px Roboto,\"Helvetica Neue\",sans-serif}.mat-slider-thumb-label-text{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:12px;font-weight:500}.mat-stepper-horizontal,.mat-stepper-vertical{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-step-label{font-size:14px;font-weight:400}.mat-step-label-selected{font-size:14px;font-weight:500}.mat-tab-group{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-tab-label,.mat-tab-link{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:14px;font-weight:500}.mat-toolbar,.mat-toolbar h1,.mat-toolbar h2,.mat-toolbar h3,.mat-toolbar h4,.mat-toolbar h5,.mat-toolbar h6{font:500 20px/32px Roboto,\"Helvetica Neue\",sans-serif;margin:0}.mat-tooltip{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:10px;padding-top:6px;padding-bottom:6px}.mat-tooltip-handset{font-size:14px;padding-top:9px;padding-bottom:9px}.mat-list-item{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-list-option{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-list .mat-list-item,.mat-nav-list .mat-list-item,.mat-selection-list .mat-list-item{font-size:16px}.mat-list .mat-list-item .mat-line,.mat-nav-list .mat-list-item .mat-line,.mat-selection-list .mat-list-item .mat-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box}.mat-list .mat-list-item .mat-line:nth-child(n+2),.mat-nav-list .mat-list-item .mat-line:nth-child(n+2),.mat-selection-list .mat-list-item .mat-line:nth-child(n+2){font-size:14px}.mat-list .mat-list-option,.mat-nav-list .mat-list-option,.mat-selection-list .mat-list-option{font-size:16px}.mat-list .mat-list-option .mat-line,.mat-nav-list .mat-list-option .mat-line,.mat-selection-list .mat-list-option .mat-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box}.mat-list .mat-list-option .mat-line:nth-child(n+2),.mat-nav-list .mat-list-option .mat-line:nth-child(n+2),.mat-selection-list .mat-list-option .mat-line:nth-child(n+2){font-size:14px}.mat-list .mat-subheader,.mat-nav-list .mat-subheader,.mat-selection-list .mat-subheader{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:14px;font-weight:500}.mat-list[dense] .mat-list-item,.mat-nav-list[dense] .mat-list-item,.mat-selection-list[dense] .mat-list-item{font-size:12px}.mat-list[dense] .mat-list-item .mat-line,.mat-nav-list[dense] .mat-list-item .mat-line,.mat-selection-list[dense] .mat-list-item .mat-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box}.mat-list[dense] .mat-list-item .mat-line:nth-child(n+2),.mat-nav-list[dense] .mat-list-item .mat-line:nth-child(n+2),.mat-selection-list[dense] .mat-list-item .mat-line:nth-child(n+2){font-size:12px}.mat-list[dense] .mat-list-option,.mat-nav-list[dense] .mat-list-option,.mat-selection-list[dense] .mat-list-option{font-size:12px}.mat-list[dense] .mat-list-option .mat-line,.mat-nav-list[dense] .mat-list-option .mat-line,.mat-selection-list[dense] .mat-list-option .mat-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box}.mat-list[dense] .mat-list-option .mat-line:nth-child(n+2),.mat-nav-list[dense] .mat-list-option .mat-line:nth-child(n+2),.mat-selection-list[dense] .mat-list-option .mat-line:nth-child(n+2){font-size:12px}.mat-list[dense] .mat-subheader,.mat-nav-list[dense] .mat-subheader,.mat-selection-list[dense] .mat-subheader{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:12px;font-weight:500}.mat-option{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:16px}.mat-optgroup-label{font:500 14px/24px Roboto,\"Helvetica Neue\",sans-serif}.mat-simple-snackbar{font-family:Roboto,\"Helvetica Neue\",sans-serif;font-size:14px}.mat-simple-snackbar-action{line-height:1;font-family:inherit;font-size:inherit;font-weight:500}.mat-tree{font-family:Roboto,\"Helvetica Neue\",sans-serif}.mat-tree-node{font-weight:400;font-size:14px}.mat-ripple{overflow:hidden}@media screen and (-ms-high-contrast:active){.mat-ripple{display:none}}.mat-ripple.mat-ripple-unbounded{overflow:visible}.mat-ripple-element{position:absolute;border-radius:50%;pointer-events:none;transition:opacity,-webkit-transform 0s cubic-bezier(0,0,.2,1);transition:opacity,transform 0s cubic-bezier(0,0,.2,1);transition:opacity,transform 0s cubic-bezier(0,0,.2,1),-webkit-transform 0s cubic-bezier(0,0,.2,1);-webkit-transform:scale(0);transform:scale(0)}.cdk-visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;outline:0;-webkit-appearance:none;-moz-appearance:none}.cdk-global-overlay-wrapper,.cdk-overlay-container{pointer-events:none;top:0;left:0;height:100%;width:100%}.cdk-overlay-container{position:fixed;z-index:1000}.cdk-overlay-container:empty{display:none}.cdk-global-overlay-wrapper{display:flex;position:absolute;z-index:1000}.cdk-overlay-pane{position:absolute;pointer-events:auto;box-sizing:border-box;z-index:1000;display:flex;max-width:100%;max-height:100%}.cdk-overlay-backdrop{position:absolute;top:0;bottom:0;left:0;right:0;z-index:1000;pointer-events:auto;-webkit-tap-highlight-color:transparent;transition:opacity .4s cubic-bezier(.25,.8,.25,1);opacity:0}.cdk-overlay-backdrop.cdk-overlay-backdrop-showing{opacity:1}@media screen and (-ms-high-contrast:active){.cdk-overlay-backdrop.cdk-overlay-backdrop-showing{opacity:.6}}.cdk-overlay-dark-backdrop{background:rgba(0,0,0,.288)}.cdk-overlay-transparent-backdrop,.cdk-overlay-transparent-backdrop.cdk-overlay-backdrop-showing{opacity:0}.cdk-overlay-connected-position-bounding-box{position:absolute;z-index:1000;display:flex;flex-direction:column;min-width:1px;min-height:1px}.cdk-global-scrollblock{position:fixed;width:100%;overflow-y:scroll}.cdk-text-field-autofill-monitored:-webkit-autofill{-webkit-animation-name:cdk-text-field-autofill-start;animation-name:cdk-text-field-autofill-start}.cdk-text-field-autofill-monitored:not(:-webkit-autofill){-webkit-animation-name:cdk-text-field-autofill-end;animation-name:cdk-text-field-autofill-end}textarea.cdk-textarea-autosize{resize:none}textarea.cdk-textarea-autosize-measuring{height:auto!important;overflow:hidden!important;padding:2px 0!important;box-sizing:content-box!important}.mat-ripple-element{background-color:rgba(0,0,0,.1)}.mat-option{color:rgba(0,0,0,.87)}.mat-option:focus:not(.mat-option-disabled),.mat-option:hover:not(.mat-option-disabled){background:rgba(0,0,0,.04)}.mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled){background:rgba(0,0,0,.04)}.mat-option.mat-active{background:rgba(0,0,0,.04);color:rgba(0,0,0,.87)}.mat-option.mat-option-disabled{color:rgba(0,0,0,.38)}.mat-primary .mat-option.mat-selected:not(.mat-option-disabled){color:#673ab7}.mat-accent .mat-option.mat-selected:not(.mat-option-disabled){color:#ffd740}.mat-warn .mat-option.mat-selected:not(.mat-option-disabled){color:#f44336}.mat-optgroup-label{color:rgba(0,0,0,.54)}.mat-optgroup-disabled .mat-optgroup-label{color:rgba(0,0,0,.38)}.mat-pseudo-checkbox{color:rgba(0,0,0,.54)}.mat-pseudo-checkbox::after{color:#fafafa}.mat-accent .mat-pseudo-checkbox-checked,.mat-accent .mat-pseudo-checkbox-indeterminate,.mat-pseudo-checkbox-checked,.mat-pseudo-checkbox-indeterminate{background:#ffd740}.mat-primary .mat-pseudo-checkbox-checked,.mat-primary .mat-pseudo-checkbox-indeterminate{background:#673ab7}.mat-warn .mat-pseudo-checkbox-checked,.mat-warn .mat-pseudo-checkbox-indeterminate{background:#f44336}.mat-pseudo-checkbox-checked.mat-pseudo-checkbox-disabled,.mat-pseudo-checkbox-indeterminate.mat-pseudo-checkbox-disabled{background:#b0b0b0}.mat-app-background{background-color:#fafafa;color:rgba(0,0,0,.87)}.mat-theme-loaded-marker{display:none}.mat-autocomplete-panel{background:#fff;color:rgba(0,0,0,.87)}.mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover){background:#fff}.mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover):not(.mat-option-disabled){color:rgba(0,0,0,.87)}.mat-badge-content{color:#fff;background:#673ab7}.mat-badge-accent .mat-badge-content{background:#ffd740;color:rgba(0,0,0,.87)}.mat-badge-warn .mat-badge-content{color:#fff;background:#f44336}.mat-badge{position:relative}.mat-badge-hidden .mat-badge-content{display:none}.mat-badge-content{position:absolute;text-align:center;display:inline-block;border-radius:50%;transition:-webkit-transform .2s ease-in-out;transition:transform .2s ease-in-out;transition:transform .2s ease-in-out, -webkit-transform .2s ease-in-out;-webkit-transform:scale(.6);transform:scale(.6);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;pointer-events:none}.mat-badge-content.mat-badge-active{-webkit-transform:none;transform:none}.mat-badge-small .mat-badge-content{width:16px;height:16px;line-height:16px}@media screen and (-ms-high-contrast:active){.mat-badge-small .mat-badge-content{outline:solid 1px;border-radius:0}}.mat-badge-small.mat-badge-above .mat-badge-content{top:-8px}.mat-badge-small.mat-badge-below .mat-badge-content{bottom:-8px}.mat-badge-small.mat-badge-before .mat-badge-content{left:-16px}[dir=rtl] .mat-badge-small.mat-badge-before .mat-badge-content{left:auto;right:-16px}.mat-badge-small.mat-badge-after .mat-badge-content{right:-16px}[dir=rtl] .mat-badge-small.mat-badge-after .mat-badge-content{right:auto;left:-16px}.mat-badge-small.mat-badge-overlap.mat-badge-before .mat-badge-content{left:-8px}[dir=rtl] .mat-badge-small.mat-badge-overlap.mat-badge-before .mat-badge-content{left:auto;right:-8px}.mat-badge-small.mat-badge-overlap.mat-badge-after .mat-badge-content{right:-8px}[dir=rtl] .mat-badge-small.mat-badge-overlap.mat-badge-after .mat-badge-content{right:auto;left:-8px}.mat-badge-medium .mat-badge-content{width:22px;height:22px;line-height:22px}@media screen and (-ms-high-contrast:active){.mat-badge-medium .mat-badge-content{outline:solid 1px;border-radius:0}}.mat-badge-medium.mat-badge-above .mat-badge-content{top:-11px}.mat-badge-medium.mat-badge-below .mat-badge-content{bottom:-11px}.mat-badge-medium.mat-badge-before .mat-badge-content{left:-22px}[dir=rtl] .mat-badge-medium.mat-badge-before .mat-badge-content{left:auto;right:-22px}.mat-badge-medium.mat-badge-after .mat-badge-content{right:-22px}[dir=rtl] .mat-badge-medium.mat-badge-after .mat-badge-content{right:auto;left:-22px}.mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{left:-11px}[dir=rtl] .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content{left:auto;right:-11px}.mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content{right:-11px}[dir=rtl] .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content{right:auto;left:-11px}.mat-badge-large .mat-badge-content{width:28px;height:28px;line-height:28px}@media screen and (-ms-high-contrast:active){.mat-badge-large .mat-badge-content{outline:solid 1px;border-radius:0}}.mat-badge-large.mat-badge-above .mat-badge-content{top:-14px}.mat-badge-large.mat-badge-below .mat-badge-content{bottom:-14px}.mat-badge-large.mat-badge-before .mat-badge-content{left:-28px}[dir=rtl] .mat-badge-large.mat-badge-before .mat-badge-content{left:auto;right:-28px}.mat-badge-large.mat-badge-after .mat-badge-content{right:-28px}[dir=rtl] .mat-badge-large.mat-badge-after .mat-badge-content{right:auto;left:-28px}.mat-badge-large.mat-badge-overlap.mat-badge-before .mat-badge-content{left:-14px}[dir=rtl] .mat-badge-large.mat-badge-overlap.mat-badge-before .mat-badge-content{left:auto;right:-14px}.mat-badge-large.mat-badge-overlap.mat-badge-after .mat-badge-content{right:-14px}[dir=rtl] .mat-badge-large.mat-badge-overlap.mat-badge-after .mat-badge-content{right:auto;left:-14px}.mat-bottom-sheet-container{background:#fff;color:rgba(0,0,0,.87)}.mat-button,.mat-icon-button,.mat-stroked-button{color:inherit;background:0 0}.mat-button.mat-primary,.mat-icon-button.mat-primary,.mat-stroked-button.mat-primary{color:#673ab7}.mat-button.mat-accent,.mat-icon-button.mat-accent,.mat-stroked-button.mat-accent{color:#ffd740}.mat-button.mat-warn,.mat-icon-button.mat-warn,.mat-stroked-button.mat-warn{color:#f44336}.mat-button.mat-accent[disabled],.mat-button.mat-primary[disabled],.mat-button.mat-warn[disabled],.mat-button[disabled][disabled],.mat-icon-button.mat-accent[disabled],.mat-icon-button.mat-primary[disabled],.mat-icon-button.mat-warn[disabled],.mat-icon-button[disabled][disabled],.mat-stroked-button.mat-accent[disabled],.mat-stroked-button.mat-primary[disabled],.mat-stroked-button.mat-warn[disabled],.mat-stroked-button[disabled][disabled]{color:rgba(0,0,0,.26)}.mat-button.mat-primary .mat-button-focus-overlay,.mat-icon-button.mat-primary .mat-button-focus-overlay,.mat-stroked-button.mat-primary .mat-button-focus-overlay{background-color:rgba(103,58,183,.12)}.mat-button.mat-accent .mat-button-focus-overlay,.mat-icon-button.mat-accent .mat-button-focus-overlay,.mat-stroked-button.mat-accent .mat-button-focus-overlay{background-color:rgba(255,215,64,.12)}.mat-button.mat-warn .mat-button-focus-overlay,.mat-icon-button.mat-warn .mat-button-focus-overlay,.mat-stroked-button.mat-warn .mat-button-focus-overlay{background-color:rgba(244,67,54,.12)}.mat-button[disabled] .mat-button-focus-overlay,.mat-icon-button[disabled] .mat-button-focus-overlay,.mat-stroked-button[disabled] .mat-button-focus-overlay{background-color:transparent}.mat-button.mat-primary .mat-ripple-element,.mat-icon-button.mat-primary .mat-ripple-element,.mat-stroked-button.mat-primary .mat-ripple-element{background-color:rgba(103,58,183,.1)}.mat-button.mat-accent .mat-ripple-element,.mat-icon-button.mat-accent .mat-ripple-element,.mat-stroked-button.mat-accent .mat-ripple-element{background-color:rgba(255,215,64,.1)}.mat-button.mat-warn .mat-ripple-element,.mat-icon-button.mat-warn .mat-ripple-element,.mat-stroked-button.mat-warn .mat-ripple-element{background-color:rgba(244,67,54,.1)}.mat-fab,.mat-flat-button,.mat-mini-fab,.mat-raised-button{color:rgba(0,0,0,.87);background-color:#fff}.mat-fab.mat-primary,.mat-flat-button.mat-primary,.mat-mini-fab.mat-primary,.mat-raised-button.mat-primary{color:#fff}.mat-fab.mat-accent,.mat-flat-button.mat-accent,.mat-mini-fab.mat-accent,.mat-raised-button.mat-accent{color:rgba(0,0,0,.87)}.mat-fab.mat-warn,.mat-flat-button.mat-warn,.mat-mini-fab.mat-warn,.mat-raised-button.mat-warn{color:#fff}.mat-fab.mat-accent[disabled],.mat-fab.mat-primary[disabled],.mat-fab.mat-warn[disabled],.mat-fab[disabled][disabled],.mat-flat-button.mat-accent[disabled],.mat-flat-button.mat-primary[disabled],.mat-flat-button.mat-warn[disabled],.mat-flat-button[disabled][disabled],.mat-mini-fab.mat-accent[disabled],.mat-mini-fab.mat-primary[disabled],.mat-mini-fab.mat-warn[disabled],.mat-mini-fab[disabled][disabled],.mat-raised-button.mat-accent[disabled],.mat-raised-button.mat-primary[disabled],.mat-raised-button.mat-warn[disabled],.mat-raised-button[disabled][disabled]{color:rgba(0,0,0,.26)}.mat-fab.mat-primary,.mat-flat-button.mat-primary,.mat-mini-fab.mat-primary,.mat-raised-button.mat-primary{background-color:#673ab7}.mat-fab.mat-accent,.mat-flat-button.mat-accent,.mat-mini-fab.mat-accent,.mat-raised-button.mat-accent{background-color:#ffd740}.mat-fab.mat-warn,.mat-flat-button.mat-warn,.mat-mini-fab.mat-warn,.mat-raised-button.mat-warn{background-color:#f44336}.mat-fab.mat-accent[disabled],.mat-fab.mat-primary[disabled],.mat-fab.mat-warn[disabled],.mat-fab[disabled][disabled],.mat-flat-button.mat-accent[disabled],.mat-flat-button.mat-primary[disabled],.mat-flat-button.mat-warn[disabled],.mat-flat-button[disabled][disabled],.mat-mini-fab.mat-accent[disabled],.mat-mini-fab.mat-primary[disabled],.mat-mini-fab.mat-warn[disabled],.mat-mini-fab[disabled][disabled],.mat-raised-button.mat-accent[disabled],.mat-raised-button.mat-primary[disabled],.mat-raised-button.mat-warn[disabled],.mat-raised-button[disabled][disabled]{background-color:rgba(0,0,0,.12)}.mat-fab.mat-primary .mat-ripple-element,.mat-flat-button.mat-primary .mat-ripple-element,.mat-mini-fab.mat-primary .mat-ripple-element,.mat-raised-button.mat-primary .mat-ripple-element{background-color:rgba(255,255,255,.1)}.mat-fab.mat-accent .mat-ripple-element,.mat-flat-button.mat-accent .mat-ripple-element,.mat-mini-fab.mat-accent .mat-ripple-element,.mat-raised-button.mat-accent .mat-ripple-element{background-color:rgba(0,0,0,.1)}.mat-fab.mat-warn .mat-ripple-element,.mat-flat-button.mat-warn .mat-ripple-element,.mat-mini-fab.mat-warn .mat-ripple-element,.mat-raised-button.mat-warn .mat-ripple-element{background-color:rgba(255,255,255,.1)}.mat-icon-button.mat-primary .mat-ripple-element{background-color:rgba(103,58,183,.2)}.mat-icon-button.mat-accent .mat-ripple-element{background-color:rgba(255,215,64,.2)}.mat-icon-button.mat-warn .mat-ripple-element{background-color:rgba(244,67,54,.2)}.mat-button-toggle{color:rgba(0,0,0,.38)}.mat-button-toggle .mat-button-toggle-focus-overlay{background-color:rgba(0,0,0,.12)}.mat-button-toggle-checked{background-color:#e0e0e0;color:rgba(0,0,0,.54)}.mat-button-toggle-disabled{background-color:#eee;color:rgba(0,0,0,.26)}.mat-button-toggle-disabled.mat-button-toggle-checked{background-color:#bdbdbd}.mat-card{background:#fff;color:rgba(0,0,0,.87)}.mat-card-subtitle{color:rgba(0,0,0,.54)}.mat-checkbox-frame{border-color:rgba(0,0,0,.54)}.mat-checkbox-checkmark{fill:#fafafa}.mat-checkbox-checkmark-path{stroke:#fafafa!important}@media screen and (-ms-high-contrast:black-on-white){.mat-checkbox-checkmark-path{stroke:#000!important}}.mat-checkbox-mixedmark{background-color:#fafafa}.mat-checkbox-checked.mat-primary .mat-checkbox-background,.mat-checkbox-indeterminate.mat-primary .mat-checkbox-background{background-color:#673ab7}.mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background{background-color:#ffd740}.mat-checkbox-checked.mat-warn .mat-checkbox-background,.mat-checkbox-indeterminate.mat-warn .mat-checkbox-background{background-color:#f44336}.mat-checkbox-disabled.mat-checkbox-checked .mat-checkbox-background,.mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background{background-color:#b0b0b0}.mat-checkbox-disabled:not(.mat-checkbox-checked) .mat-checkbox-frame{border-color:#b0b0b0}.mat-checkbox-disabled .mat-checkbox-label{color:#b0b0b0}@media screen and (-ms-high-contrast:active){.mat-checkbox-disabled{opacity:.5}}@media screen and (-ms-high-contrast:active){.mat-checkbox-background{background:0 0}}.mat-checkbox:not(.mat-checkbox-disabled).mat-primary .mat-checkbox-ripple .mat-ripple-element{background-color:rgba(103,58,183,.26)}.mat-checkbox:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-ripple .mat-ripple-element{background-color:rgba(255,215,64,.26)}.mat-checkbox:not(.mat-checkbox-disabled).mat-warn .mat-checkbox-ripple .mat-ripple-element{background-color:rgba(244,67,54,.26)}.mat-chip.mat-standard-chip{background-color:#e0e0e0;color:rgba(0,0,0,.87)}.mat-chip.mat-standard-chip .mat-chip-remove{color:rgba(0,0,0,.87);opacity:.4}.mat-chip.mat-standard-chip .mat-chip-remove:hover{opacity:.54}.mat-chip.mat-standard-chip.mat-chip-selected.mat-primary{background-color:#673ab7;color:#fff}.mat-chip.mat-standard-chip.mat-chip-selected.mat-primary .mat-chip-remove{color:#fff;opacity:.4}.mat-chip.mat-standard-chip.mat-chip-selected.mat-primary .mat-chip-remove:hover{opacity:.54}.mat-chip.mat-standard-chip.mat-chip-selected.mat-warn{background-color:#f44336;color:#fff}.mat-chip.mat-standard-chip.mat-chip-selected.mat-warn .mat-chip-remove{color:#fff;opacity:.4}.mat-chip.mat-standard-chip.mat-chip-selected.mat-warn .mat-chip-remove:hover{opacity:.54}.mat-chip.mat-standard-chip.mat-chip-selected.mat-accent{background-color:#ffd740;color:rgba(0,0,0,.87)}.mat-chip.mat-standard-chip.mat-chip-selected.mat-accent .mat-chip-remove{color:rgba(0,0,0,.87);opacity:.4}.mat-chip.mat-standard-chip.mat-chip-selected.mat-accent .mat-chip-remove:hover{opacity:.54}.mat-table{background:#fff}.mat-table tbody,.mat-table tfoot,.mat-table thead,.mat-table-sticky,[mat-footer-row],[mat-header-row],[mat-row],mat-footer-row,mat-header-row,mat-row{background:inherit}mat-footer-row,mat-header-row,mat-row,td.mat-cell,td.mat-footer-cell,th.mat-header-cell{border-bottom-color:rgba(0,0,0,.12)}.mat-header-cell{color:rgba(0,0,0,.54)}.mat-cell,.mat-footer-cell{color:rgba(0,0,0,.87)}.mat-calendar-arrow{border-top-color:rgba(0,0,0,.54)}.mat-datepicker-content .mat-calendar-next-button,.mat-datepicker-content .mat-calendar-previous-button,.mat-datepicker-toggle{color:rgba(0,0,0,.54)}.mat-calendar-table-header{color:rgba(0,0,0,.38)}.mat-calendar-table-header-divider::after{background:rgba(0,0,0,.12)}.mat-calendar-body-label{color:rgba(0,0,0,.54)}.mat-calendar-body-cell-content{color:rgba(0,0,0,.87);border-color:transparent}.mat-calendar-body-disabled>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected){color:rgba(0,0,0,.38)}.cdk-keyboard-focused .mat-calendar-body-active>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected),.cdk-program-focused .mat-calendar-body-active>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected),.mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected){background-color:rgba(0,0,0,.04)}.mat-calendar-body-today:not(.mat-calendar-body-selected){border-color:rgba(0,0,0,.38)}.mat-calendar-body-disabled>.mat-calendar-body-today:not(.mat-calendar-body-selected){border-color:rgba(0,0,0,.18)}.mat-calendar-body-selected{background-color:#673ab7;color:#fff}.mat-calendar-body-disabled>.mat-calendar-body-selected{background-color:rgba(103,58,183,.4)}.mat-calendar-body-today.mat-calendar-body-selected{box-shadow:inset 0 0 0 1px #fff}.mat-datepicker-content{background-color:#fff;color:rgba(0,0,0,.87)}.mat-datepicker-content.mat-accent .mat-calendar-body-selected{background-color:#ffd740;color:rgba(0,0,0,.87)}.mat-datepicker-content.mat-accent .mat-calendar-body-disabled>.mat-calendar-body-selected{background-color:rgba(255,215,64,.4)}.mat-datepicker-content.mat-accent .mat-calendar-body-today.mat-calendar-body-selected{box-shadow:inset 0 0 0 1px rgba(0,0,0,.87)}.mat-datepicker-content.mat-warn .mat-calendar-body-selected{background-color:#f44336;color:#fff}.mat-datepicker-content.mat-warn .mat-calendar-body-disabled>.mat-calendar-body-selected{background-color:rgba(244,67,54,.4)}.mat-datepicker-content.mat-warn .mat-calendar-body-today.mat-calendar-body-selected{box-shadow:inset 0 0 0 1px #fff}.mat-datepicker-toggle-active{color:#673ab7}.mat-datepicker-toggle-active.mat-accent{color:#ffd740}.mat-datepicker-toggle-active.mat-warn{color:#f44336}.mat-dialog-container{background:#fff;color:rgba(0,0,0,.87)}.mat-divider{border-top-color:rgba(0,0,0,.12)}.mat-divider-vertical{border-right-color:rgba(0,0,0,.12)}.mat-expansion-panel{background:#fff;color:rgba(0,0,0,.87)}.mat-action-row{border-top-color:rgba(0,0,0,.12)}.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused,.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused,.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover{background:rgba(0,0,0,.04)}.mat-expansion-panel-header-title{color:rgba(0,0,0,.87)}.mat-expansion-indicator::after,.mat-expansion-panel-header-description{color:rgba(0,0,0,.54)}.mat-expansion-panel-header[aria-disabled=true]{color:rgba(0,0,0,.26)}.mat-expansion-panel-header[aria-disabled=true] .mat-expansion-panel-header-description,.mat-expansion-panel-header[aria-disabled=true] .mat-expansion-panel-header-title{color:inherit}.mat-form-field-label{color:rgba(0,0,0,.6)}.mat-hint{color:rgba(0,0,0,.6)}.mat-form-field.mat-focused .mat-form-field-label{color:#673ab7}.mat-form-field.mat-focused .mat-form-field-label.mat-accent{color:#ffd740}.mat-form-field.mat-focused .mat-form-field-label.mat-warn{color:#f44336}.mat-focused .mat-form-field-required-marker{color:#ffd740}.mat-form-field-ripple{background-color:rgba(0,0,0,.87)}.mat-form-field.mat-focused .mat-form-field-ripple{background-color:#673ab7}.mat-form-field.mat-focused .mat-form-field-ripple.mat-accent{background-color:#ffd740}.mat-form-field.mat-focused .mat-form-field-ripple.mat-warn{background-color:#f44336}.mat-form-field.mat-form-field-invalid .mat-form-field-label{color:#f44336}.mat-form-field.mat-form-field-invalid .mat-form-field-label .mat-form-field-required-marker,.mat-form-field.mat-form-field-invalid .mat-form-field-label.mat-accent{color:#f44336}.mat-form-field.mat-form-field-invalid .mat-form-field-ripple,.mat-form-field.mat-form-field-invalid .mat-form-field-ripple.mat-accent{background-color:#f44336}.mat-error{color:#f44336}.mat-form-field-appearance-legacy .mat-form-field-label{color:rgba(0,0,0,.54)}.mat-form-field-appearance-legacy .mat-hint{color:rgba(0,0,0,.54)}.mat-form-field-appearance-legacy .mat-form-field-underline{background-color:rgba(0,0,0,.42)}.mat-form-field-appearance-legacy.mat-form-field-disabled .mat-form-field-underline{background-image:linear-gradient(to right,rgba(0,0,0,.42) 0,rgba(0,0,0,.42) 33%,transparent 0);background-size:4px 100%;background-repeat:repeat-x}.mat-form-field-appearance-standard .mat-form-field-underline{background-color:rgba(0,0,0,.42)}.mat-form-field-appearance-standard.mat-form-field-disabled .mat-form-field-underline{background-image:linear-gradient(to right,rgba(0,0,0,.42) 0,rgba(0,0,0,.42) 33%,transparent 0);background-size:4px 100%;background-repeat:repeat-x}.mat-form-field-appearance-fill .mat-form-field-flex{background-color:rgba(0,0,0,.04)}.mat-form-field-appearance-fill.mat-form-field-disabled .mat-form-field-flex{background-color:rgba(0,0,0,.02)}.mat-form-field-appearance-fill .mat-form-field-underline::before{background-color:rgba(0,0,0,.42)}.mat-form-field-appearance-fill.mat-form-field-disabled .mat-form-field-label{color:rgba(0,0,0,.38)}.mat-form-field-appearance-fill.mat-form-field-disabled .mat-form-field-underline::before{background-color:transparent}.mat-form-field-appearance-outline .mat-form-field-outline{color:rgba(0,0,0,.12)}.mat-form-field-appearance-outline .mat-form-field-outline-thick{color:rgba(0,0,0,.87)}.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick{color:#673ab7}.mat-form-field-appearance-outline.mat-focused.mat-accent .mat-form-field-outline-thick{color:#ffd740}.mat-form-field-appearance-outline.mat-focused.mat-warn .mat-form-field-outline-thick{color:#f44336}.mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick{color:#f44336}.mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-label{color:rgba(0,0,0,.38)}.mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline{color:rgba(0,0,0,.06)}.mat-icon.mat-primary{color:#673ab7}.mat-icon.mat-accent{color:#ffd740}.mat-icon.mat-warn{color:#f44336}.mat-input-element:disabled{color:rgba(0,0,0,.38)}.mat-input-element{caret-color:#673ab7}.mat-input-element::-webkit-input-placeholder{color:rgba(0,0,0,.42)}.mat-input-element:-ms-input-placeholder{color:rgba(0,0,0,.42)}.mat-input-element::-ms-input-placeholder{color:rgba(0,0,0,.42)}.mat-input-element::placeholder{color:rgba(0,0,0,.42)}.mat-input-element::-moz-placeholder{color:rgba(0,0,0,.42)}.mat-input-element::-webkit-input-placeholder{color:rgba(0,0,0,.42)}.mat-input-element:-ms-input-placeholder{color:rgba(0,0,0,.42)}.mat-accent .mat-input-element{caret-color:#ffd740}.mat-form-field-invalid .mat-input-element,.mat-warn .mat-input-element{caret-color:#f44336}.mat-list .mat-list-item,.mat-nav-list .mat-list-item,.mat-selection-list .mat-list-item{color:rgba(0,0,0,.87)}.mat-list .mat-list-option,.mat-nav-list .mat-list-option,.mat-selection-list .mat-list-option{color:rgba(0,0,0,.87)}.mat-list .mat-subheader,.mat-nav-list .mat-subheader,.mat-selection-list .mat-subheader{color:rgba(0,0,0,.54)}.mat-list-item-disabled{background-color:#eee}.mat-list-option.mat-list-item-focus,.mat-list-option:hover,.mat-nav-list .mat-list-item.mat-list-item-focus,.mat-nav-list .mat-list-item:hover{background:rgba(0,0,0,.04)}.mat-menu-panel{background:#fff}.mat-menu-item{background:0 0;color:rgba(0,0,0,.87)}.mat-menu-item[disabled],.mat-menu-item[disabled]::after{color:rgba(0,0,0,.38)}.mat-menu-item .mat-icon:not([color]),.mat-menu-item-submenu-trigger::after{color:rgba(0,0,0,.54)}.mat-menu-item-highlighted:not([disabled]),.mat-menu-item.cdk-keyboard-focused:not([disabled]),.mat-menu-item.cdk-program-focused:not([disabled]),.mat-menu-item:hover:not([disabled]){background:rgba(0,0,0,.04)}.mat-paginator{background:#fff}.mat-paginator,.mat-paginator-page-size .mat-select-trigger{color:rgba(0,0,0,.54)}.mat-paginator-decrement,.mat-paginator-increment{border-top:2px solid rgba(0,0,0,.54);border-right:2px solid rgba(0,0,0,.54)}.mat-paginator-first,.mat-paginator-last{border-top:2px solid rgba(0,0,0,.54)}.mat-icon-button[disabled] .mat-paginator-decrement,.mat-icon-button[disabled] .mat-paginator-first,.mat-icon-button[disabled] .mat-paginator-increment,.mat-icon-button[disabled] .mat-paginator-last{border-color:rgba(0,0,0,.38)}.mat-progress-bar-background{fill:#d1c4e9}.mat-progress-bar-buffer{background-color:#d1c4e9}.mat-progress-bar-fill::after{background-color:#673ab7}.mat-progress-bar.mat-accent .mat-progress-bar-background{fill:#ffe57f}.mat-progress-bar.mat-accent .mat-progress-bar-buffer{background-color:#ffe57f}.mat-progress-bar.mat-accent .mat-progress-bar-fill::after{background-color:#ffd740}.mat-progress-bar.mat-warn .mat-progress-bar-background{fill:#ffcdd2}.mat-progress-bar.mat-warn .mat-progress-bar-buffer{background-color:#ffcdd2}.mat-progress-bar.mat-warn .mat-progress-bar-fill::after{background-color:#f44336}.mat-progress-spinner circle,.mat-spinner circle{stroke:#673ab7}.mat-progress-spinner.mat-accent circle,.mat-spinner.mat-accent circle{stroke:#ffd740}.mat-progress-spinner.mat-warn circle,.mat-spinner.mat-warn circle{stroke:#f44336}.mat-radio-outer-circle{border-color:rgba(0,0,0,.54)}.mat-radio-disabled .mat-radio-outer-circle{border-color:rgba(0,0,0,.38)}.mat-radio-disabled .mat-radio-inner-circle,.mat-radio-disabled .mat-radio-ripple .mat-ripple-element{background-color:rgba(0,0,0,.38)}.mat-radio-disabled .mat-radio-label-content{color:rgba(0,0,0,.38)}.mat-radio-button.mat-primary.mat-radio-checked .mat-radio-outer-circle{border-color:#673ab7}.mat-radio-button.mat-primary .mat-radio-inner-circle{background-color:#673ab7}.mat-radio-button.mat-primary .mat-radio-ripple .mat-ripple-element{background-color:rgba(103,58,183,.26)}.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{border-color:#ffd740}.mat-radio-button.mat-accent .mat-radio-inner-circle{background-color:#ffd740}.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element{background-color:rgba(255,215,64,.26)}.mat-radio-button.mat-warn.mat-radio-checked .mat-radio-outer-circle{border-color:#f44336}.mat-radio-button.mat-warn .mat-radio-inner-circle{background-color:#f44336}.mat-radio-button.mat-warn .mat-radio-ripple .mat-ripple-element{background-color:rgba(244,67,54,.26)}.mat-select-content,.mat-select-panel-done-animating{background:#fff}.mat-select-value{color:rgba(0,0,0,.87)}.mat-select-placeholder{color:rgba(0,0,0,.42)}.mat-select-disabled .mat-select-value{color:rgba(0,0,0,.38)}.mat-select-arrow{color:rgba(0,0,0,.54)}.mat-select-panel .mat-option.mat-selected:not(.mat-option-multiple){background:rgba(0,0,0,.12)}.mat-form-field.mat-focused.mat-primary .mat-select-arrow{color:#673ab7}.mat-form-field.mat-focused.mat-accent .mat-select-arrow{color:#ffd740}.mat-form-field.mat-focused.mat-warn .mat-select-arrow{color:#f44336}.mat-form-field .mat-select.mat-select-invalid .mat-select-arrow{color:#f44336}.mat-form-field .mat-select.mat-select-disabled .mat-select-arrow{color:rgba(0,0,0,.38)}.mat-drawer-container{background-color:#fafafa;color:rgba(0,0,0,.87)}.mat-drawer{background-color:#fff;color:rgba(0,0,0,.87)}.mat-drawer.mat-drawer-push{background-color:#fff}.mat-drawer-backdrop.mat-drawer-shown{background-color:rgba(0,0,0,.6)}.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb{background-color:#ffc107}.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar{background-color:rgba(255,193,7,.5)}.mat-slide-toggle:not(.mat-checked) .mat-ripple-element{background-color:rgba(0,0,0,.06)}.mat-slide-toggle .mat-ripple-element{background-color:rgba(255,193,7,.12)}.mat-slide-toggle.mat-primary.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb{background-color:#673ab7}.mat-slide-toggle.mat-primary.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar{background-color:rgba(103,58,183,.5)}.mat-slide-toggle.mat-primary:not(.mat-checked) .mat-ripple-element{background-color:rgba(0,0,0,.06)}.mat-slide-toggle.mat-primary .mat-ripple-element{background-color:rgba(103,58,183,.12)}.mat-slide-toggle.mat-warn.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb{background-color:#f44336}.mat-slide-toggle.mat-warn.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar{background-color:rgba(244,67,54,.5)}.mat-slide-toggle.mat-warn:not(.mat-checked) .mat-ripple-element{background-color:rgba(0,0,0,.06)}.mat-slide-toggle.mat-warn .mat-ripple-element{background-color:rgba(244,67,54,.12)}.mat-disabled .mat-slide-toggle-thumb{background-color:#bdbdbd}.mat-disabled .mat-slide-toggle-bar{background-color:rgba(0,0,0,.1)}.mat-slide-toggle-thumb{background-color:#fafafa}.mat-slide-toggle-bar{background-color:rgba(0,0,0,.38)}.mat-slider-track-background{background-color:rgba(0,0,0,.26)}.mat-primary .mat-slider-thumb,.mat-primary .mat-slider-thumb-label,.mat-primary .mat-slider-track-fill{background-color:#673ab7}.mat-primary .mat-slider-thumb-label-text{color:#fff}.mat-accent .mat-slider-thumb,.mat-accent .mat-slider-thumb-label,.mat-accent .mat-slider-track-fill{background-color:#ffd740}.mat-accent .mat-slider-thumb-label-text{color:rgba(0,0,0,.87)}.mat-warn .mat-slider-thumb,.mat-warn .mat-slider-thumb-label,.mat-warn .mat-slider-track-fill{background-color:#f44336}.mat-warn .mat-slider-thumb-label-text{color:#fff}.mat-slider-focus-ring{background-color:rgba(255,215,64,.2)}.cdk-focused .mat-slider-track-background,.mat-slider:hover .mat-slider-track-background{background-color:rgba(0,0,0,.38)}.mat-slider-disabled .mat-slider-thumb,.mat-slider-disabled .mat-slider-track-background,.mat-slider-disabled .mat-slider-track-fill{background-color:rgba(0,0,0,.26)}.mat-slider-disabled:hover .mat-slider-track-background{background-color:rgba(0,0,0,.26)}.mat-slider-min-value .mat-slider-focus-ring{background-color:rgba(0,0,0,.12)}.mat-slider-min-value.mat-slider-thumb-label-showing .mat-slider-thumb,.mat-slider-min-value.mat-slider-thumb-label-showing .mat-slider-thumb-label{background-color:rgba(0,0,0,.87)}.mat-slider-min-value.mat-slider-thumb-label-showing.cdk-focused .mat-slider-thumb,.mat-slider-min-value.mat-slider-thumb-label-showing.cdk-focused .mat-slider-thumb-label{background-color:rgba(0,0,0,.26)}.mat-slider-min-value:not(.mat-slider-thumb-label-showing) .mat-slider-thumb{border-color:rgba(0,0,0,.26);background-color:transparent}.mat-slider-min-value:not(.mat-slider-thumb-label-showing).cdk-focused .mat-slider-thumb,.mat-slider-min-value:not(.mat-slider-thumb-label-showing):hover .mat-slider-thumb{border-color:rgba(0,0,0,.38)}.mat-slider-min-value:not(.mat-slider-thumb-label-showing).cdk-focused.mat-slider-disabled .mat-slider-thumb,.mat-slider-min-value:not(.mat-slider-thumb-label-showing):hover.mat-slider-disabled .mat-slider-thumb{border-color:rgba(0,0,0,.26)}.mat-slider-has-ticks .mat-slider-wrapper::after{border-color:rgba(0,0,0,.7)}.mat-slider-horizontal .mat-slider-ticks{background-image:repeating-linear-gradient(to right,rgba(0,0,0,.7),rgba(0,0,0,.7) 2px,transparent 0,transparent);background-image:-moz-repeating-linear-gradient(.0001deg,rgba(0,0,0,.7),rgba(0,0,0,.7) 2px,transparent 0,transparent)}.mat-slider-vertical .mat-slider-ticks{background-image:repeating-linear-gradient(to bottom,rgba(0,0,0,.7),rgba(0,0,0,.7) 2px,transparent 0,transparent)}.mat-step-header.cdk-keyboard-focused,.mat-step-header.cdk-program-focused,.mat-step-header:hover{background-color:rgba(0,0,0,.04)}.mat-step-header .mat-step-label,.mat-step-header .mat-step-optional{color:rgba(0,0,0,.38)}.mat-step-header .mat-step-icon{background-color:#673ab7;color:#fff}.mat-step-header .mat-step-icon-not-touched{background-color:rgba(0,0,0,.38);color:#fff}.mat-step-header .mat-step-label.mat-step-label-active{color:rgba(0,0,0,.87)}.mat-stepper-horizontal,.mat-stepper-vertical{background-color:#fff}.mat-stepper-vertical-line::before{border-left-color:rgba(0,0,0,.12)}.mat-stepper-horizontal-line{border-top-color:rgba(0,0,0,.12)}.mat-sort-header-arrow{color:#757575}.mat-tab-header,.mat-tab-nav-bar{border-bottom:1px solid rgba(0,0,0,.12)}.mat-tab-group-inverted-header .mat-tab-header,.mat-tab-group-inverted-header .mat-tab-nav-bar{border-top:1px solid rgba(0,0,0,.12);border-bottom:none}.mat-tab-label,.mat-tab-link{color:rgba(0,0,0,.87)}.mat-tab-label.mat-tab-disabled,.mat-tab-link.mat-tab-disabled{color:rgba(0,0,0,.38)}.mat-tab-header-pagination-chevron{border-color:rgba(0,0,0,.87)}.mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron{border-color:rgba(0,0,0,.38)}.mat-tab-group[class*=mat-background-] .mat-tab-header,.mat-tab-nav-bar[class*=mat-background-]{border-bottom:none;border-top:none}.mat-tab-group.mat-primary .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-primary .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-primary .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-primary .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(209,196,233,.3)}.mat-tab-group.mat-primary .mat-ink-bar,.mat-tab-nav-bar.mat-primary .mat-ink-bar{background-color:#673ab7}.mat-tab-group.mat-primary.mat-background-primary .mat-ink-bar,.mat-tab-nav-bar.mat-primary.mat-background-primary .mat-ink-bar{background-color:#fff}.mat-tab-group.mat-accent .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-accent .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-accent .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-accent .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(255,229,127,.3)}.mat-tab-group.mat-accent .mat-ink-bar,.mat-tab-nav-bar.mat-accent .mat-ink-bar{background-color:#ffd740}.mat-tab-group.mat-accent.mat-background-accent .mat-ink-bar,.mat-tab-nav-bar.mat-accent.mat-background-accent .mat-ink-bar{background-color:rgba(0,0,0,.87)}.mat-tab-group.mat-warn .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-warn .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-warn .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-warn .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(255,205,210,.3)}.mat-tab-group.mat-warn .mat-ink-bar,.mat-tab-nav-bar.mat-warn .mat-ink-bar{background-color:#f44336}.mat-tab-group.mat-warn.mat-background-warn .mat-ink-bar,.mat-tab-nav-bar.mat-warn.mat-background-warn .mat-ink-bar{background-color:#fff}.mat-tab-group.mat-background-primary .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-background-primary .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-primary .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-primary .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(209,196,233,.3)}.mat-tab-group.mat-background-primary .mat-tab-header,.mat-tab-group.mat-background-primary .mat-tab-links,.mat-tab-nav-bar.mat-background-primary .mat-tab-header,.mat-tab-nav-bar.mat-background-primary .mat-tab-links{background-color:#673ab7}.mat-tab-group.mat-background-primary .mat-tab-label,.mat-tab-group.mat-background-primary .mat-tab-link,.mat-tab-nav-bar.mat-background-primary .mat-tab-label,.mat-tab-nav-bar.mat-background-primary .mat-tab-link{color:#fff}.mat-tab-group.mat-background-primary .mat-tab-label.mat-tab-disabled,.mat-tab-group.mat-background-primary .mat-tab-link.mat-tab-disabled,.mat-tab-nav-bar.mat-background-primary .mat-tab-label.mat-tab-disabled,.mat-tab-nav-bar.mat-background-primary .mat-tab-link.mat-tab-disabled{color:rgba(255,255,255,.4)}.mat-tab-group.mat-background-primary .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-primary .mat-tab-header-pagination-chevron{border-color:#fff}.mat-tab-group.mat-background-primary .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-primary .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron{border-color:rgba(255,255,255,.4)}.mat-tab-group.mat-background-primary .mat-ripple-element,.mat-tab-nav-bar.mat-background-primary .mat-ripple-element{background-color:rgba(255,255,255,.12)}.mat-tab-group.mat-background-accent .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-background-accent .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-accent .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-accent .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(255,229,127,.3)}.mat-tab-group.mat-background-accent .mat-tab-header,.mat-tab-group.mat-background-accent .mat-tab-links,.mat-tab-nav-bar.mat-background-accent .mat-tab-header,.mat-tab-nav-bar.mat-background-accent .mat-tab-links{background-color:#ffd740}.mat-tab-group.mat-background-accent .mat-tab-label,.mat-tab-group.mat-background-accent .mat-tab-link,.mat-tab-nav-bar.mat-background-accent .mat-tab-label,.mat-tab-nav-bar.mat-background-accent .mat-tab-link{color:rgba(0,0,0,.87)}.mat-tab-group.mat-background-accent .mat-tab-label.mat-tab-disabled,.mat-tab-group.mat-background-accent .mat-tab-link.mat-tab-disabled,.mat-tab-nav-bar.mat-background-accent .mat-tab-label.mat-tab-disabled,.mat-tab-nav-bar.mat-background-accent .mat-tab-link.mat-tab-disabled{color:rgba(0,0,0,.4)}.mat-tab-group.mat-background-accent .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-accent .mat-tab-header-pagination-chevron{border-color:rgba(0,0,0,.87)}.mat-tab-group.mat-background-accent .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-accent .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron{border-color:rgba(0,0,0,.4)}.mat-tab-group.mat-background-accent .mat-ripple-element,.mat-tab-nav-bar.mat-background-accent .mat-ripple-element{background-color:rgba(0,0,0,.12)}.mat-tab-group.mat-background-warn .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-group.mat-background-warn .mat-tab-link:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-warn .mat-tab-label:not(.mat-tab-disabled):focus,.mat-tab-nav-bar.mat-background-warn .mat-tab-link:not(.mat-tab-disabled):focus{background-color:rgba(255,205,210,.3)}.mat-tab-group.mat-background-warn .mat-tab-header,.mat-tab-group.mat-background-warn .mat-tab-links,.mat-tab-nav-bar.mat-background-warn .mat-tab-header,.mat-tab-nav-bar.mat-background-warn .mat-tab-links{background-color:#f44336}.mat-tab-group.mat-background-warn .mat-tab-label,.mat-tab-group.mat-background-warn .mat-tab-link,.mat-tab-nav-bar.mat-background-warn .mat-tab-label,.mat-tab-nav-bar.mat-background-warn .mat-tab-link{color:#fff}.mat-tab-group.mat-background-warn .mat-tab-label.mat-tab-disabled,.mat-tab-group.mat-background-warn .mat-tab-link.mat-tab-disabled,.mat-tab-nav-bar.mat-background-warn .mat-tab-label.mat-tab-disabled,.mat-tab-nav-bar.mat-background-warn .mat-tab-link.mat-tab-disabled{color:rgba(255,255,255,.4)}.mat-tab-group.mat-background-warn .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-warn .mat-tab-header-pagination-chevron{border-color:#fff}.mat-tab-group.mat-background-warn .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,.mat-tab-nav-bar.mat-background-warn .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron{border-color:rgba(255,255,255,.4)}.mat-tab-group.mat-background-warn .mat-ripple-element,.mat-tab-nav-bar.mat-background-warn .mat-ripple-element{background-color:rgba(255,255,255,.12)}.mat-toolbar{background:#f5f5f5;color:rgba(0,0,0,.87)}.mat-toolbar.mat-primary{background:#673ab7;color:#fff}.mat-toolbar.mat-accent{background:#ffd740;color:rgba(0,0,0,.87)}.mat-toolbar.mat-warn{background:#f44336;color:#fff}.mat-toolbar .mat-focused .mat-form-field-ripple,.mat-toolbar .mat-form-field-ripple,.mat-toolbar .mat-form-field-underline{background-color:currentColor}.mat-toolbar .mat-focused .mat-form-field-label,.mat-toolbar .mat-form-field-label,.mat-toolbar .mat-form-field.mat-focused .mat-select-arrow,.mat-toolbar .mat-select-arrow,.mat-toolbar .mat-select-value{color:inherit}.mat-toolbar .mat-input-element{caret-color:currentColor}.mat-tooltip{background:rgba(97,97,97,.9)}.mat-tree{background:#fff}.mat-tree-node{color:rgba(0,0,0,.87)}.mat-snack-bar-container{background:#323232;color:#fff}.mat-simple-snackbar-action{color:#ffd740}\n"
+
+/***/ }),
+
+/***/ "./src/app/native-setting-dialog/native-setting-dialog.component.ts":
+/*!**************************************************************************!*\
+  !*** ./src/app/native-setting-dialog/native-setting-dialog.component.ts ***!
+  \**************************************************************************/
+/*! exports provided: NativeSettingDialogComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NativeSettingDialogComponent", function() { return NativeSettingDialogComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+var NativeSettingDialogComponent = /** @class */ (function () {
+    function NativeSettingDialogComponent(thisDialogRef, data) {
+        this.thisDialogRef = thisDialogRef;
+        this.data = data;
+    }
+    NativeSettingDialogComponent.prototype.ngOnInit = function () {
+    };
+    NativeSettingDialogComponent.prototype.cancelDialog = function () {
+        this.thisDialogRef.close('cancel');
+        // console.log("canceled");
+    };
+    NativeSettingDialogComponent.prototype.confirmDialog = function () {
+        this.thisDialogRef.close('confirm');
+        // console.log("confirmed");
+    };
+    NativeSettingDialogComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            selector: 'app-native-setting-dialog',
+            template: __webpack_require__(/*! ./native-setting-dialog.component.html */ "./src/app/native-setting-dialog/native-setting-dialog.component.html"),
+            styles: [__webpack_require__(/*! ./native-setting-dialog.component.scss */ "./src/app/native-setting-dialog/native-setting-dialog.component.scss")]
+        }),
+        __param(1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_1__["MAT_DIALOG_DATA"])),
+        __metadata("design:paramtypes", [_angular_material__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"], Object])
+    ], NativeSettingDialogComponent);
+    return NativeSettingDialogComponent;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/page-not-found/page-not-found.component.css":
 /*!*************************************************************!*\
   !*** ./src/app/page-not-found/page-not-found.component.css ***!
@@ -1356,7 +1588,11 @@ var initialState = {
     atExhibitParentId: undefined,
     onExhibit: undefined,
     errorMessage: undefined,
-    successMessage: undefined
+    successMessage: undefined,
+    lastDismissed: undefined,
+    showDismissed: true,
+    locationScanning: true,
+    isLoggedIn: false
 };
 function rootReducer(state, action) {
     if (state === void 0) { state = initialState; }
@@ -1373,6 +1609,12 @@ function rootReducer(state, action) {
             return __assign({}, state, { atExhibitParentId: action.atExhibitParentId });
         case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_ON_EXHIBIT"]:
             return __assign({}, state, { onExhibit: action.onExhibit });
+        case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_LAST_DISMISSED"]:
+            return __assign({}, state, { lastDismissed: action.lastDismissed });
+        case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_SHOW_DISMISSED"]:
+            return __assign({}, state, { showDismissed: action.showDismissed });
+        case _actions_LocationActions__WEBPACK_IMPORTED_MODULE_0__["CHANGE_LOCATION_SCANNING"]:
+            return __assign({}, state, { locationScanning: action.locationScanning });
         case _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["CHANGE_USER"]:
             return __assign({}, state, { user: action.user });
         case _actions_UserActions__WEBPACK_IMPORTED_MODULE_1__["CHANGE_TOKEN"]:
@@ -1385,6 +1627,8 @@ function rootReducer(state, action) {
             return __assign({}, state, { errorMessage: action.error });
         case _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["CHANGE_SUCCESS_MESSAGE"]:
             return __assign({}, state, { successMessage: action.success });
+        case _actions_StatusActions__WEBPACK_IMPORTED_MODULE_2__["CHANGE_LOGGED_IN"]:
+            return __assign({}, state, { isLoggedIn: action.isLoggedIn });
         default:
             return state;
     }
@@ -1431,7 +1675,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WindowRef__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../WindowRef */ "./src/app/WindowRef.ts");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
 /* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../app.component */ "./src/app/app.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1450,22 +1693,18 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
-
 var RegisterComponent = /** @class */ (function () {
-    function RegisterComponent(router, nativeCommunicationService, winRef, appStore, userActions, utilitiesService, appComponent) {
+    function RegisterComponent(router, nativeCommunicationService, winRef, appStore, userActions, utilitiesService) {
         this.router = router;
         this.nativeCommunicationService = nativeCommunicationService;
         this.winRef = winRef;
         this.appStore = appStore;
         this.userActions = userActions;
         this.utilitiesService = utilitiesService;
-        this.appComponent = appComponent;
-        this.registered = true;
     }
     RegisterComponent.prototype.requestDeviceInfos = function (isGuest) {
         this.nativeCommunicationService.registerName = this.name;
         this.nativeCommunicationService.registerIsGuest = isGuest;
-        this.appComponent.registered = true;
         var state = this.appStore.getState();
         var platform = state.platform;
         this.utilitiesService.sendToNative('getDeviceInfos', 'getDeviceInfos');
@@ -1488,8 +1727,7 @@ var RegisterComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [_angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
             _services_native_communication_service__WEBPACK_IMPORTED_MODULE_2__["NativeCommunicationService"],
             _WindowRef__WEBPACK_IMPORTED_MODULE_3__["WindowRef"], Object, _actions_UserActions__WEBPACK_IMPORTED_MODULE_4__["UserActions"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__["UtilitiesService"],
-            _app_component__WEBPACK_IMPORTED_MODULE_6__["AppComponent"]])
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_5__["UtilitiesService"]])
     ], RegisterComponent);
     return RegisterComponent;
 }());
@@ -1522,6 +1760,10 @@ var AlertService = /** @class */ (function () {
     function AlertService() {
         this.subjectAlert = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.subjectResponse = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.subjectLocationId = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.subjectNativeSettingCheck = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.subjectNativeWifiSettingCheckResult = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.subjectNativeBluetoothSettingCheckResult = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
     }
     AlertService.prototype.sendMessage = function (message) {
         this.subjectAlert.next(message);
@@ -1536,10 +1778,28 @@ var AlertService = /** @class */ (function () {
         return this.subjectResponse.asObservable();
     };
     AlertService.prototype.sendMessageLocationid = function (message) {
-        this.subjectResponse.next(message);
+        this.subjectLocationId.next(message);
     };
     AlertService.prototype.getMessageLocationid = function () {
-        return this.subjectResponse.asObservable();
+        return this.subjectLocationId.asObservable();
+    };
+    AlertService.prototype.sendMessageNativeSettingCheck = function (message) {
+        this.subjectNativeSettingCheck.next(message);
+    };
+    AlertService.prototype.getMessageNativeSettingCheck = function () {
+        return this.subjectNativeSettingCheck.asObservable();
+    };
+    AlertService.prototype.sendMessageNativeBluetoothSettingCheckResult = function (message) {
+        this.subjectNativeBluetoothSettingCheckResult.next(message);
+    };
+    AlertService.prototype.getMessageNativeBluetoothSettingCheckResult = function () {
+        return this.subjectNativeBluetoothSettingCheckResult.asObservable();
+    };
+    AlertService.prototype.sendMessageNativeWifiSettingCheckResult = function (message) {
+        this.subjectNativeWifiSettingCheckResult.next(message);
+    };
+    AlertService.prototype.getMessageNativeWifiSettingCheckResult = function () {
+        return this.subjectNativeWifiSettingCheckResult.asObservable();
     };
     AlertService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])()
@@ -1616,9 +1876,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_LocationActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/LocationActions */ "./src/app/actions/LocationActions.ts");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
 /* harmony import */ var _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _native_communication_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./native-communication.service */ "./src/app/services/native-communication.service.ts");
-/* harmony import */ var _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config/ErrorTypes */ "./src/app/config/ErrorTypes.ts");
-/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config/SuccessTypes */ "./src/app/config/SuccessTypes.ts");
+/* harmony import */ var _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../config/ErrorTypes */ "./src/app/config/ErrorTypes.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1644,7 +1904,7 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 var ExhibitService = /** @class */ (function () {
-    function ExhibitService(router, winRef, locationService, socket, socketGod, appStore, locationActions, userActions, statusActions, utilitiesService, nativeCommunicationService) {
+    function ExhibitService(router, winRef, locationService, socket, socketGod, appStore, locationActions, userActions, statusActions, utilitiesService) {
         this.router = router;
         this.winRef = winRef;
         this.locationService = locationService;
@@ -1655,23 +1915,39 @@ var ExhibitService = /** @class */ (function () {
         this.userActions = userActions;
         this.statusActions = statusActions;
         this.utilitiesService = utilitiesService;
-        this.nativeCommunicationService = nativeCommunicationService;
     }
     ExhibitService.prototype.establishExhibitConnection = function (url) {
         var _this = this;
         // console.log(url);
-        //const localURL = 'http://localhost:8100/';
+        // const localURL = 'http://localhost:8100/';
         this.socket.openNewExhibitConnection(url);
         // this.socket.openNewExhibitConnection(url);
         this.socket.connection.on('connected', function () {
             _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(true));
+            var state = _this.appStore.getState();
+            if (state.successMessage && state.successMessage.code === _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"]) {
+                _this.appStore.dispatch(_this.statusActions.changeSuccessMessage(undefined));
+            }
+        });
+        this.socket.connection.on('reconnect', function () {
+            _this.connectOD();
         });
         this.socket.connection.on('disconnect', function () {
-            var error = { code: _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_10__["LOST_CONNECTION_TO_EXHIBIT"], message: 'Lost connection to Exhibit' };
-            _this.appStore.dispatch(_this.statusActions.changeErrorMessage(error));
-            _this.socket.connection.disconnect();
+            // const error: Message = {code: ErrorTypes.LOST_CONNECTION_TO_EXHIBIT, message: 'Lost connection to Exhibit'};
+            // this.appStore.dispatch(this.statusActions.changeErrorMessage(error));
             var currLoc = _this.locationService.currentLocation.value;
-            _this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
+            var state = _this.appStore.getState();
+            if ((!state.successMessage) || (state.successMessage && state.successMessage.code !==
+                _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"])) {
+                var errorMessage = { message: 'You were disconnected from the Exhibit', code: _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_11__["LOST_CONNECTION_TO_EXHIBIT"] };
+                _this.appStore.dispatch(_this.statusActions.changeErrorMessage(errorMessage));
+            }
+            if (currLoc) {
+                _this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
+                _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(false));
+                _this.appStore.dispatch(_this.locationActions.changeAtExhibitParentId(0));
+                _this.appStore.dispatch(_this.locationActions.changeOnExhibit(false));
+            }
         });
     };
     ExhibitService.prototype.connectOD = function () {
@@ -1687,13 +1963,14 @@ var ExhibitService = /** @class */ (function () {
             _this.utilitiesService.sendToNative(result, 'print');
             _this.socket.connection.removeAllListeners('connectODResult');
             _this.startAutoResponder();
-            //this.nativeCommunicationService.transmitShowUnity();
+            // this.nativeCommunicationService.transmitShowUnity();
         });
     };
     ExhibitService.prototype.startAutoResponder = function () {
         var _this = this;
         this.socket.connection.on('exhibitStatusCheck', function () {
-            console.log('Auto Responder Check');
+            console.log('AutoResponderCheck');
+            _this.utilitiesService.sendToNative('AutoResponderCheck', 'print');
             var user = _this.appStore.getState().user;
             _this.socket.connection.emit('exhibitStatusCheckResult', user);
         });
@@ -1709,10 +1986,12 @@ var ExhibitService = /** @class */ (function () {
         this.socket.connection.emit('closeConnection', user);
         this.socket.connection.on('closeConnectionResult', function (result) {
             if (result === 'SUCCESS') {
+                _this.appStore.dispatch(_this.statusActions.changeSuccessMessage({ message: 'You decided to quit',
+                    code: _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_DISCONNECTED_FROM_EXHIBIT"] }));
                 _this.socket.connection.disconnect();
                 _this.appStore.dispatch(_this.locationActions.changeConnectedExhibit(false));
-                var currLoc = _this.locationService.currentLocation.value;
-                _this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
+                // const currLoc = this.locationService.currentLocation.value;
+                // this.socketGod.disconnectedFromExhibit(currLoc.parentId, currLoc.id);
             }
             _this.socket.connection.removeAllListeners('closeConnectionResult');
             _this.socket.connection.removeAllListeners('exhibitStatusCheck');
@@ -1727,9 +2006,8 @@ var ExhibitService = /** @class */ (function () {
             _exhibit_socket_service__WEBPACK_IMPORTED_MODULE_4__["ExhibitSocketService"],
             _god_service__WEBPACK_IMPORTED_MODULE_5__["GodService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_6__["LocationActions"],
             _actions_UserActions__WEBPACK_IMPORTED_MODULE_7__["UserActions"],
-            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_11__["StatusActions"],
-            _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"],
-            _native_communication_service__WEBPACK_IMPORTED_MODULE_9__["NativeCommunicationService"]])
+            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_9__["StatusActions"],
+            _services_utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"]])
     ], ExhibitService);
     return ExhibitService;
 }());
@@ -1775,7 +2053,7 @@ var GodSocketService = /** @class */ (function (_super) {
     __extends(GodSocketService, _super);
     function GodSocketService() {
         return _super.call(this, { url: 'https://god.meeteux.fhstp.ac.at:3000', options: { secure: true } }) || this;
-        //super({ url: 'https://localhost:3000', options: {secure: true} });
+        // super({ url: 'https://localhost:3000', options: {secure: true} });
         // super({ url: 'https://god.meeteux.fhstp.ac.at', options: {secure: true} });
     }
     GodSocketService = __decorate([
@@ -1808,8 +2086,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
 /* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
 /* harmony import */ var _utilities_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utilities.service */ "./src/app/services/utilities.service.ts");
-/* harmony import */ var _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../config/ErrorTypes */ "./src/app/config/ErrorTypes.ts");
-/* harmony import */ var _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config/SuccessTypes */ "./src/app/config/SuccessTypes.ts");
+/* harmony import */ var _alert_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config/ErrorTypes */ "./src/app/config/ErrorTypes.ts");
+/* harmony import */ var _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../config/SuccessTypes */ "./src/app/config/SuccessTypes.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1833,8 +2112,9 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var GodService = /** @class */ (function () {
-    function GodService(router, winRef, locationService, socket, store, locationActions, userActions, statusActions, utilitiesService) {
+    function GodService(router, winRef, locationService, socket, store, locationActions, userActions, statusActions, utilitiesService, alertService) {
         var _this = this;
         this.router = router;
         this.winRef = winRef;
@@ -1845,15 +2125,16 @@ var GodService = /** @class */ (function () {
         this.userActions = userActions;
         this.statusActions = statusActions;
         this.utilitiesService = utilitiesService;
+        this.alertService = alertService;
         this.socket.on('news', function (msg) {
             _this.utilitiesService.sendToNative(msg, 'print');
         });
         this.socket.on('disconnect', function () {
-            var error = { code: _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_9__["LOST_CONNECTION_TO_GOD"], message: 'Lost connection to Server' };
+            var error = { code: _config_ErrorTypes__WEBPACK_IMPORTED_MODULE_10__["LOST_CONNECTION_TO_GOD"], message: 'Lost connection to Server' };
             _this.store.dispatch(_this.statusActions.changeErrorMessage(error));
         });
         this.socket.on('reconnect', function () {
-            var success = { code: _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_10__["SUCCESS_RECONNECTED_TO_GOD"], message: 'Reconnected to Server' };
+            var success = { code: _config_SuccessTypes__WEBPACK_IMPORTED_MODULE_11__["SUCCESS_RECONNECTED_TO_GOD"], message: 'Reconnected to Server' };
             _this.store.dispatch(_this.statusActions.changeSuccessMessage(success));
         });
     }
@@ -1872,6 +2153,7 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(res.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(res.locations));
             _this.store.dispatch(_this.userActions.changeToken(res.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 // send success to native & start beacon scan
@@ -1894,6 +2176,7 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(res.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(res.locations));
             _this.store.dispatch(_this.userActions.changeToken(res.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 _this.utilitiesService.sendToNative('success', 'registerOD');
@@ -1901,27 +2184,29 @@ var GodService = /** @class */ (function () {
             _this.socket.removeAllListeners('registerODResult');
         });
     };
-    GodService.prototype.registerLocation = function (id) {
+    GodService.prototype.registerLocation = function (id, dismissed) {
         var _this = this;
         var state = this.store.getState();
         var user = state.user;
-        this.socket.emit('registerLocation', { location: id, user: user.id });
+        this.socket.emit('registerLocation', { location: id, user: user.id, dismissed: dismissed });
         this.socket.on('registerLocationResult', function (result) {
-            var res = result.data;
+            var loc = result.data.location;
+            var dis = result.data.dismissed;
             var message = result.message;
-            console.log(result);
             if (message.code > 299) {
                 _this.store.dispatch(_this.statusActions.changeErrorMessage(message));
                 _this.utilitiesService.sendToNative('RegisterLocation: FAILED', 'print');
                 return;
             }
-            _this.locationService.updateCurrentLocation(res);
-            _this.utilitiesService.sendToNative(_this.locationService.currentLocation, 'print');
-            var currLoc = _this.locationService.currentLocation.value;
-            _this.router.navigate([currLoc.contentURL]).then(function () {
-                // send success to native & trigger signal
-                _this.utilitiesService.sendToNative('success', 'triggerSignal');
-            });
+            if (dis === false) {
+                _this.locationService.updateCurrentLocation(loc);
+                _this.utilitiesService.sendToNative('New Location is ' + _this.locationService.currentLocation, 'print');
+                var currLoc = _this.locationService.currentLocation.value;
+                _this.router.navigate([currLoc.contentURL]).then(function () {
+                    // send success to native & trigger signal
+                    // this.utilitiesService.sendToNative('success', 'triggerSignal');
+                });
+            }
             _this.socket.removeAllListeners('registerLocationResult');
         });
     };
@@ -1933,7 +2218,9 @@ var GodService = /** @class */ (function () {
         this.socket.on('registerLocationLikeResult', function (result) {
             var res = result.data;
             var message = result.message;
-            console.log(res);
+            _this.store.dispatch(_this.userActions.changeLookupTable(res.locations));
+            var currLoc = _this.locationService.currentLocation.value;
+            _this.locationService.updateCurrentLocation(currLoc.id);
             if (message.code > 299) {
                 console.log('RegisterLocation: FAILED');
                 _this.store.dispatch(_this.statusActions.changeErrorMessage(message));
@@ -1966,6 +2253,7 @@ var GodService = /** @class */ (function () {
     };
     GodService.prototype.disconnectedFromExhibit = function (parentLocation, location) {
         var _this = this;
+        console.log('disconnectedFromExhibit');
         this.socket.emit('disconnectedFromExhibit', { parentLocation: parentLocation, location: location });
         this.socket.on('disconnectedFromExhibitResult', function (result) {
             var res = result.data;
@@ -1976,7 +2264,9 @@ var GodService = /** @class */ (function () {
                 return;
             }
             // console.log('Disconnected from Exhibit-' + res.parent + ': ' + res.location);
-            _this.registerLocation(res.parent);
+            if (_this.store.getState().isLoggedIn === true) {
+                _this.registerLocation(res.parent, false);
+            }
             _this.socket.removeAllListeners('disconnectedFromExhibitResult');
         });
     };
@@ -1993,12 +2283,43 @@ var GodService = /** @class */ (function () {
             _this.store.dispatch(_this.userActions.changeUser(data.user));
             _this.store.dispatch(_this.userActions.changeLookupTable(data.locations));
             _this.store.dispatch(_this.userActions.changeToken(data.token));
+            _this.store.dispatch(_this.statusActions.changeLoggedIn(true));
             _this.locationService.setToStartPoint();
             _this.router.navigate(['/mainview']).then(function () {
                 // send success to native & start beacon scan
                 _this.utilitiesService.sendToNative('success', 'registerOD');
             });
             _this.socket.removeAllListeners('autoLoginODResult');
+        });
+    };
+    GodService.prototype.checkWifi = function (wifiSSID) {
+        var _this = this;
+        var isCorrect = false;
+        var nativeSettingType = "Wifi";
+        if (isCorrect) {
+            this.utilitiesService.sendToNative('correctWifi', 'getWifiStatusResult');
+            this.utilitiesService.sendToNative('bluetoothCheck', 'activateBluetoothCheck');
+        }
+        else {
+            var data = { nativeSettingType: nativeSettingType };
+            this.alertService.sendMessageNativeSettingCheck(data);
+            var elm = document.getElementById('ghostButtonWifi');
+            elm.click();
+        }
+        this.socket.emit('checkWifiSSID', wifiSSID);
+        this.socket.on('checkWifiSSIDResult', function (result) {
+            var isCorrect = result.check;
+            var nativeSettingType = "wifi";
+            if (isCorrect) {
+                _this.utilitiesService.sendToNative('correctWifi', 'getWifiStatusResult');
+                _this.utilitiesService.sendToNative('bluetoothCheck', 'activateBluetoothCheck');
+            }
+            else {
+                var data = { nativeSettingType: nativeSettingType };
+                _this.alertService.sendMessageNativeSettingCheck(data);
+                var elm = document.getElementById('ghostButtonWifi');
+                elm.click();
+            }
         });
     };
     GodService = __decorate([
@@ -2010,7 +2331,8 @@ var GodService = /** @class */ (function () {
             _god_socket_service__WEBPACK_IMPORTED_MODULE_4__["GodSocketService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_5__["LocationActions"],
             _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__["UserActions"],
             _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__["StatusActions"],
-            _utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"]])
+            _utilities_service__WEBPACK_IMPORTED_MODULE_8__["UtilitiesService"],
+            _alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"]])
     ], GodService);
     return GodService;
 }());
@@ -2117,6 +2439,12 @@ var LocationService = /** @class */ (function () {
         }
         return isSame;
     };
+    LocationService.prototype.stopLocationScanning = function () {
+        this.appStore.dispatch(this.locationActions.changeLocationScanning(false));
+    };
+    LocationService.prototype.startLocationScanning = function () {
+        this.appStore.dispatch(this.locationActions.changeLocationScanning(true));
+    };
     Object.defineProperty(LocationService.prototype, "lookuptable", {
         get: function () {
             return this._lookuptable;
@@ -2163,9 +2491,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities.service */ "./src/app/services/utilities.service.ts");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/UserActions */ "./src/app/actions/UserActions.ts");
-/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var rxjs_Subject__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/Subject */ "./node_modules/rxjs-compat/_esm5/Subject.js");
+/* harmony import */ var _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/StatusActions */ "./src/app/actions/StatusActions.ts");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _alert_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./alert.service */ "./src/app/services/alert.service.ts");
+/* harmony import */ var _exhibit_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./exhibit.service */ "./src/app/services/exhibit.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2188,8 +2517,9 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var NativeCommunicationService = /** @class */ (function () {
-    function NativeCommunicationService(router, godService, locationService, appStore, locationActions, utilitiesService, userActions, dialog, alertService) {
+    function NativeCommunicationService(router, godService, locationService, appStore, locationActions, utilitiesService, userActions, statusActions, dialog, alertService, exhibitService) {
         var _this = this;
         this.router = router;
         this.godService = godService;
@@ -2198,16 +2528,41 @@ var NativeCommunicationService = /** @class */ (function () {
         this.locationActions = locationActions;
         this.utilitiesService = utilitiesService;
         this.userActions = userActions;
+        this.statusActions = statusActions;
         this.dialog = dialog;
         this.alertService = alertService;
-        this.subject = new rxjs_Subject__WEBPACK_IMPORTED_MODULE_8__["Subject"]();
+        this.exhibitService = exhibitService;
         this.subscription = this.alertService.getMessageResponse().subscribe(function (message) {
             if (message.result === 'confirm') {
-                _this.godService.registerLocation(message.location);
+                _this.godService.registerLocation(message.location, false);
+                var lastDis = _this.appStore.getState().lastDismissed;
+                if (lastDis === message.location) {
+                    _this.appStore.dispatch(_this.locationActions.changeLastDismissed(undefined));
+                }
             }
             else {
+                _this.appStore.dispatch(_this.locationActions.changeLastDismissed(message.location));
+                _this.godService.registerLocation(message.location, true);
             }
-            _this.utilitiesService.sendToNative('restartScanning', 'restartScanning');
+            _this.locationService.startLocationScanning();
+        });
+        this.subscriptionBluetooth = this.alertService.getMessageNativeBluetoothSettingCheckResult().subscribe(function (message) {
+            if (message.result === 'confirm') {
+                _this.utilitiesService.sendToNative('turnOnBluetooth', 'activateBluetooth');
+            }
+            else if (message.result === 'cancel') {
+                //TODO: when alert for turning on Bluetooth was canceled
+            }
+        });
+        this.subscriptionWifi = this.alertService.getMessageNativeWifiSettingCheckResult().subscribe(function (message) {
+            if (message.result === 'confirm') {
+                _this.utilitiesService.sendToNative('wrongWifi', 'activateWifiSettings');
+                _this.utilitiesService.sendToNative('bluetoothCheck', 'activateBluetoothCheck');
+            }
+            else if (message.result === 'cancel') {
+                _this.utilitiesService.sendToNative('bluetoothCheck', 'activateBluetoothCheck');
+                //TODO: when alert for switching to correct wifi was canceled
+            }
         });
     }
     NativeCommunicationService.prototype.ngOnInit = function () {
@@ -2228,28 +2583,35 @@ var NativeCommunicationService = /** @class */ (function () {
     };
     NativeCommunicationService.prototype.transmitLocationRegister = function (result) {
         var _this = this;
+        var state = this.appStore.getState();
         var minor = result.minor;
         var location = this.locationService.findLocation(minor);
+        if (state.lastDismissed === result.minor) {
+            return;
+        }
+        if (state.locationScanning === false && location.locationTypeId !== 2) {
+            return;
+        }
         if (!location) {
             this.utilitiesService.sendToNative('this is not a valid location', 'print');
             return;
         }
         var currLoc = this.locationService.currentLocation.value;
-        // location is not the same as before
+        // if the location is not the same as before
         if (!this.locationService.sameAsCurrentLocation(location.id)) {
+            // If the current location is from type activeExhibitOn the redirection should be disabled
             if (this.locationService.currentLocation && currLoc.locationTypeId === 2) {
                 this.utilitiesService.sendToNative('this is not a valid location - type 2', 'print');
                 return;
             }
-            var state = this.appStore.getState();
             var exhibitParentId = state.atExhibitParentId;
             var onExhibit = state.onExhibit;
-            this.utilitiesService.sendToNative('new valid location found - check and registerLocation at GoD', 'print');
+            this.utilitiesService.sendToNative('new valid location found - check and registerLocation at GoD - ' + location.id, 'print');
             if ((location.locationTypeId !== 2 && !onExhibit) || (location.locationTypeId === 2 && exhibitParentId === location.parentId)) {
                 if (location.locationTypeId === 2) {
                     this.godService.checkLocationStatus(location.id, function (res) {
                         if (res === 'FREE') {
-                            _this.godService.registerLocation(location.id);
+                            _this.godService.registerLocation(location.id, false);
                             _this.appStore.dispatch(_this.locationActions.changeLocationSocketStatus(res));
                         }
                         else {
@@ -2258,7 +2620,7 @@ var NativeCommunicationService = /** @class */ (function () {
                     });
                 }
                 else {
-                    this.utilitiesService.sendToNative('stopScanning', 'stopScanning');
+                    this.locationService.stopLocationScanning();
                     var data = { location: location.id, resStatus: null };
                     this.alertService.sendMessageLocationid(data);
                     var elm = document.getElementById('ghostButton');
@@ -2279,16 +2641,30 @@ var NativeCommunicationService = /** @class */ (function () {
             var exhibitParentId = state.atExhibitParentId;
             this.utilitiesService.sendToNative('new valid location found - check and registerLocation at GoD', 'print');
             if (location.locationTypeId === 7 && exhibitParentId === location.parentId) {
-                this.godService.registerLocation(location.id);
+                this.godService.registerLocation(location.id, false);
             }
         }
     };
     NativeCommunicationService.prototype.autoLogin = function (data) {
         var token = data.token;
         this.utilitiesService.sendToNative('Autologin', 'print');
-        if (token) {
+        if (token !== undefined && token !== null && token !== '') {
             this.godService.autoLogin(token);
         }
+    };
+    NativeCommunicationService.prototype.checkWifi = function (data) {
+        var wifiSSSID = data.ssid;
+        console.log(wifiSSSID);
+        if (wifiSSSID !== undefined && wifiSSSID !== null && wifiSSSID !== '') {
+            this.godService.checkWifi(wifiSSSID);
+        }
+    };
+    NativeCommunicationService.prototype.checkBluetooth = function () {
+        var nativeSettingType = "Bluetooth";
+        var data = { nativeSettingType: nativeSettingType };
+        this.alertService.sendMessageNativeSettingCheck(data);
+        var elm = document.getElementById('ghostButtonBluetooth');
+        elm.click();
     };
     NativeCommunicationService.prototype.transmitShowUnity = function () {
         // this.utilitiesService.sendToNative('NativeCommService Show Unity before', 'print');
@@ -2297,14 +2673,23 @@ var NativeCommunicationService = /** @class */ (function () {
     };
     NativeCommunicationService.prototype.logout = function () {
         this.utilitiesService.sendToNative('clearToken', 'clearToken');
+        if (this.utilitiesService.isWeb === true) {
+            this.logoutSuccess();
+        }
     };
     NativeCommunicationService.prototype.logoutSuccess = function () {
         var _this = this;
-        this.appStore.dispatch(this.userActions.changeToken(undefined));
-        this.appStore.dispatch(this.locationActions);
+        this.appStore.dispatch(this.statusActions.changeLoggedIn(false));
         this.router.navigate(['']).then(function () {
             _this.utilitiesService.sendToNative('User Logged out', 'print');
         });
+        this.appStore.dispatch(this.userActions.changeToken(undefined));
+        this.appStore.dispatch(this.locationActions.changeLocationStatus(undefined));
+        this.appStore.dispatch(this.locationActions.changeLocationSocketStatus(undefined));
+        this.appStore.dispatch(this.locationActions.changeConnectedExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeAtExhibitParentId(undefined));
+        this.appStore.dispatch(this.locationActions.changeOnExhibit(false));
+        this.appStore.dispatch(this.locationActions.changeLastDismissed(undefined));
     };
     NativeCommunicationService.prototype.transmitLocationLike = function (like) {
         var currLoc = this.locationService.currentLocation.value;
@@ -2316,9 +2701,6 @@ var NativeCommunicationService = /** @class */ (function () {
         }
         this.godService.registerLocationLike(currLoc, like);
     };
-    NativeCommunicationService.prototype.changeBeacon = function () {
-        this.utilitiesService.sendToNative('changeBeacon', 'changeBeacon');
-    };
     NativeCommunicationService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
         __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('AppStore')),
@@ -2327,8 +2709,10 @@ var NativeCommunicationService = /** @class */ (function () {
             _location_service__WEBPACK_IMPORTED_MODULE_2__["LocationService"], Object, _actions_LocationActions__WEBPACK_IMPORTED_MODULE_3__["LocationActions"],
             _utilities_service__WEBPACK_IMPORTED_MODULE_4__["UtilitiesService"],
             _actions_UserActions__WEBPACK_IMPORTED_MODULE_6__["UserActions"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_7__["MatDialog"],
-            _alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"]])
+            _actions_StatusActions__WEBPACK_IMPORTED_MODULE_7__["StatusActions"],
+            _angular_material__WEBPACK_IMPORTED_MODULE_8__["MatDialog"],
+            _alert_service__WEBPACK_IMPORTED_MODULE_9__["AlertService"],
+            _exhibit_service__WEBPACK_IMPORTED_MODULE_10__["ExhibitService"]])
     ], NativeCommunicationService);
     return NativeCommunicationService;
 }());
@@ -2415,14 +2799,17 @@ var UtilitiesService = /** @class */ (function () {
                 case 'getToken':
                     this.winRef.nativeWindow.MEETeUXAndroidAppRoot.getToken();
                     break;
-                case 'stopScanning':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.stopScanner();
+                case 'getWifiStatusResult':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.getWifiStatusResult(messageBody);
                     break;
-                case 'restartScanning':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.restartScanner();
+                case 'activateBluetoothCheck':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.activateBluetoothCheck();
                     break;
-                case 'changeBeacon':
-                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.changeBeacon();
+                case 'activateBluetooth':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.activateBluetooth();
+                    break;
+                case 'activateWifiSettings':
+                    this.winRef.nativeWindow.MEETeUXAndroidAppRoot.activateWifiSettings();
                     break;
                 default:
                     break;
