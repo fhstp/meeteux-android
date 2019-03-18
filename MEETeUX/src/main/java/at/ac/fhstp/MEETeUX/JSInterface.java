@@ -183,6 +183,11 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void triggerAR(){
+        mainActivity.launchImageTargets();
+    }
+
+    @JavascriptInterface
     public void changeBeacon(){
         //Log.d("Status","Change Beacon");
         mainActivity.changeBeacon();

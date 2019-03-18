@@ -178,6 +178,11 @@ public class JSInterfaceX extends AppCompatActivity {
     }
 
     @org.xwalk.core.JavascriptInterface
+    public void triggerAR(){
+        mainActivity.launchImageTargets();
+    }
+
+    @org.xwalk.core.JavascriptInterface
     public void showBackgroundNotification(String message){
         mainActivity.showNotificationBackground(message);
     }

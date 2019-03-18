@@ -161,7 +161,8 @@ public class MainActivity extends AbsRuntimePermission {
                         Manifest.permission.INTERNET,
                         Manifest.permission.BLUETOOTH_ADMIN,
                         Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.CHANGE_WIFI_STATE
+                        Manifest.permission.CHANGE_WIFI_STATE,
+                        Manifest.permission.CAMERA
                 },
                 R.string.msg,
                 REQUEST_PERMISSION);
@@ -224,6 +225,7 @@ public class MainActivity extends AbsRuntimePermission {
             mXWalkView.setResourceClient(client);
 
             mXWalkView.loadUrl("file:///android_asset/www/index.html");
+
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -307,6 +309,8 @@ public class MainActivity extends AbsRuntimePermission {
         // Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
 
         KontaktSDK.initialize(this);
+
+        launchImageTargets();
 
         proximityManager = ProximityManagerFactory.create(this);
 
@@ -1252,5 +1256,13 @@ public class MainActivity extends AbsRuntimePermission {
     private void activateLocationNative(){
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
+    }
+
+    public void launchImageTargets(){
+        Intent i = new Intent();
+        Log.d("imagetargetpackagename", getPackageName());
+        i.setClassName( getPackageName(),  getPackageName()+".vuforia.engine.ImageTargets");
+        startActivity(i);
+
     }
 }
