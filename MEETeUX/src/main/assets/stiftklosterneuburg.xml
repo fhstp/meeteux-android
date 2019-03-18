@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="Shrine" size="1.000000 0.507383" />
+    <ImageTarget name="Accounting" size="1.000000 1.360444" />
+    <ImageTarget name="Sunthaym2" size="1.000000 0.645663" />
+    <ImageTarget name="Sunthaym1" size="1.000000 0.807780" />
+  </Tracking>
+</QCARConfig>
