@@ -175,6 +175,19 @@ public class JSInterface extends AppCompatActivity {
     @JavascriptInterface
     public void  receiveWifiData(String message){
         mainActivity.checkWifiData(message);
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String isCorrect = mainActivity.isCorrectWifi;
+                mAppView.evaluateJavascript("javascript:send_correct_wifi("+ isCorrect +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
     }
 
     @JavascriptInterface

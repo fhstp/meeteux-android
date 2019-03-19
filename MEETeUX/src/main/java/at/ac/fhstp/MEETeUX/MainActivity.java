@@ -143,6 +143,7 @@ public class MainActivity extends AbsRuntimePermission {
     public WifiManager mWifiManger;
     public String wifiSSID;
     public String wifiPassword;
+    public String isCorrectWifi;
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -1017,8 +1018,10 @@ public class MainActivity extends AbsRuntimePermission {
     public void checkWifiData(String message){
         String[] WIFI = message.split(" ");
         if(!wifiSSID.equals(WIFI[0])){
+            isCorrectWifi = "false";
             openWifiDialogNative();
         }else{
+            isCorrectWifi = "true";
             checkBluetoothStatus();
         }
         Log.d("checkWifiData", "SSID " + WIFI[0]);
