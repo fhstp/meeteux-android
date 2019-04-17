@@ -35,6 +35,8 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -143,7 +145,9 @@ public class MainActivity extends AbsRuntimePermission {
     public WifiManager mWifiManger;
     public String wifiSSID;
     public String wifiPassword;
-    public String isCorrectWifi;
+    public String isCorrectWifi = "false";
+    public String isCorrectBluetooth = "false";
+    public String isCorrectLocation = "false";
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -298,9 +302,7 @@ public class MainActivity extends AbsRuntimePermission {
 
         activityVisible = true;
         //Log.d("CheckWifi", "CheckWifi");
-
     }
-
 
 
     @Override
@@ -337,15 +339,6 @@ public class MainActivity extends AbsRuntimePermission {
 
 
             }
-
-            /*
-            private ScanSettings getScanSettings()
-            {
-                final ScanSettings.Builder builder = new ScanSettings.Builder();
-                builder.setReportDelay(0);
-                builder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER);
-                return builder.build();
-            }*/
 
             @Override
             public void onIBeaconsUpdated(List<IBeaconDevice> iBeacons, IBeaconRegion region) {
@@ -437,20 +430,6 @@ public class MainActivity extends AbsRuntimePermission {
                         }else{
                             //Log.d("beaconNOT", String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()));
                         }
-
-                        /*String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
-                        String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
-                        beaconItems[helpCounter] = beaconName + " " + beaconRssi;
-                        helpCounter++;*/
-                    /*}else if(newList.get(i).getMajor()==10&&String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE")){
-                        String beaconName = "Major " + newList.get(i).getMajor() + " " + "Minor " + newList.get(i).getMinor() + " " + "Proximity " + newList.get(i).getProximity();
-                        String beaconRssi = "RSSI " + String.valueOf(newList.get(i).getRssi());
-                        beaconItems[helpCounter] = beaconName + " " + beaconRssi;
-                        helpCounter++;
-                    }else{
-                        beaconItems[helpCounter]="";
-                        helpCounter++;
-                    }*/
                     }
                     //TODO: CHECK If circularbuffer is full
                     Iterator it = beaconBufferDict.entrySet().iterator();
@@ -717,7 +696,6 @@ public class MainActivity extends AbsRuntimePermission {
     }
 
 
-
     public void update_location(){
         JSONObject jObject = new JSONObject();
         try {
@@ -733,19 +711,7 @@ public class MainActivity extends AbsRuntimePermission {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int lastBeaconMinor = sp.getInt("LastBeaconMinor", 0);
         int lastBeaconMajor = sp.getInt("LastBeaconMajor", 0);
-        //sendLocationUpdate();
-        //if((lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor) || (lastBeaconMajor != nearestBeaconMajor && lastBeaconMinor == nearestBeaconMinor) || (lastBeaconMajor == nearestBeaconMajor && lastBeaconMinor != nearestBeaconMinor)){
-            //proximityManager.stopScanning();
-            sendLocationUpdate();
-            /*if(!activityVisible) {
-                showNewLocationNotification("New Exhibit", "Exhibit "+ nearestBeaconMinor);
-            }*/
-            //showNewLocationAlert("New Exhibit "+ nearestBeaconMinor, "Do you want to view this Exhibit?");
-        //}else {
-        //    Log.d("update_location", "No new beacon = no update!");
-        //}
-
-
+        sendLocationUpdate();
     }
 
     public void showNotificationBackground(String exhibit){
@@ -1050,21 +1016,6 @@ public class MainActivity extends AbsRuntimePermission {
                 .show();
     }
 
-    /*public void showWifiStatusAlert(){
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("Wifi Status")
-                .setMessage("You are in the wrong Wifi. Please change to the Wifi called MEETeUX!")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
-                .setCancelable(false)
-                .create()
-                .show();
-    }*/
-
     Runnable mHandlerTask = new Runnable()
     {
         @Override
@@ -1120,48 +1071,55 @@ public class MainActivity extends AbsRuntimePermission {
             //no bluetooth support
         } else {
             if (mBluetoothAdapter.isEnabled()) {
-                //Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show();
-                //Log.d("checkBluetoothStatus", "Bluetooth is on");
+                isCorrectBluetooth = "true";
             }else{
+                this.isCorrectBluetooth = "false";
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setTitle(getResources().getString(R.string.bluetooth_title))
-                        .setMessage(getResources().getString(R.string.bluetooth_message))
-                        .setPositiveButton(getResources().getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                activateBluetoothNative();
-                            }
-                        })
-                        .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                    .setMessage(getResources().getString(R.string.bluetooth_message))
+                    .setPositiveButton(getResources().getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            activateBluetoothNative();
+                            isCorrectBluetooth = "true";
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-                            }
-                        })
-                        .setCancelable(false)
-                        .create()
-                        .show();
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    myWebView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            //Log.i("onReceiveValue! " + value);
-                            Log.d("Status", "Callback from send to web");
                         }
-                    });
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    mXWalkView.evaluateJavascript("javascript:send_bluetooth_check()", new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            //Log.i("onReceiveValue! " + value);
-                            Log.d("Status", "Callback from send to web");
-                        }
-                    });
-                }*/
-                //Toast.makeText(this, "Bluetooth is off. Please enable it!", Toast.LENGTH_LONG).show();
-                //Log.d("checkBluetoothStatus", "Bluetooth is off");
+                    })
+                    .setCancelable(false)
+                    .create()
+                    .show();
             }
+        }
+    }
+
+    void updateBluetoothStatus(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            //no bluetooth support
+        } else {
+            if (mBluetoothAdapter.isEnabled()) {
+                isCorrectBluetooth = "true";
+            }else{
+                isCorrectBluetooth = "false";
+            }
+        }
+    }
+
+    void updateLocationStatus(){
+        LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        Log.d("checkForActivatedLoc", isNetworkEnabled + " " + isGPSEnabled);
+
+        if(!isNetworkEnabled && !isGPSEnabled){
+            isCorrectLocation = "false";
+        }else{
+            isCorrectLocation = "true";
         }
     }
 
@@ -1219,41 +1177,50 @@ public class MainActivity extends AbsRuntimePermission {
                     //Log.d("Status", "Callback from send to web");
                 }
             });
+        }else{
+            mXWalkView.evaluateJavascript("javascript:back_button_pressed()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    //Log.i("onReceiveValue! " + value);
+                    //Log.d("Status", "Callback from send to web");
+                }
+            });
         }
     }
 
-
-    private void checkForActivatedLocation(){
+    void checkForActivatedLocation(){
         LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         Log.d("checkForActivatedLoc", isNetworkEnabled + " " + isGPSEnabled);
 
         if(!isNetworkEnabled && !isGPSEnabled){
+            isCorrectLocation = "false";
             activateLocationDialog();
+        }else{
+            isCorrectLocation = "true";
         }
-
     }
 
     private void activateLocationDialog(){
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle("Location Status")
-                .setMessage("Location is not activated. Do you want to activate it?")
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        activateLocationNative();
-                    }
-                })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+            .setMessage("Location is not activated. Do you want to activate it?")
+            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    activateLocationNative();
+                }
+            })
+            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
 
-                    }
-                })
-                .setCancelable(false)
-                .create()
-                .show();
+                }
+            })
+            .setCancelable(false)
+            .create()
+            .show();
     }
 
     private void activateLocationNative(){
@@ -1269,3 +1236,34 @@ public class MainActivity extends AbsRuntimePermission {
 
     }
 }
+
+/*
+class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                           float velocityY) {
+        try {
+            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH){
+                return false;
+            }
+            // right to left swipe
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
+                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                onLeftSwipe();
+            }
+            // left to right swipe
+            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                onRightSwipe();
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+}*/
+

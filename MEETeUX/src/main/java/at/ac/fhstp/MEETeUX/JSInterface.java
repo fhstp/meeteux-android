@@ -161,6 +161,17 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void activateLocationCheck(){
+        //Log.d("Status","Bluetooth Check");
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                mainActivity.checkForActivatedLocation();
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void activateBluetooth(){
         //Log.d("Status","Activate Bluetooth");
         mainActivity.activateBluetoothNative();
@@ -180,6 +191,59 @@ public class JSInterface extends AppCompatActivity {
             public void run() {
                 String isCorrect = mainActivity.isCorrectWifi;
                 mAppView.evaluateJavascript("javascript:send_correct_wifi("+ isCorrect +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void  statusWifi(){
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String isCorrect = mainActivity.isCorrectWifi;
+                mAppView.evaluateJavascript("javascript:send_correct_wifi("+ isCorrect +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void  statusBluetooth(){
+        mainActivity.updateBluetoothStatus();
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String isCorrect = mainActivity.isCorrectBluetooth;
+                mAppView.evaluateJavascript("javascript:send_correct_bluetooth("+ isCorrect +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void  statusLocation(){
+        mainActivity.updateLocationStatus();
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String isCorrect = mainActivity.isCorrectLocation;
+                mAppView.evaluateJavascript("javascript:send_correct_location("+ isCorrect +")", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);
