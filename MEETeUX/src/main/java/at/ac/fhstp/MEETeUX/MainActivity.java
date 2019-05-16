@@ -187,10 +187,6 @@ public class MainActivity extends Activity {
                 R.string.msg,
                 REQUEST_PERMISSION);*/
 
-        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
-            //Log.d(TAG, "Clicked on start, asking for audio permission");
-            requestAppPermissions();
-        }
 
         mySelf = this;
         //this.setContentView(R.layout.view_switch);
@@ -321,6 +317,12 @@ public class MainActivity extends Activity {
         clearLastBeacon();
 
         activityVisible = true;
+
+        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+            //Log.d(TAG, "Clicked on start, asking for audio permission");
+            requestAppPermissions();
+        }
+
         //Log.d("CheckWifi", "CheckWifi");
     }
 
@@ -1292,11 +1294,13 @@ public class MainActivity extends Activity {
     public void requestAppPermissions(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
             //Call to web
-            permissionResultToWeb();
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+            //permissionResultToWeb();
             Log.d("requestAppPermission", "Camera Permission");
         }else if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
             //Call to web
-            permissionResultToWeb();
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+            //permissionResultToWeb();
             Log.d("requestAppPermission", "Fine Location Permission");
         } else {
             // First time, no explanation needed, we can request the permission.
