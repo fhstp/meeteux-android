@@ -6,6 +6,7 @@ package at.ac.fhstp.MEETeUX;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -18,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.location.LocationManager;
 import android.media.Ringtone;
@@ -32,11 +34,17 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -91,9 +99,11 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-public class MainActivity extends AbsRuntimePermission {
+public class MainActivity extends Activity {
 
     private static final int REQUEST_PERMISSION = 10;
+    private String [] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH, Manifest.permission.INTERNET,  Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA};
     private ProximityManager proximityManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private BeaconManager beaconManager;
@@ -148,11 +158,16 @@ public class MainActivity extends AbsRuntimePermission {
     public String isCorrectWifi = "false";
     public String isCorrectBluetooth = "false";
     public String isCorrectLocation = "false";
-    // Setup activity layout
+
+    private SparseIntArray mErrorString;
+
     @Override protected void onCreate(Bundle savedInstanceState)
     {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+
+        mErrorString = new SparseIntArray();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             setContentView(R.layout.view_switchx);
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -160,7 +175,7 @@ public class MainActivity extends AbsRuntimePermission {
         }
         beaconManager = BeaconManager.getInstanceForApplication(getApplicationContext());
 
-        requestAppPermissions(new String[]{
+        /*requestAppPermissions(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.BLUETOOTH,
                         Manifest.permission.INTERNET,
@@ -170,7 +185,12 @@ public class MainActivity extends AbsRuntimePermission {
                         Manifest.permission.CAMERA
                 },
                 R.string.msg,
-                REQUEST_PERMISSION);
+                REQUEST_PERMISSION);*/
+
+        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+            //Log.d(TAG, "Clicked on start, asking for audio permission");
+            requestAppPermissions();
+        }
 
         mySelf = this;
         //this.setContentView(R.layout.view_switch);
@@ -304,9 +324,7 @@ public class MainActivity extends AbsRuntimePermission {
         //Log.d("CheckWifi", "CheckWifi");
     }
 
-
-    @Override
-    public void onPermissionsGranted(int requestCode){
+    public void onPermissionsGranted(/*int requestCode*/){
         // Do anything when permission granted
         checkForActivatedLocation();
         // Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
@@ -409,7 +427,7 @@ public class MainActivity extends AbsRuntimePermission {
                     for(int i = 0; i<newList.size();i++) {
                         //String helpString = newList.get(i).getProximity() + "";
                         //if(newList.get(i).getMajor()==20&&String.valueOf(newList.get(i).getProximity()).equals("NEAR")) {
-                        if((String.valueOf(newList.get(i).getMajor()).matches("10|20|30|40|50|60") || String.valueOf(newList.get(i).getMajor()).length() == 3) && String.valueOf(String.valueOf(newList.get(i).getMinor()).charAt(0)).matches("1|2|3|4|5|6") && (String.valueOf(newList.get(i).getProximity()).equals("NEAR") || String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))){
+                        if((String.valueOf(newList.get(i).getMajor()).matches("10|20|30|40|50|60|1") || String.valueOf(newList.get(i).getMajor()).length() == 3) && String.valueOf(String.valueOf(newList.get(i).getMinor()).charAt(0)).matches("1|2|3|4|5|6|7") && (String.valueOf(newList.get(i).getProximity()).equals("NEAR") || String.valueOf(newList.get(i).getProximity()).equals("IMMEDIATE"))){
                             if (!beaconBufferDict.containsKey(String.valueOf(newList.get(i).getMinor()) + '/' + String.valueOf(newList.get(i).getMajor()))) {
                                 if (String.valueOf(newList.get(i).getMajor()).length() == 3) {
                                     //Log.d("BeaconValue", "Minor 3 " + newList.get(i).getMinor());
@@ -1234,6 +1252,81 @@ public class MainActivity extends AbsRuntimePermission {
         i.setClassName( getPackageName(),  getPackageName()+".vuforia.engine.ImageTargets");
         startActivity(i);
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length == 0) {
+            //call to web
+            permissionResultToWeb();
+            Log.d("onRequestPermissionsRes", "Permission missing");
+        }
+        switch (requestCode){
+            case REQUEST_PERMISSION:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Permissions are granted
+                    Log.d("onRequestPermissionsRes", "Permission are Granted");
+                }
+                else if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    //call to Web
+                    permissionResultToWeb();
+                    Log.d("onRequestPermissionsRes", "Permission missing");
+                }
+                break;
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void requestAppPermissions(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
+            //Call to web
+            permissionResultToWeb();
+            Log.d("requestAppPermission", "Camera Permission");
+        }else if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
+            //Call to web
+            permissionResultToWeb();
+            Log.d("requestAppPermission", "Fine Location Permission");
+        } else {
+            // First time, no explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+        }
+    }
+
+    public void permissionResultToWeb(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView.evaluateJavascript("javascript:permissionresult()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                }
+            });
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            mXWalkView.evaluateJavascript("javascript:permissionresult()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                }
+            });
+        }
+    }
+
+    public void checkPermissions(){
+        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+            requestAppPermissions();
+        }else{
+            onPermissionsGranted();
+        }
     }
 }
 

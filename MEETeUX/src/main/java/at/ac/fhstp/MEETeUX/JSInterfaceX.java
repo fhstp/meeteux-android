@@ -289,6 +289,10 @@ public class JSInterfaceX extends AppCompatActivity {
     @org.xwalk.core.JavascriptInterface
     public void openWifiDialogNative(){ mainActivity.openWifiDialogNative();}
 
+    @org.xwalk.core.JavascriptInterface
+    public void sendPermissionCheck(){
+        mainActivity.checkPermissions();
+    }
    /* @JavascriptInterface
     public void run(final String scriptSrc){
         mAppView.post(new Runnable() {
