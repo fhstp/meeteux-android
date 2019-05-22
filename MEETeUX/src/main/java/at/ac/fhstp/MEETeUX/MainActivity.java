@@ -173,31 +173,14 @@ public class MainActivity extends Activity {
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             setContentView(R.layout.view_switch);
         }
+
         beaconManager = BeaconManager.getInstanceForApplication(getApplicationContext());
-
-        /*requestAppPermissions(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.CHANGE_WIFI_STATE,
-                        Manifest.permission.CAMERA
-                },
-                R.string.msg,
-                REQUEST_PERMISSION);*/
-
-
         mySelf = this;
-        //this.setContentView(R.layout.view_switch);
 
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            //myWebView.setWebContentsDebuggingEnabled(true);
-            //Log.d("CROSSWALK", "I am using crosswalk!");
-
             mXWalkView = (XWalkView) findViewById(R.id.xWalkView);
 
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
@@ -240,13 +223,11 @@ public class MainActivity extends Activity {
                             Log.d("SSL Certificate error", "The certificate is not yet valid.");
                             break;
                     }
-
                 }
             };
+
             mXWalkView.setResourceClient(client);
-
             mXWalkView.loadUrl("file:///android_asset/www/index.html");
-
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -261,7 +242,6 @@ public class MainActivity extends Activity {
             webSettings.setDomStorageEnabled(true);
             webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
             webSettings.setAllowFileAccessFromFileURLs(true);
-
 
             myJSInterface = new JSInterface(myWebView, this);
             myWebView.addJavascriptInterface(myJSInterface, "MEETeUXAndroidAppRoot");
@@ -293,16 +273,12 @@ public class MainActivity extends Activity {
                             Log.d("SSL Certificate error", "The certificate is not yet valid.");
                             break;
                     }
-
                 }
-
             };
-            myWebView.setWebViewClient(client);
 
+            myWebView.setWebViewClient(client);
             myWebView.loadUrl("file:///android_asset/www/index.html");
         }
-
-        //webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
@@ -322,28 +298,20 @@ public class MainActivity extends Activity {
             //Log.d(TAG, "Clicked on start, asking for audio permission");
             requestAppPermissions();
         }
-
-        //Log.d("CheckWifi", "CheckWifi");
     }
 
     public void onPermissionsGranted(/*int requestCode*/){
         // Do anything when permission granted
         checkForActivatedLocation();
-        // Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
 
         KontaktSDK.initialize(this);
-
-        //launchImageTargets();
-
         proximityManager = ProximityManagerFactory.create(this);
-
         Collection<IBeaconRegion> beaconRegions = new ArrayList<>();
 
         IBeaconRegion region1 = new BeaconRegion.Builder()
                 .identifier("My Region")
                 .proximity(UUID.fromString("f7826da6-4fa2-4e98-8024-bc5b71e0893e"))
                 .build();
-
 
         beaconRegions.add(region1);
 
@@ -356,8 +324,6 @@ public class MainActivity extends Activity {
             public void onIBeaconDiscovered(IBeaconDevice iBeacon, IBeaconRegion region) {
                 //Beacon discovered
                 Log.i("Sample", "IBeacon discovered: " + iBeacon.toString());
-
-
             }
 
             @Override
@@ -365,22 +331,21 @@ public class MainActivity extends Activity {
                 //Beacons updated
                 //Log.i("Sample", "IBeacon updated: " + iBeacons.toString());
 
-                //readBeaconData(iBeacons);
                 beaconItems = new IBeaconDevice[iBeacons.size()];
                 List<IBeaconDevice> newList = new ArrayList<>(iBeacons);
                 Collections.sort(newList, new Comparator<IBeaconDevice>() {
                     @Override
                     public int compare(IBeaconDevice lhs, IBeaconDevice rhs) {
-                        int returnVal = 0;
+                    int returnVal = 0;
 
-                        if(lhs.getRssi() < rhs.getRssi()){
-                            returnVal =  1;
-                        }else if(lhs.getRssi() > rhs.getRssi()){
-                            returnVal =  -1;
-                        }else if(lhs.getRssi() == rhs.getRssi()){
-                            returnVal =  0;
-                        }
-                        return returnVal;
+                    if(lhs.getRssi() < rhs.getRssi()){
+                        returnVal =  1;
+                    }else if(lhs.getRssi() > rhs.getRssi()){
+                        returnVal =  -1;
+                    }else if(lhs.getRssi() == rhs.getRssi()){
+                        returnVal =  0;
+                    }
+                    return returnVal;
                     }
                 });
 
@@ -413,7 +378,6 @@ public class MainActivity extends Activity {
                             helpCounterBeacons++;
                         }
                     }
-
 
                     for (int i = 0; i < triggeredBeaconDevices.length; i++) {
                         if (i == 0) {
@@ -548,8 +512,6 @@ public class MainActivity extends Activity {
 
         String deviceInfos = jObject.toString();
 
-        //Log.d("DeviceInfos", deviceInfos);
-
         return deviceInfos;
     }
 
@@ -585,7 +547,6 @@ public class MainActivity extends Activity {
         beaconBufferDict = new HashMap<String, CircularFifoBuffer>();
         stopRepeatingTask();
         //unregisterReceiver(mReceiver);
-
     }
 
     public String getToken(){
@@ -930,12 +891,7 @@ public class MainActivity extends Activity {
             String myIP = myInetIP.getHostAddress();
             if (wifiInfo != null) {
                 String currentConnectedSSID = wifiInfo.getSSID();
-                //Log.e("checkWIFIStatusSSID", wifiInfo.getSSID());
-                //Log.e("checkWIFIStatusIP", myIP);
-
                 currentConnectedSSID = currentConnectedSSID.replace("\"", "");
-                //Log.e("checkWIFIStatusSSID", currentConnectedSSID);
-
 
                 JSONObject jObject = new JSONObject();
                 try {
@@ -1333,34 +1289,4 @@ public class MainActivity extends Activity {
         }
     }
 }
-
-/*
-class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                           float velocityY) {
-        try {
-            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH){
-                return false;
-            }
-            // right to left swipe
-            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                onLeftSwipe();
-            }
-            // left to right swipe
-            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                onRightSwipe();
-            }
-        } catch (Exception e) {
-
-        }
-        return false;
-    }
-}*/
 
