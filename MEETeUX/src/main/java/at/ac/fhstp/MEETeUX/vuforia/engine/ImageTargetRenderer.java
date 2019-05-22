@@ -51,6 +51,7 @@ import at.ac.fhstp.MEETeUX.vuforia.utils.Texture;
 public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRendererControl
 {
     private static final String LOGTAG = "ImageTargetRenderer";
+    public String objectFound = "false";
     
     private final SampleApplicationSession vuforiaAppSession;
     private final WeakReference<ImageTargets> mActivityRef;
@@ -259,6 +260,8 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                         : textureIndex;
                 textureIndex = trackable.getName().equalsIgnoreCase("Accounting") ? 3
                         : textureIndex;
+
+                objectFound = "true";
 
                 textureIndex = mActivityRef.get().isDeviceTrackingActive() ? 3 : textureIndex;
 

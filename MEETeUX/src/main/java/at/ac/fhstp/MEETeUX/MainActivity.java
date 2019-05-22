@@ -94,6 +94,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class MainActivity extends AbsRuntimePermission {
 
     private static final int REQUEST_PERMISSION = 10;
+    private final static int REQUEST_AR_OBJ_FOUND = 20;
     private ProximityManager proximityManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private BeaconManager beaconManager;
@@ -512,7 +513,6 @@ public class MainActivity extends AbsRuntimePermission {
     public int nearestBeaconMajorDetected(){
         return nearestBeaconMajor;
     }
-
 
     public String getDeviceInfosNative(){
         JSONObject jObject = new JSONObject();
@@ -1232,38 +1232,43 @@ public class MainActivity extends AbsRuntimePermission {
         Intent i = new Intent();
         Log.d("imagetargetpackagename", getPackageName());
         i.setClassName( getPackageName(),  getPackageName()+".vuforia.engine.ImageTargets");
-        startActivity(i);
+        // startActivity(i);
+        startActivityForResult(i, REQUEST_AR_OBJ_FOUND);
+    }
 
+    // This method is invoked when target activity return result data back.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
+        super.onActivityResult(requestCode, resultCode, dataIntent);
+        switch (requestCode) {
+            case REQUEST_AR_OBJ_FOUND:
+                if(resultCode == RESULT_OK) {
+
+                    String messageReturn = dataIntent.getStringExtra("objectFound");
+
+                    if(messageReturn.equalsIgnoreCase("true")){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            myWebView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //Log.i("onReceiveValue! " + value);
+                                    //Log.d("CheckReceive","Es ist was passiert");
+                                }
+                            });
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            mXWalkView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //Log.i("onReceiveValue! " + value);
+                                    //Log.d("CheckReceive", "Es ist was passiert");
+                                }
+                            });
+                        }
+                    }
+                }
+                break;
+        }
     }
 }
-
-/*
-class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                           float velocityY) {
-        try {
-            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH){
-                return false;
-            }
-            // right to left swipe
-            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                onLeftSwipe();
-            }
-            // left to right swipe
-            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                onRightSwipe();
-            }
-        } catch (Exception e) {
-
-        }
-        return false;
-    }
-}*/
 

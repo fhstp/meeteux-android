@@ -12,6 +12,7 @@ package at.ac.fhstp.MEETeUX.vuforia.engine;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -137,6 +138,7 @@ public class ImageTargets extends Activity implements SampleApplicationControl/*
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                prepareResponse();
                 finish();
             }
         });
@@ -195,6 +197,12 @@ public class ImageTargets extends Activity implements SampleApplicationControl/*
         };
     }
 
+
+    public void prepareResponse(){
+        Intent intent = new Intent();
+        intent.putExtra("objectFound", mRenderer.objectFound);
+        setResult(RESULT_OK, intent);
+    }
 
     private class GestureListener extends
         GestureDetector.SimpleOnGestureListener
@@ -422,7 +430,7 @@ public class ImageTargets extends Activity implements SampleApplicationControl/*
         {
             return false;
         }
-        
+
         TrackableList trackableList = mCurrentDataset.getTrackables();
         for (Trackable trackable : trackableList)
         {
@@ -1013,5 +1021,12 @@ public class ImageTargets extends Activity implements SampleApplicationControl/*
     private void showToast(String text)
     {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    // This method will be invoked when user click android device Back menu at bottom.
+    @Override
+    public void onBackPressed() {
+        prepareResponse();
+        finish();
     }
 }
