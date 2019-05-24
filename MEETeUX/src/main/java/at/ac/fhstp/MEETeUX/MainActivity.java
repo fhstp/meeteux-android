@@ -1225,6 +1225,7 @@ public class MainActivity extends Activity {
             case REQUEST_PERMISSION:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Permissions are granted
+                    onPermissionsGranted();
                     Log.d("onRequestPermissionsRes", "Permission are Granted");
                 }
                 else if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
