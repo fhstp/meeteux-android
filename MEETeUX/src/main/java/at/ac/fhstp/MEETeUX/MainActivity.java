@@ -294,10 +294,11 @@ public class MainActivity extends Activity {
 
         activityVisible = true;
 
-        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+        checkPermissions();
+        /*if(!hasPermissions(MainActivity.this, PERMISSIONS)){
             //Log.d(TAG, "Clicked on start, asking for audio permission");
             requestAppPermissions();
-        }
+        }*/
     }
 
     public void onPermissionsGranted(/*int requestCode*/){
