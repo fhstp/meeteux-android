@@ -502,8 +502,8 @@ public class MainActivity extends Activity {
     public String getDeviceInfosNative(){
         JSONObject jObject = new JSONObject();
         try {
-            jObject.put("deviceAddress", Settings.Secure.ANDROID_ID);
-            jObject.put("deviceOS", "Android");
+            jObject.put("deviceAddress", Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID));
+            jObject.put("deviceOS", "Android " + Build.VERSION.SDK_INT);
             jObject.put("deviceVersion", Build.VERSION.RELEASE);
             jObject.put("deviceModel", android.os.Build.MODEL);
 
@@ -1225,6 +1225,8 @@ public class MainActivity extends Activity {
         switch (requestCode){
             case REQUEST_PERMISSION:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //prepared call to Web notifying
+                    permissionsGrantedToWeb();
                     //Permissions are granted
                     onPermissionsGranted();
                     Log.d("onRequestPermissionsRes", "Permission are Granted");
@@ -1287,7 +1289,28 @@ public class MainActivity extends Activity {
         if(!hasPermissions(MainActivity.this, PERMISSIONS)){
             requestAppPermissions();
         }else{
+            //prepared call to Web notifying
+            permissionsGrantedToWeb();
+            Log.d("checkPermissions", "called");
             onPermissionsGranted();
+        }
+    }
+
+    public void permissionsGrantedToWeb(){
+        Log.d("permissionsGrantedToWeb", "called");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            myWebView.evaluateJavascript("javascript:permissions_granted()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                }
+            });
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            mXWalkView.evaluateJavascript("javascript:permissions_granted()", new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                }
+            });
         }
     }
 }
