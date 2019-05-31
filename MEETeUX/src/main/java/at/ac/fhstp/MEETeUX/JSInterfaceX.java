@@ -290,19 +290,29 @@ public class JSInterfaceX extends AppCompatActivity {
     public void openWifiDialogNative(){ mainActivity.openWifiDialogNative();}
 
     @org.xwalk.core.JavascriptInterface
+    public void displayUpdateMessage(){
+        mainActivity.updateApp();
+    }
+
+    @org.xwalk.core.JavascriptInterface
     public void sendPermissionCheck(){
         mainActivity.checkPermissions();
     }
-   /* @JavascriptInterface
-    public void run(final String scriptSrc){
+
+    @org.xwalk.core.JavascriptInterface
+    public void  getAppVersion(){
         mAppView.post(new Runnable() {
             @Override
             public void run() {
-                mAppView.loadUrl("javascript:" + scriptSrc);
+                String mVERSION_GOD = mainActivity.VERSION_GOD;
+                mAppView.evaluateJavascript("javascript:send_app_version('"+ mVERSION_GOD +"')", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
             }
         });
-    }*/
-
-
-
+    }
 }

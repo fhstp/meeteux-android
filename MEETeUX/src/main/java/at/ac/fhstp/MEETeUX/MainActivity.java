@@ -100,7 +100,8 @@ import java.util.UUID;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class MainActivity extends Activity {
-
+    final String appPackageName = BuildConfig.APPLICATION_ID;
+    public String VERSION_GOD = "1.0.0";
     private static final int REQUEST_PERMISSION = 10;
     private final static int REQUEST_AR_OBJ_FOUND = 20;
     private String [] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH, Manifest.permission.INTERNET,  Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_NETWORK_STATE,
@@ -1040,6 +1041,25 @@ public class MainActivity extends Activity {
         if(proximityManager.isScanning() && proximityManager.isConnected()){
             //Log.e("checkScanStatus", "connected and scanning");
         }
+    }
+
+    void updateApp(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle(getResources().getString(R.string.update_title))
+            .setMessage(getResources().getString(R.string.update_text))
+            .setPositiveButton(getResources().getString(R.string.update_ok), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+                }
+            })
+            .setCancelable(false)
+            .create()
+            .show();
     }
 
     void checkBluetoothStatus(){

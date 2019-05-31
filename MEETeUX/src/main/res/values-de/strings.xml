@@ -12,4 +12,7 @@
     <string name="button_cancel">Abbrechen</string>
     <string name="button_confirm">Bestätigen</string>
     <string name="notification_body">Öffne die App, um mehr über mich und die Ausstellungsstücke zu erfahren.</string>
+    <string name="update_ok">Öffne App Store</string>
+    <string name="update_text">Es ist eine neue Version für \'Des Kaisers App\' verfügbar. Bitte aktualisiere die App!</string>
+    <string name="update_title">Update</string>
 </resources>
