@@ -1219,7 +1219,51 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, dataIntent);
         switch (requestCode) {
             case REQUEST_AR_OBJ_FOUND:
-                if(resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
+                    String messageReturn = dataIntent.getStringExtra("objectFound");
+
+                    if (messageReturn.equalsIgnoreCase("true")) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            myWebView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //Log.i("onReceiveValue! " + value);
+                                    //Log.d("CheckReceive","Es ist was passiert");
+                                }
+                            });
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            mXWalkView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //Log.i("onReceiveValue! " + value);
+                                    //Log.d("CheckReceive", "Es ist was passiert");
+                                }
+                            });
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    public void requestAppPermissions(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
+            //Call to web
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+            //permissionResultToWeb();
+            Log.d("requestAppPermission", "Camera Permission");
+        }else if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
+            //Call to web
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+            //permissionResultToWeb();
+            Log.d("requestAppPermission", "Fine Location Permission");
+        } else {
+            // First time, no explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1257,48 +1301,6 @@ public class MainActivity extends Activity {
         }
         return true;
     }
-
-                    String messageReturn = dataIntent.getStringExtra("objectFound");
-
-                    if(messageReturn.equalsIgnoreCase("true")){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            myWebView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    //Log.i("onReceiveValue! " + value);
-                                    //Log.d("CheckReceive","Es ist was passiert");
-                                }
-                            });
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                            mXWalkView.evaluateJavascript("javascript:ar_object_found()", new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    //Log.i("onReceiveValue! " + value);
-                                    //Log.d("CheckReceive", "Es ist was passiert");
-                                }
-                            });
-                        }
-                    }
-                }
-                break;
-    public void requestAppPermissions(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
-            //Call to web
-            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
-            //permissionResultToWeb();
-            Log.d("requestAppPermission", "Camera Permission");
-        }else if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
-            //Call to web
-            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
-            //permissionResultToWeb();
-            Log.d("requestAppPermission", "Fine Location Permission");
-        } else {
-            // First time, no explanation needed, we can request the permission.
-            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_PERMISSION);
-        }
-    }
-}
 
     public void permissionResultToWeb(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
