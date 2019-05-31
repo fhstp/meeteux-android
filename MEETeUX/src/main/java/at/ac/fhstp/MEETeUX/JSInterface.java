@@ -289,6 +289,10 @@ public class JSInterface extends AppCompatActivity {
         //Log.d("WWW",message);
     }
 
+    @JavascriptInterface
+    public void sendPermissionCheck(){
+        mainActivity.checkPermissions();
+    }
    /* @JavascriptInterface
     public void run(final String scriptSrc){
         mAppView.post(new Runnable() {
