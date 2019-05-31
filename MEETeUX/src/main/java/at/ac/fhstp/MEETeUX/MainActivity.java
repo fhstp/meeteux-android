@@ -1224,14 +1224,14 @@ public class MainActivity extends Activity {
         }
         switch (requestCode){
             case REQUEST_PERMISSION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[6] == PackageManager.PERMISSION_GRANTED) {
                     //prepared call to Web notifying
                     permissionsGrantedToWeb();
                     //Permissions are granted
                     onPermissionsGranted();
                     Log.d("onRequestPermissionsRes", "Permission are Granted");
                 }
-                else if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                else if(grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[6] == PackageManager.PERMISSION_DENIED) {
                     //call to Web
                     permissionResultToWeb();
                     Log.d("onRequestPermissionsRes", "Permission missing");
