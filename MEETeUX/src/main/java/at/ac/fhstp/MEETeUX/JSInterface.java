@@ -90,8 +90,9 @@ public class JSInterface extends AppCompatActivity {
         mAppView.post(new Runnable() {
             @Override
             public void run() {
-                String token = mainActivity.getToken();
-                mAppView.evaluateJavascript("javascript:send_token("+ token +")", new ValueCallback<String>() {
+                // String token = mainActivity.getToken();
+                String newToken = mainActivity.getTokenAndDeviceInfosNative();
+                mAppView.evaluateJavascript("javascript:send_token("+ newToken +")", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
                         //Log.i("onReceiveValue! " + value);

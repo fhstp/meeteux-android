@@ -517,6 +517,24 @@ public class MainActivity extends Activity {
         return deviceInfos;
     }
 
+    public String getTokenAndDeviceInfosNative(){
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("token", getTokenString());
+            jObject.put("deviceAddress", Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID));
+            jObject.put("deviceOS", "Android " + Build.VERSION.SDK_INT);
+            jObject.put("deviceVersion", Build.VERSION.RELEASE);
+            jObject.put("deviceModel", android.os.Build.MODEL);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String deviceInfos = jObject.toString();
+
+        return deviceInfos;
+    }
+
     public void registerODNatve(){
         //Log.i("Sample", "Start scanning");
         startScanning();
@@ -552,6 +570,19 @@ public class MainActivity extends Activity {
     }
 
     public String getToken(){
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("token", getTokenString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //checkWifiSSID();
+        //checkBluetoothStatus();
+        return jObject.toString();
+    }
+
+    public String getTokenString(){
         File file = new File(this.getFilesDir(),filename);
 
         //Read text from file
@@ -570,18 +601,8 @@ public class MainActivity extends Activity {
         catch (IOException e) {
             e.printStackTrace();
         }
-        //Log.i("Sample", "Send Token to Web " + text.toString());
 
-        JSONObject jObject = new JSONObject();
-        try {
-            jObject.put("token", text.toString());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //checkWifiSSID();
-        //checkBluetoothStatus();
-        return jObject.toString();
+        return text.toString();
     }
 
     public String getLanguage(){
