@@ -121,18 +121,52 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
-    public void getDeviceInfos(){
+    public void getDeviceInfos(final String message){
         mAppView.post(new Runnable() {
             @Override
             public void run() {
                 String deviceInfos = mainActivity.getDeviceInfosNative();
-                mAppView.evaluateJavascript("javascript:send_device_infos("+ deviceInfos +")", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String value) {
-                        //Log.i("onReceiveValue! " + value);
-                        //Log.d("Status","Callback from send to web");
-                    }
-                });
+                switch (message){
+                    case "login":
+                        mAppView.evaluateJavascript("javascript:send_device_infos_login("+ deviceInfos +")", new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                //Log.i("onReceiveValue! " + value);
+                                //Log.d("Status","Callback from send to web");
+                            }
+                        });
+                        break;
+
+                    case "loginGuest":
+                        mAppView.evaluateJavascript("javascript:send_device_infos_login_guest("+ deviceInfos +")", new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                //Log.i("onReceiveValue! " + value);
+                                //Log.d("Status","Callback from send to web");
+                            }
+                        });
+                        break;
+
+                    case "register":
+                        mAppView.evaluateJavascript("javascript:send_device_infos_register("+ deviceInfos +")", new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                //Log.i("onReceiveValue! " + value);
+                                //Log.d("Status","Callback from send to web");
+                            }
+                        });
+                        break;
+
+                    case "credentialChange":
+                        mAppView.evaluateJavascript("javascript:send_device_infos_credential_change("+ deviceInfos +")", new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                //Log.i("onReceiveValue! " + value);
+                                //Log.d("Status","Callback from send to web");
+                            }
+                        });
+                        break;
+                }
             }
         });
     }
