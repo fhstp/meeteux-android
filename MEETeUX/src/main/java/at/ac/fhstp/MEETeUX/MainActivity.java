@@ -101,7 +101,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class MainActivity extends Activity {
     final String appPackageName = BuildConfig.APPLICATION_ID;
-    public String VERSION_GOD = "2.4";
+    public String VERSION_GOD = "2.5";
     private static final int REQUEST_PERMISSION = 10;
     private final static int REQUEST_AR_OBJ_FOUND = 20;
     private String [] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH, Manifest.permission.INTERNET,  Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_NETWORK_STATE,
@@ -977,6 +977,17 @@ public class MainActivity extends Activity {
                     }
                 });
             }
+        }
+    }
+
+    public void checkAppSettings(String message){
+        updateBluetoothStatus();
+        updateLocationStatus();
+        String[] WIFI = message.split(" ");
+        if(!wifiSSID.equals(WIFI[0])){
+            isCorrectWifi = "false";
+        }else{
+            isCorrectWifi = "true";
         }
     }
 

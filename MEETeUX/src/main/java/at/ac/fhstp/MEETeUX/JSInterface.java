@@ -185,6 +185,30 @@ public class JSInterface extends AppCompatActivity {
     }
 
     @JavascriptInterface
+    public void  receiveAppSettingsData(String message){
+        mainActivity.checkAppSettings(message);
+        mAppView.post(new Runnable() {
+            @Override
+            public void run() {
+                String isCorrectW = mainActivity.isCorrectWifi;
+                String isCorrectB = mainActivity.isCorrectBluetooth;
+                String isCorrectL = mainActivity.isCorrectLocation;
+                String isCorrect = "false";
+                if(isCorrectW.equalsIgnoreCase("true") && isCorrectB.equalsIgnoreCase("true") && isCorrectL.equalsIgnoreCase("true")){
+                    isCorrect = "true";
+                }
+                mAppView.evaluateJavascript("javascript:send_correct_appSettings("+ isCorrect +")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //Log.i("onReceiveValue! " + value);
+                        //Log.d("Status","Callback from send to web");
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void  receiveWifiData(String message){
         mainActivity.checkWifiData(message);
         mAppView.post(new Runnable() {
