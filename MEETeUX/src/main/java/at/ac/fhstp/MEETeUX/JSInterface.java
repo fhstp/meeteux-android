@@ -166,6 +166,16 @@ public class JSInterface extends AppCompatActivity {
                             }
                         });
                         break;
+
+                    case "delete":
+                        mAppView.evaluateJavascript("javascript:send_device_infos_delete("+ deviceInfos +")", new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                //Log.i("send_deviceinfos_delete","onReceiveValue " + value);
+                                //Log.d("Status","Callback from send to web");
+                            }
+                        });
+                        break;
                 }
             }
         });
