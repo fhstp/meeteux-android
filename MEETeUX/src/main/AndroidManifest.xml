@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="at.ac.fhstp.MEETeUX" xmlns:tools="http://schemas.android.com/tools" android:versionName="2.5" android:versionCode="16" android:installLocation="preferExternal">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="at.ac.fhstp.MEETeUX" xmlns:tools="http://schemas.android.com/tools" android:versionName="3.0" android:versionCode="18" android:installLocation="preferExternal">
   <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true" />
 
   <uses-feature android:name="android.hardware.camera" />

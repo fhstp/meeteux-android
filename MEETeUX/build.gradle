@@ -29,7 +29,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def VUFORIA_SDK_DIR = properties.getProperty('vuforia.dir')
 
 android {
-	compileSdkVersion 27
+	compileSdkVersion 28
 	buildToolsVersion '28.0.3'
 
 	sourceSets.main {
@@ -38,7 +38,7 @@ android {
 	}
 
 	defaultConfig {
-		targetSdkVersion 27
+		targetSdkVersion 28
 		applicationId 'at.ac.fhstp.MEETeUX'
 
 		ndk {
